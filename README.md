@@ -1,30 +1,26 @@
-# React + TypeScript + Vite
+# KZ Profile v2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Environment variables
 
-Currently, two official plugins are available:
+Create a `.dev.vars` file in the root of the respository and add your STEAM API KEY like this: `STEAM_API_KEY=<YOUR KEY>`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Then set your `STEAM_API_KEY` environment variable in your Cloudflare dashboard for production and preview.
 
-## Expanding the ESLint configuration
+## KV
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Create a KV namespace in your Cloudflare dashboard and bind it to your Cloudflre Page with the binding name `KZPROFILE`.
 
-- Configure the top-level `parserOptions` property like this:
+Create a `wrangler.toml` file in the root of the respository and add your KV binding like this:
 
 ```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+kv_namespaces = [
+  { binding = "KZPROFILE", id = "<YOUR KV NAMESPACE ID>", preview_id = "<YOUR KV NAMESPACE ID>" },
+]
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+In Cloudflare Pages, local development uses local storage. It cannot access data stored on Cloudflare’s servers.
+KV must be seeded separetly for local development. See `functions/api/maps.ts`
+
+## Run
+
+To start the development server run `npx wrangler pages dev -- npm run dev`

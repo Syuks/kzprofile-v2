@@ -1,17 +1,17 @@
-import useGlobalMaps from "@/hooks/TanStackQueries/useGlobalMaps"
+import useSteamProfiles from "@/hooks/TanStackQueries/useSteamProfiles"
 
 function PlayerProfile() {
-    const maps = useGlobalMaps()
+    const steamProfile = useSteamProfiles(["76561198267993933"])
 
-    if (maps.isLoading) {
+    if (steamProfile.isLoading) {
         return <div>Loading...</div>
     }
 
-    if (maps.isError) {
+    if (steamProfile.isError) {
         return <div>Error!</div>
     }
 
-    return <div>{JSON.stringify(maps.data)}</div>
+    return <div>{JSON.stringify(steamProfile.data)}</div>
 }
 
 export default PlayerProfile
