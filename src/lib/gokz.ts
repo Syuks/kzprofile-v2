@@ -2,7 +2,7 @@
 
 type GameModeLabel = "kz_timer" | "kz_simple" | "kz_vanilla"
 type GameModeID = 200 | 201 | 202
-type GameMode = GameModeLabel | GameModeID
+export type GameMode = GameModeLabel | GameModeID
 
 export const getGameModeID = (gameMode: GameMode): GameModeID => {
     const gameModeID: Record<GameMode, GameModeID> = {

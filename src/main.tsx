@@ -15,19 +15,6 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
 export const queryClient = new QueryClient()
 
-function getBaseUrl() {
-    if (typeof window !== "undefined") {
-        // browser should use relative path
-        return ""
-    }
-
-    if (process.env.VITE_VERCEL_URL) {
-        return `https://${process.env.VITE_VERCEL_URL}`
-    }
-
-    return `http://localhost:${process.env.PORT ?? 3000}`
-}
-
 const router = createBrowserRouter([
     {
         path: "/",
