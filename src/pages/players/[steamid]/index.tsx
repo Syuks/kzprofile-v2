@@ -1,10 +1,6 @@
-import { useParams } from "react-router-dom"
-
 import useGlobalMaps from "@/hooks/TanStackQueries/useGlobalMaps"
 
 function PlayerProfile() {
-    const { steamid } = useParams() as { steamid: string }
-
     const maps = useGlobalMaps()
 
     if (maps.isLoading) {
