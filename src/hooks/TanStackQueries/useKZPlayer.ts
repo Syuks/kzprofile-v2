@@ -1,17 +1,24 @@
-import { useQuery, QueryOptions } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { GlobalAPI_GetPlayers } from "./APIs/GlobalAPI"
 
-const useKZPlayer = (steamID: string, queryOptions: QueryOptions = {}) => {
+interface Player {
+    steamid64: string
+    steam_id: string
+    is_banned: boolean
+    total_records: number
+    name: string
+}
+
+const useKZPlayer = (steamID: string) => {
     return useQuery({
         queryKey: ["kz_player", steamID],
         queryFn: async () => {
             const response = await GlobalAPI_GetPlayers({ steamid64_list: [steamID] })
-            const json = await response.json()
+            const json: Player[] = await response.json()
             return json
         },
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
-        ...queryOptions,
     })
 }
 

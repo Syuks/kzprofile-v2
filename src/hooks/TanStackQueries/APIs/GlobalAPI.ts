@@ -34,7 +34,7 @@ export const GlobalAPI_GetAuthStatus = () => {
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface GetBans {
+export interface GetBansParams {
     ban_types?: string //Ban types to query
     ban_types_list?: string[] //Unsupported at the moment-
     is_expired?: boolean //Whether to query for isExpired or not
@@ -54,7 +54,7 @@ interface GetBans {
  * Starts a GET HTTP Request to /api/{version}/bans
  *
  */
-export const GlobalAPI_GetBans = (params: GetBans) => {
+export const GlobalAPI_GetBans = (params: GetBansParams) => {
     const url = "bans"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -62,7 +62,7 @@ export const GlobalAPI_GetBans = (params: GetBans) => {
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface CreateBan {
+export interface CreateBanParams {
     steamId?: string // SteamID2 of the user
     banType?: string // Type of the ban
     stats?: string // Stats of the ban
@@ -74,13 +74,13 @@ interface CreateBan {
  * Starts a POST HTTP Request to /api/{version}/bans
  *
  */
-export const GlobalAPI_CreateBan = (params: CreateBan) => {
+export const GlobalAPI_CreateBan = (params: CreateBanParams) => {
     const url = "bans"
 
     return fetch(`${globalAPI.baseURL}/${url}`, { method: "POST", body: JSON.stringify(params) })
 }
 
-interface GetJumpstats {
+export interface GetJumpstatsParams {
     id?: number //Id to query
     server_id?: number //Server id to query
     steamid64?: string //SteamID64 to query
@@ -105,7 +105,7 @@ interface GetJumpstats {
  * Starts a GET HTTP Request to /api/{version}/jumpstats
  *
  */
-export const GlobalAPI_GetJumpstats = (params: GetJumpstats) => {
+export const GlobalAPI_GetJumpstats = (params: GetJumpstatsParams) => {
     const url = "jumpstats"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -113,7 +113,7 @@ export const GlobalAPI_GetJumpstats = (params: GetJumpstats) => {
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface CreateJumpstat {
+export interface CreateJumpstatParams {
     steam_id?: string // SteamID2 of the user
     jumptype?: string // Type of the jump
     distance?: unknown // Distance of the jump
@@ -130,13 +130,13 @@ interface CreateJumpstat {
  * Starts a POST HTTP Request to /api/{version}/jumpstats
  *
  */
-export const GlobalAPI_CreateJumpstat = (params: CreateJumpstat) => {
+export const GlobalAPI_CreateJumpstat = (params: CreateJumpstatParams) => {
     const url = "jumpstats"
 
     return fetch(`${globalAPI.baseURL}/${url}`, { method: "POST", body: JSON.stringify(params) })
 }
 
-interface GetJumpstatTop {
+export interface GetJumpstatTopParams {
     jump_type?: string //Jump type to query
     id?: number //Id to query
     server_id?: number //Server Id to query
@@ -161,7 +161,7 @@ interface GetJumpstatTop {
  * Starts a GET HTTP Request to /api/{version}/jumpstats/{jump_type}/top
  *
  */
-export const GlobalAPI_GetJumpstatTop = (params: GetJumpstatTop, jumpType: string) => {
+export const GlobalAPI_GetJumpstatTop = (params: GetJumpstatTopParams, jumpType: string) => {
     const url = `jumpstats/${jumpType}/top`
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -179,7 +179,7 @@ export const GlobalAPI_GetJumpstatTop30 = (jumpType: string) => {
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface GetMaps {
+export interface GetMapsParams {
     id?: number //Map id to query
     name?: string //Map name to query
     larger_than_filesize?: number //Larger than filesize to query
@@ -196,7 +196,7 @@ interface GetMaps {
  * Starts a GET HTTP Request to /api/{version}/maps
  *
  */
-export const GlobalAPI_GetMaps = (params: GetMaps) => {
+export const GlobalAPI_GetMaps = (params: GetMapsParams) => {
     const url = "maps"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -254,7 +254,7 @@ export const GlobalAPI_GetModeByName = (modeName: string) => {
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface GetPlayers {
+export interface GetPlayersParams {
     name?: string //Player name to query
     steam_id?: string //SteamID2 to query
     is_banned?: boolean //Whether to query for isBanned or not
@@ -269,7 +269,7 @@ interface GetPlayers {
  * Starts a GET HTTP Request to /api/{version}/players
  *
  */
-export const GlobalAPI_GetPlayers = (params: GetPlayers) => {
+export const GlobalAPI_GetPlayers = (params: GetPlayersParams) => {
     const url = "players"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -297,7 +297,7 @@ export const GlobalAPI_GetPlayerBySteamIdAndIp = (steamid: string, ip: string) =
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface CreateRecord {
+export interface CreateRecordParams {
     steam_id?: string //SteamID2 of the user
     map_id?: number //Map id of the record
     mode?: number //Mode of the record
@@ -311,7 +311,7 @@ interface CreateRecord {
  * Starts a POST HTTP Request to /api/{version}/records
  *
  */
-export const GlobalAPI_CreateRecord = (params: CreateRecord) => {
+export const GlobalAPI_CreateRecord = (params: CreateRecordParams) => {
     const url = "records"
 
     return fetch(`${globalAPI.baseURL}/${url}`, { method: "POST", body: JSON.stringify(params) })
@@ -328,7 +328,7 @@ export const GlobalAPI_GetRecordPlaceById = (id: number) => {
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface GetRecordsTop {
+export interface GetRecordsTopParams {
     steam_id?: string //SteamID2 to query
     server_id?: string //Server ID to query
     steamid64?: string //SteamID64 to query
@@ -347,7 +347,7 @@ interface GetRecordsTop {
  * Starts a GET HTTP Request to /api/{version}/records/top
  *
  */
-export const GlobalAPI_GetRecordsTop = (params: GetRecordsTop) => {
+export const GlobalAPI_GetRecordsTop = (params: GetRecordsTopParams) => {
     const url = "records/top"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -355,7 +355,7 @@ export const GlobalAPI_GetRecordsTop = (params: GetRecordsTop) => {
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface GetRecordsTopRecent {
+export interface GetRecordsTopRecentParams {
     steam_id?: string //SteamID2 to query
     steamid64?: string //SteamID64 to query
     map_id?: number //Map id to query
@@ -375,7 +375,7 @@ interface GetRecordsTopRecent {
  * Starts a GET HTTP Request to /api/{version}/records/top/recent
  *
  */
-export const GlobalAPI_GetRecordsTopRecent = (params: GetRecordsTopRecent) => {
+export const GlobalAPI_GetRecordsTopRecent = (params: GetRecordsTopRecentParams) => {
     const url = "records/top/recent"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -383,7 +383,7 @@ export const GlobalAPI_GetRecordsTopRecent = (params: GetRecordsTopRecent) => {
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface GetRecordsTopWorldRecords {
+export interface GetRecordsTopWorldRecordsParams {
     ids?: number[] //Array of ids to query
     map_ids?: number[] //Array of map ids to query
     stages?: number[] //Array of stages to query
@@ -398,7 +398,7 @@ interface GetRecordsTopWorldRecords {
  * Starts a GET HTTP Request to /api/{version}/records/top/world_records
  *
  */
-export const GlobalAPI_GetRecordsTopWorldRecords = (params: GetRecordsTopWorldRecords) => {
+export const GlobalAPI_GetRecordsTopWorldRecords = (params: GetRecordsTopWorldRecordsParams) => {
     const url = "records/top/world_records"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -406,7 +406,7 @@ export const GlobalAPI_GetRecordsTopWorldRecords = (params: GetRecordsTopWorldRe
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface GetServers {
+export interface GetServersParams {
     id?: number[] //Id to query
     port?: number //Port to query
     ip?: string //IP address to query
@@ -421,7 +421,7 @@ interface GetServers {
  * Starts a GET HTTP Request to /api/{version}/servers
  *
  */
-export const GlobalAPI_GetServers = (params: GetServers) => {
+export const GlobalAPI_GetServers = (params: GetServersParams) => {
     const url = "servers"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -449,7 +449,7 @@ export const GlobalAPI_GetServersByName = (serverName: string) => {
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface GetPlayerRanks {
+export interface GetPlayerRanksParams {
     points_greater_than?: number //Points greater than to query
     average_greater_than?: number //Average greater than to query
     rating_greater_than?: number //Rating greater than to query
@@ -469,7 +469,7 @@ interface GetPlayerRanks {
  * Starts a GET HTTP Request to /api/{version}/player_ranks
  *
  */
-export const GlobalAPI_GetPlayerRanks = (params: GetPlayerRanks) => {
+export const GlobalAPI_GetPlayerRanks = (params: GetPlayerRanksParams) => {
     const url = "player_ranks"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -477,7 +477,7 @@ export const GlobalAPI_GetPlayerRanks = (params: GetPlayerRanks) => {
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface GetRecordFilters {
+export interface GetRecordFiltersParams {
     ids?: number[] //Array of ids to query
     map_ids?: number[] //Array of map ids to query
     stages?: number[] //Array of stages to query
@@ -492,7 +492,7 @@ interface GetRecordFilters {
  * Starts a GET HTTP Request to /api/{version}/record_filters
  *
  */
-export const GlobalAPI_GetRecordFilters = (params: GetRecordFilters) => {
+export const GlobalAPI_GetRecordFilters = (params: GetRecordFiltersParams) => {
     const url = "record_filters"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -500,7 +500,7 @@ export const GlobalAPI_GetRecordFilters = (params: GetRecordFilters) => {
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface GetRecordFilterDistributions {
+export interface GetRecordFilterDistributionsParams {
     ids?: number[] //Array of ids to query
     map_ids?: number[] //Array of map ids to query
     stages?: number[] //Array of stages to query
@@ -515,7 +515,9 @@ interface GetRecordFilterDistributions {
  * Starts a GET HTTP Request to /api/{version}/record_filters/distributions
  *
  */
-export const GlobalAPI_GetRecordFilterDistributions = (params: GetRecordFilterDistributions) => {
+export const GlobalAPI_GetRecordFilterDistributions = (
+    params: GetRecordFilterDistributionsParams,
+) => {
     const url = "record_filters/distributions"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -523,7 +525,7 @@ export const GlobalAPI_GetRecordFilterDistributions = (params: GetRecordFilterDi
     return fetch(`${globalAPI.baseURL}/${url}?${queryString}`)
 }
 
-interface GetReplayList {
+export interface GetReplayListParams {
     offset?: number //Offset of the dataset to query
     limit?: number //Amount of items returned for the query
 }
@@ -532,7 +534,7 @@ interface GetReplayList {
  * Starts a GET HTTP Request to /api/{version}/records/replay/list
  *
  */
-export const GlobalAPI_GetReplayList = (params: GetReplayList) => {
+export const GlobalAPI_GetReplayList = (params: GetReplayListParams) => {
     const url = "records/replay/list"
 
     const queryString = generateUrlSearchParams(params).toString()
@@ -560,7 +562,7 @@ export const GlobalAPI_GetReplayByReplayId = (replayId: number) => {
     return fetch(`${globalAPI.baseURL}/${url}`)
 }
 
-interface CreateReplayForRecordId {
+export interface CreateReplayForRecordIdParams {
     replayFile?: string //Path to the replay file
 }
 
@@ -569,7 +571,7 @@ interface CreateReplayForRecordId {
  *
  */
 export const GlobalAPI_CreateReplayForRecordId = (
-    params: CreateReplayForRecordId,
+    params: CreateReplayForRecordIdParams,
     recordId: number,
 ) => {
     const url = `records/${recordId}/replay`

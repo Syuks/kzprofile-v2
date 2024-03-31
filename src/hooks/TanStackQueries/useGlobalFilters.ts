@@ -1,9 +1,21 @@
-import { useQuery, QueryOptions } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { GlobalAPI_GetRecordFilters } from "./APIs/GlobalAPI"
 
 import { getGameModeID, GameMode } from "@/lib/gokz"
 
-const useGlobalFilters = (gameMode: GameMode, queryOptions: QueryOptions = {}) => {
+interface RecordFilter {
+    id: number
+    map_id: number
+    stage: number
+    mode_id: number
+    tickrate: number
+    has_teleports: boolean
+    created_on: string
+    updated_on: string
+    updated_by_id: string
+}
+
+const useGlobalFilters = (gameMode: GameMode) => {
     // Filters should be fetched once for the whole session
     return useQuery({
         queryKey: ["filters", gameMode],
@@ -15,12 +27,11 @@ const useGlobalFilters = (gameMode: GameMode, queryOptions: QueryOptions = {}) =
                 has_teleports: false,
                 limit: 9999,
             })
-            const json = await response.json()
+            const json: RecordFilter[] = await response.json()
             return json
         },
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
-        ...queryOptions,
     })
 }
 

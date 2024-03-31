@@ -1,3 +1,7 @@
+// RUN TYPES
+
+export type RunType = "pro" | "nub" | "tp"
+
 // GAME MODES
 
 type GameModeLabel = "kz_timer" | "kz_simple" | "kz_vanilla"

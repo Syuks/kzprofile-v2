@@ -1,17 +1,32 @@
-import { useQuery, QueryOptions } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 
-const useSteamProfiles = (steamIds: string[], queryOptions: QueryOptions = {}) => {
+interface PlayerSummary {
+    steamid: string
+    personaname: string
+    profileurl: string
+    avatar: string
+    avatarmedium: string
+    avatarfull: string
+    personastate: number
+    realname: string
+    primaryclanid: string
+    timecreated: number
+    personastateflags: number
+    loccountrycode: string
+    locstatecode: string
+}
+
+const useSteamProfiles = (steamIds: string[]) => {
     return useQuery({
         queryKey: ["steamProfiles", steamIds],
         queryFn: async () => {
             const response = await SteamAPI_GetProfiles(steamIds)
-            const json = await response.json()
+            const json: PlayerSummary[] = await response.json()
             return json
         },
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
-        ...queryOptions,
     })
 }
 
