@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 
-interface PlayerSummary {
+export interface SteamPlayerSummary {
     steamid: string
     personaname: string
     profileurl: string
@@ -22,7 +22,7 @@ const useSteamProfiles = (steamIds: string[]) => {
         queryKey: ["steamProfiles", steamIds],
         queryFn: async () => {
             const response = await SteamAPI_GetProfiles(steamIds)
-            const json: PlayerSummary[] = await response.json()
+            const json: SteamPlayerSummary[] = await response.json()
             return json
         },
         staleTime: Infinity, // never refetch

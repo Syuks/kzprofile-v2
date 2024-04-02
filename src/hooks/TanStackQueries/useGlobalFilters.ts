@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordFilters } from "./APIs/GlobalAPI"
 
 import { getGameModeID, GameMode } from "@/lib/gokz"
@@ -15,9 +16,8 @@ interface RecordFilter {
     updated_by_id: string
 }
 
-const useGlobalFilters = (gameMode: GameMode) => {
-    // Filters should be fetched once for the whole session
-    return useQuery({
+const globalFiltersQueryOptions = (gameMode: GameMode) => {
+    return {
         queryKey: ["filters", gameMode],
         queryFn: async () => {
             const response = await GlobalAPI_GetRecordFilters({
@@ -32,7 +32,17 @@ const useGlobalFilters = (gameMode: GameMode) => {
         },
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
-    })
+    }
+}
+
+const useGlobalFilters = (gameMode: GameMode) => {
+    // Filters should be fetched once for the whole session
+    return useQuery(globalFiltersQueryOptions(gameMode))
+}
+
+const fetchGlobalFilters = (gameMode: GameMode) => {
+    return queryClient.fetchQuery(globalFiltersQueryOptions(gameMode))
 }
 
 export default useGlobalFilters
+export { fetchGlobalFilters }

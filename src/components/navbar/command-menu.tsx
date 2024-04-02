@@ -82,7 +82,7 @@ function CommandMenu({ ...props }: DialogProps) {
                 }}
                 {...props}
             >
-                <span className="inline-flex">Search maps...</span>
+                <span className="inline-flex">Search...</span>
                 <kbd className="pointer-events-none h-5 rounded border bg-muted px-1.5 font-mono text-xs">
                     Any
                 </kbd>

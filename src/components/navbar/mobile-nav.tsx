@@ -1,5 +1,7 @@
 import { useState } from "react"
 
+import { GitHubLogoIcon, VideoIcon } from "@radix-ui/react-icons"
+
 import { Link, NavLink } from "react-router-dom"
 
 import { HamburgerMenuIcon } from "@radix-ui/react-icons"
@@ -58,6 +60,21 @@ function MobileNav() {
                     >
                         Test
                     </NavLink>
+                </div>
+                <div className="mt-6 flex flex-col space-y-3">
+                    <h4 className="font-medium">Socials</h4>
+                    <Button asChild variant="link" className="justify-start">
+                        <Link to="https://github.com/Syuks/KZProfile">
+                            <GitHubLogoIcon className="mr-2 h-4 w-4" />
+                            Github
+                        </Link>
+                    </Button>
+                    <Button asChild variant="link" className="justify-start">
+                        <Link to="https://youtube.com/c/Syuks">
+                            <VideoIcon className="mr-2 h-4 w-4" />
+                            YouTube
+                        </Link>
+                    </Button>
                 </div>
             </SheetContent>
         </Sheet>

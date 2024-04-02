@@ -20,7 +20,7 @@ function Header() {
                         <CommandMenu />
                     </div>
                     <nav className="flex items-center">
-                        <Button asChild variant="ghost" size="icon">
+                        <Button asChild variant="ghost" size="icon" className="hidden md:flex">
                             <Link
                                 to="https://github.com/Syuks/KZProfile"
                                 target="_blank"
@@ -30,7 +30,7 @@ function Header() {
                                 <span className="sr-only">Github</span>
                             </Link>
                         </Button>
-                        <Button asChild variant="ghost" size="icon">
+                        <Button asChild variant="ghost" size="icon" className="hidden md:flex">
                             <Link to="https://youtube.com/c/Syuks" target="_blank" rel="noreferrer">
                                 <VideoIcon className="h-5 w-5" />
                                 <span className="sr-only">YouTube</span>

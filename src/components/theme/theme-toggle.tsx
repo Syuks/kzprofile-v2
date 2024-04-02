@@ -8,10 +8,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { useTheme } from "@/components/theme/theme-provider"
+import { useLocalSettings, Theme } from "@/components/localsettings/localsettings-provider"
 
 function ThemeToggle() {
-    const { setTheme } = useTheme()
+    const [_localSettings, setLocalSettings] = useLocalSettings()
+
+    const changeTheme = (newTheme: Theme) => {
+        setLocalSettings({ theme: newTheme })
+    }
 
     return (
         <DropdownMenu>
@@ -23,9 +27,9 @@ function ThemeToggle() {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setTheme("light")}>Light</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>Dark</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>System</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeTheme("light")}>Light</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeTheme("dark")}>Dark</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => changeTheme("system")}>System</DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

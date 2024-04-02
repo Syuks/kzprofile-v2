@@ -1,11 +1,15 @@
+import z from "zod"
+
 // RUN TYPES
 
 export type RunType = "pro" | "nub" | "tp"
+export const runTypeSchema = z.enum(["pro", "nub", "tp"])
 
 // GAME MODES
 
-type GameModeLabel = "kz_timer" | "kz_simple" | "kz_vanilla"
-type GameModeID = 200 | 201 | 202
+export type GameModeLabel = "kz_timer" | "kz_simple" | "kz_vanilla"
+export const gameModeLabelSchema = z.enum(["kz_timer", "kz_simple", "kz_vanilla"])
+export type GameModeID = 200 | 201 | 202
 export type GameMode = GameModeLabel | GameModeID
 
 export const getGameModeID = (gameMode: GameMode): GameModeID => {
@@ -79,7 +83,7 @@ const tierColorBackground = {
     7: "#38173c4D",
 }
 
-type TierID = 1 | 2 | 3 | 4 | 5 | 6 | 7
+export type TierID = 1 | 2 | 3 | 4 | 5 | 6 | 7
 
 export const getTierName = (tierID: TierID) => {
     return tierName[tierID]
@@ -186,128 +190,89 @@ export const jumptypeDropdownItems = [
 
 // RANKS
 
-const rankCount = 23
-
-const rankThreshold = {
+const rankThresholds: Record<GameModeID, number[]> = {
     200: [
-        0, 1, 500, 1000,
-
-        2000, 5000, 10000,
-
-        20000, 30000, 40000,
-
-        60000, 70000, 80000,
-
-        100000, 120000, 150000,
-
-        200000, 230000, 250000,
-
-        400000, 600000, 800000, 1000000,
+        0, 1, 500, 1000, 2000, 5000, 10000, 20000, 30000, 40000, 60000, 70000, 80000, 100000,
+        120000, 150000, 200000, 230000, 250000, 400000, 600000, 800000, 1000000,
     ],
     201: [
-        0, 1, 500, 1000,
-
-        2000, 5000, 10000,
-
-        20000, 30000, 40000,
-
-        60000, 70000, 80000,
-
-        100000, 120000, 150000,
-
-        200000, 230000, 250000,
-
-        300000, 400000, 500000, 800000,
+        0, 1, 500, 1000, 2000, 5000, 10000, 20000, 30000, 40000, 60000, 70000, 80000, 100000,
+        120000, 150000, 200000, 230000, 250000, 300000, 400000, 500000, 800000,
     ],
     202: [
-        0, 1, 500, 1000,
-
-        2000, 5000, 10000,
-
-        20000, 30000, 40000,
-
-        60000, 70000, 80000,
-
-        100000, 120000, 140000,
-
-        160000, 180000, 200000,
-
-        250000, 300000, 400000, 600000,
+        0, 1, 500, 1000, 2000, 5000, 10000, 20000, 30000, 40000, 60000, 70000, 80000, 100000,
+        120000, 140000, 160000, 180000, 200000, 250000, 300000, 400000, 600000,
     ],
 }
 
-const rankName = [
-    "New",
-    "Beginner-",
-    "Beginner",
-    "Beginner+",
-    "Amateur-",
-    "Amateur",
-    "Amateur+",
-    "Casual-",
-    "Casual",
-    "Casual+",
-    "Regular-",
-    "Regular",
-    "Regular+",
-    "Skilled-",
-    "Skilled",
-    "Skilled+",
-    "Expert-",
-    "Expert",
-    "Expert+",
-    "Semipro",
-    "Pro",
-    "Master",
-    "Legend",
+const rankData = [
+    { label: "New", color: "csgo-grey" },
+    { label: "Beginner-", color: "csgo-default" },
+    { label: "Beginner", color: "csgo-default" },
+    { label: "Beginner+", color: "csgo-default" },
+    { label: "Amateur-", color: "csgo-blue" },
+    { label: "Amateur", color: "csgo-blue" },
+    { label: "Amateur+", color: "csgo-blue" },
+    { label: "Casual-", color: "csgo-lightgreen" },
+    { label: "Casual", color: "csgo-lightgreen" },
+    { label: "Casual+", color: "csgo-lightgreen" },
+    { label: "Regular-", color: "csgo-green" },
+    { label: "Regular", color: "csgo-green" },
+    { label: "Regular+", color: "csgo-green" },
+    { label: "Skilled-", color: "csgo-purple" },
+    { label: "Skilled", color: "csgo-purple" },
+    { label: "Skilled+", color: "csgo-purple" },
+    { label: "Expert-", color: "csgo-orchid" },
+    { label: "Expert", color: "csgo-orchid" },
+    { label: "Expert+", color: "csgo-orchid" },
+    { label: "Semipro", color: "csgo-lightred" },
+    { label: "Pro", color: "csgo-lightred" },
+    { label: "Master", color: "csgo-red" },
+    { label: "Legend", color: "csgo-gold" },
 ]
 
-const rankColor = [
-    "var(--csgo-grey)",
-    "var(--csgo-default)",
-    "var(--csgo-default)",
-    "var(--csgo-default)",
-    "var(--csgo-blue)",
-    "var(--csgo-blue)",
-    "var(--csgo-blue)",
-    "var(--csgo-lightgreen)",
-    "var(--csgo-lightgreen)",
-    "var(--csgo-lightgreen)",
-    "var(--csgo-green)",
-    "var(--csgo-green)",
-    "var(--csgo-green)",
-    "var(--csgo-purple)",
-    "var(--csgo-purple)",
-    "var(--csgo-purple)",
-    "var(--csgo-orchid)",
-    "var(--csgo-orchid)",
-    "var(--csgo-orchid)",
-    "var(--csgo-lightred)",
-    "var(--csgo-lightred)",
-    "var(--csgo-red)",
-    "var(--csgo-gold)",
-]
+const rankCount = rankData.length
 
-export const getRank = (gameMode: GameModeID, points: number) => {
-    const gameMode_thresholds = rankThreshold[getGameModeID(gameMode)]
+export type KZRank = {
+    label: string
+    prevThreshold: number
+    nextThreshold: number
+    points: number
+    percent: number
+    color: string
+}
+
+export const getKZRank = (gameMode: GameModeID, points: number): KZRank => {
+    const thresholds = rankThresholds[gameMode]
 
     for (let i = rankCount - 1; i >= 0; i--) {
-        if (points >= gameMode_thresholds[i]) {
-            const prev_threshold = gameMode_thresholds[i]
-            const next_threshold = gameMode_thresholds[i + 1] ?? prev_threshold
+        if (points >= thresholds[i]) {
+            const prevThreshold = thresholds[i]
+            const nextThreshold = thresholds[i + 1] ?? prevThreshold
             const percent =
-                next_threshold !== prev_threshold
-                    ? (points - prev_threshold) / (next_threshold - prev_threshold)
+                nextThreshold !== prevThreshold
+                    ? (points - prevThreshold) / (nextThreshold - prevThreshold)
                     : 1
+
             return {
-                label: rankName[i],
-                prevThreshold: prev_threshold,
-                nextThreshold: next_threshold,
-                points: points,
-                percent: percent,
-                color: rankColor[i],
+                label: rankData[i].label,
+                prevThreshold,
+                nextThreshold,
+                points,
+                percent,
+                color: rankData[i].color,
             }
         }
+    }
+
+    // Return a default rank if points are below the minimum threshold
+    return {
+        label: rankData[0].label,
+        prevThreshold: 0,
+        nextThreshold: thresholds[0],
+        points,
+        percent: 0,
+        color: rankData[0].color,
     }
 }
 

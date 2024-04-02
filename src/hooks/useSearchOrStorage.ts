@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom"
 
 type SetValue<T> = (value: T | ((val: T) => T)) => void
 
-function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
+function useSearchOrStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
     const location = useLocation()
 
     const getInitialValue = (): T => {
@@ -47,4 +47,4 @@ function useLocalStorage<T>(key: string, initialValue: T): [T, SetValue<T>] {
     return [value, updateValue]
 }
 
-export default useLocalStorage
+export default useSearchOrStorage
