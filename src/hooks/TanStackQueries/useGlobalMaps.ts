@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetMaps } from "./APIs/GlobalAPI"
 import { TierID } from "@/lib/gokz"
@@ -16,7 +16,7 @@ interface Map {
     download_url: string
 }
 
-const globalMapsQueryOptions = {
+const globalMapsQueryOptions: UseQueryOptions<Map[]> = {
     queryKey: ["maps", "globalMaps"],
     queryFn: async () => {
         const response = await GlobalAPI_GetMaps({ is_validated: true, limit: 9999 })

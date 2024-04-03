@@ -152,8 +152,19 @@
         --discord-blue: 217, 100%, 64%;
         --discord-coral: 0, 65%, 64%;
         --discord-purple: 253, 76%, 73%;
+
+        --medals-gold: 45, 100%, 29%;
+        --medals-red: 355, 75%, 25%;
+        --medals-blue: 210, 72%, 31%;
+        --medals-green: 155, 46%, 51%;
     }
     html {
         font-family: "Inter", sans-serif;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        @apply px-4;
     }
 }

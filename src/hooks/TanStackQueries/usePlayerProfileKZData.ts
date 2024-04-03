@@ -11,7 +11,7 @@ interface Completion {
     done: [number, number, number, number, number, number, number]
 }
 
-interface RecordsTopExtended extends RecordsTop {
+export interface RecordsTopExtended extends RecordsTop {
     difficulty: TierID
 }
 
@@ -62,6 +62,7 @@ const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
                     points: 0,
                     percent: 0,
                     color: "",
+                    backgroundColor: "",
                 },
                 points: {
                     total: 0,

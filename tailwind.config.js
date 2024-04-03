@@ -76,6 +76,12 @@ module.exports = {
                     coral: "hsl(var(--discord-coral))",
                     purple: "hsl(var(--discord-purple))",
                 },
+                medals: {
+                    gold: "hsl(var(--medals-gold))",
+                    red: "hsl(var(--medals-red))",
+                    blue: "hsl(var(--medals-blue))",
+                    green: "hsl(var(--medals-green))",
+                },
             },
             borderRadius: {
                 lg: "var(--radius)",

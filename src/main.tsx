@@ -7,6 +7,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import Layout from "./pages/layout"
 import PlayerSearch from "./pages/players/search"
 import PlayerProfile from "./pages/players/[steamid]"
+import Finishes from "./pages/players/[steamid]/finishes"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -35,6 +36,12 @@ const router = createBrowserRouter([
                     {
                         path: ":steamid",
                         element: <PlayerProfile />,
+                        children: [
+                            {
+                                index: true,
+                                element: <Finishes />,
+                            },
+                        ],
                     },
                 ],
             },

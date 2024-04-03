@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, UseQueryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordFilters } from "./APIs/GlobalAPI"
 
@@ -16,7 +16,7 @@ interface RecordFilter {
     updated_by_id: string
 }
 
-const globalFiltersQueryOptions = (gameMode: GameMode) => {
+const globalFiltersQueryOptions = (gameMode: GameMode): UseQueryOptions<RecordFilter[]> => {
     return {
         queryKey: ["filters", gameMode],
         queryFn: async () => {

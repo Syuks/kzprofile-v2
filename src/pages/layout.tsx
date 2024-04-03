@@ -6,14 +6,19 @@ import Header from "@/components/navbar/header"
 import ModeChooser from "@/components/gamemode/game-mode-chooser"
 
 import { Toaster } from "@/components/ui/sonner"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 function Layout() {
     return (
         <LocalSettingsProvider>
-            <Header />
-            <ModeChooser />
-            <Outlet />
-            <Toaster />
+            <TooltipProvider>
+                <Header />
+                <ModeChooser />
+                <div className="container">
+                    <Outlet />
+                </div>
+                <Toaster />
+            </TooltipProvider>
         </LocalSettingsProvider>
     )
 }

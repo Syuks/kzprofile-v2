@@ -15,7 +15,7 @@ function ModeChooser() {
     const [runType, setRunType] = useRunType()
 
     return (
-        <div className="flex h-14 items-center justify-center">
+        <div className="flex h-16 items-center justify-center">
             <RadioGroup value={gameMode} onValueChange={setGameMode} className="flex">
                 <CustomRadioGroupItem value="kz_timer" label="KZ Timer" id="r_kz_timer" />
                 <CustomRadioGroupItem value="kz_simple" label="KZ Simple" id="r_kz_simple" />
@@ -49,7 +49,7 @@ function CustomRadioGroupItem({ value, label, id }: CustomRadioGroupItemProps) {
             <RadioGroupItem value={value} id={id} className="peer sr-only" />
             <Label
                 htmlFor={id}
-                className="cursor-pointer text-foreground/60 transition-colors hover:text-foreground/80 peer-aria-checked:text-foreground"
+                className="cursor-pointer text-base text-foreground/60 transition-colors hover:text-foreground/80 peer-aria-checked:text-foreground"
             >
                 {label}
             </Label>

@@ -6,13 +6,15 @@ import BlueMedal from "@/assets/medals/800.png"
 import BlueMedalEmpty from "@/assets/medals/800-empty.png"
 import AvatarFrame from "@/assets/frames/frame1.png"
 
+import { Link } from "react-router-dom"
+
 import type { SteamPlayerSummary } from "@/hooks/TanStackQueries/useSteamProfiles"
 import type { PlayerProfileKZData } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
-//import PlayerFlag from '../../PlayerFlag/PlayerFlag'
+import PlayerFlag from "@/components/flag/player-flag"
 //import Role from "../../Roles/Role"
 
-//import { Badge } from 'primereact/badge'
+import { Badge } from "@/components/ui/badge"
 
 interface PlayerInfoProps {
     steamid: string
@@ -39,45 +41,6 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
         </>
     )*/
 
-    const WrMedalDiv = (
-        <div className="md:order-0 relative order-1 mt-2">
-            {playerProfileKZData.medals.gold > 0 ? (
-                <>
-                    <img src={GoldMedal} alt="WRs" />
-                    <span className="wr-badge">{playerProfileKZData.medals.gold}</span>
-                </>
-            ) : (
-                <img src={GoldMedalEmpty} alt="WRs" />
-            )}
-        </div>
-    )
-
-    const RedMedalDiv = (
-        <div className="order-0 relative mt-[1.15rem] md:order-1">
-            {playerProfileKZData.medals.red > 0 ? (
-                <>
-                    <img src={RedMedal} alt="900s" />
-                    <span className="red-badge">{playerProfileKZData.medals.red}</span>
-                </>
-            ) : (
-                <img src={RedMedalEmpty} alt="900s" />
-            )}
-        </div>
-    )
-
-    const BlueMedalDiv = (
-        <div className="relative order-2 mt-[0.35rem]">
-            {playerProfileKZData.medals.blue > 0 ? (
-                <>
-                    <img src={BlueMedal} alt="800s" />
-                    <span className="blue-badge">{playerProfileKZData.medals.blue}</span>
-                </>
-            ) : (
-                <img src={BlueMedalEmpty} alt="800s" />
-            )}
-        </div>
-    )
-
     /*const PlayerRoles = playerProfile && playerProfile.roles.map(role=>{
         return (
             <Role roleID={role} key={role} />
@@ -85,62 +48,96 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
     })*/
 
     return (
-        <div className="player-panel">
-            <div className="picture-col">
-                <div className="picture-div">
-                    <a
-                        href={`https://steamcommunity.com/profiles/${steamid}/`}
+        <div className="flex-col md:inline-flex md:flex-row">
+            <div className="flex justify-center md:block">
+                <div className="mt-0 h-[184px] w-[184px] bg-zinc-950 md:mt-4">
+                    <Link
+                        to={`https://steamcommunity.com/profiles/${steamid}/`}
                         target="_blank"
                         rel="noreferrer"
                     >
-                        <div className="avatar-frame">
-                            <img src={AvatarFrame} alt="frame" className="max-w-none" />
-                        </div>
-                        {steamProfile && (
+                        <div className="relative">
                             <img
-                                className="avatar-image"
-                                src={steamProfile.avatar}
-                                alt="playerAvatar"
-                            ></img>
-                        )}
-                    </a>
-                </div>
-                <div className="socials-row">{/*PlayerSocials*/}</div>
-            </div>
-
-            <div className="medals-col">
-                {WrMedalDiv}
-                {RedMedalDiv}
-                {BlueMedalDiv}
-            </div>
-
-            <div className="info-col">
-                <div className="info-name">
-                    {!steamProfile ? (
-                        <span className="h-[50px] w-[300px] bg-[#0E0E0E]"></span>
-                    ) : (
-                        <>
-                            <span>{steamProfile.personaname}</span>
-
-                            <img
-                                title={steamProfile.loccountrycode}
-                                alt={steamProfile.loccountrycode}
-                                src={`/flags/${steamProfile.loccountrycode.toUpperCase()}.png`}
-                                onError={(e) => (e.currentTarget.src = `/flags/_unknown.png`)}
+                                src={AvatarFrame}
+                                alt="frame"
+                                className="absolute -left-[20px] -top-[20px] hidden max-w-none"
                             />
+                        </div>
+                        <img
+                            className="h-full w-full rounded"
+                            src={steamProfile.avatarfull}
+                            alt="playerAvatar"
+                        />
+                    </Link>
+                </div>
+                {/*<div className="socials-row">{PlayerSocials}</div>*/}
+            </div>
+
+            <div className="my-4 flex flex-row items-center justify-around md:my-0 md:ml-12 md:flex-col">
+                <div className="md:order-0 relative order-1 mt-2">
+                    {playerProfileKZData.medals.gold > 0 ? (
+                        <>
+                            <img src={GoldMedal} alt="1000-medal" />
+                            <Badge
+                                variant="secondary"
+                                className="bg-medals-gold pointer-events-none absolute left-[50px] top-[10px] px-2"
+                            >
+                                {playerProfileKZData.medals.gold}
+                            </Badge>
                         </>
+                    ) : (
+                        <img src={GoldMedalEmpty} alt="1000-medal-emty" />
                     )}
                 </div>
-                <div className="info-rank">
-                    <span className={playerProfileKZData.rank.label}>
+                <div className="order-0 relative mt-[1.15rem] md:order-1">
+                    {playerProfileKZData.medals.red > 0 ? (
+                        <>
+                            <img src={RedMedal} alt="900-medal" />
+                            <Badge
+                                variant="secondary"
+                                className="bg-medals-red pointer-events-none absolute left-[34px] top-0 px-2"
+                            >
+                                {playerProfileKZData.medals.red}
+                            </Badge>
+                        </>
+                    ) : (
+                        <img src={RedMedalEmpty} alt="900-medal-empty" />
+                    )}
+                </div>
+                <div className="relative order-2 mt-[0.35rem]">
+                    {playerProfileKZData.medals.blue > 0 ? (
+                        <>
+                            <img src={BlueMedal} alt="800-mdeal" />
+                            <Badge
+                                variant="secondary"
+                                className="bg-medals-blue pointer-events-none absolute left-[34px] top-0 px-2"
+                            >
+                                {playerProfileKZData.medals.blue}
+                            </Badge>
+                        </>
+                    ) : (
+                        <img src={BlueMedalEmpty} alt="800-mdeal-empty" />
+                    )}
+                </div>
+            </div>
+
+            <div className="ml-0 md:ml-12">
+                <div className="mt-4 text-7xl font-light">
+                    <span className="mr-5 inline-block">{steamProfile.personaname}</span>
+                    <PlayerFlag
+                        className="inline-block"
+                        nationality={steamProfile.loccountrycode}
+                    />
+                </div>
+                <div className="mt-3 text-5xl">
+                    <span className={playerProfileKZData.rank.color}>
                         {playerProfileKZData.rank.label}
                     </span>
                 </div>
-                <div className="info-points">
-                    `${playerProfileKZData.points.total.toLocaleString()} ($
-                    {playerProfileKZData.points.average.toFixed(2)})`
+                <div className="mt-3 text-4xl font-light text-foreground/60">
+                    {`${playerProfileKZData.points.total.toLocaleString()} (${playerProfileKZData.points.average.toFixed(2)})`}
                 </div>
-                <div className="info-roles">{/*PlayerRoles*/}</div>
+                {/*<div className="inline-flex mb-2 ">{PlayerRoles}</div>*/}
             </div>
         </div>
     )
