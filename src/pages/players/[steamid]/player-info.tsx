@@ -80,7 +80,7 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                             <img src={GoldMedal} alt="1000-medal" />
                             <Badge
                                 variant="secondary"
-                                className="bg-medals-gold pointer-events-none absolute left-[50px] top-[10px] px-2"
+                                className="bg-medals-gold pointer-events-none absolute left-[50px] top-[10px] px-2 text-white"
                             >
                                 {playerProfileKZData.medals.gold}
                             </Badge>
@@ -95,7 +95,7 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                             <img src={RedMedal} alt="900-medal" />
                             <Badge
                                 variant="secondary"
-                                className="bg-medals-red pointer-events-none absolute left-[34px] top-0 px-2"
+                                className="bg-medals-red pointer-events-none absolute left-[34px] top-0 px-2 text-white"
                             >
                                 {playerProfileKZData.medals.red}
                             </Badge>
@@ -110,7 +110,7 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                             <img src={BlueMedal} alt="800-mdeal" />
                             <Badge
                                 variant="secondary"
-                                className="bg-medals-blue pointer-events-none absolute left-[34px] top-0 px-2"
+                                className="bg-medals-blue pointer-events-none absolute left-[34px] top-0 px-2 text-white"
                             >
                                 {playerProfileKZData.medals.blue}
                             </Badge>

@@ -173,29 +173,144 @@ const rankThresholds: Record<GameModeID, number[]> = {
 }
 
 const rankData = [
-    { label: "New", color: "text-csgo-grey", backgroundColor: "bg-csgo-grey" },
-    { label: "Beginner-", color: "text-csgo-default", backgroundColor: "bg-csgo-default" },
-    { label: "Beginner", color: "text-csgo-default", backgroundColor: "bg-csgo-default" },
-    { label: "Beginner+", color: "text-csgo-default", backgroundColor: "bg-csgo-default" },
-    { label: "Amateur-", color: "text-csgo-blue", backgroundColor: "bg-csgo-blue" },
-    { label: "Amateur", color: "text-csgo-blue", backgroundColor: "bg-csgo-blue" },
-    { label: "Amateur+", color: "text-csgo-blue", backgroundColor: "bg-csgo-blue" },
-    { label: "Casual-", color: "text-csgo-lightgreen", backgroundColor: "bg-csgo-lightgreen" },
-    { label: "Casual", color: "text-csgo-lightgreen", backgroundColor: "bg-csgo-lightgreen" },
-    { label: "Casual+", color: "text-csgo-lightgreen", backgroundColor: "bg-csgo-lightgreen" },
-    { label: "Regular-", color: "text-csgo-green", backgroundColor: "bg-csgo-green" },
-    { label: "Regular", color: "text-csgo-green", backgroundColor: "bg-csgo-green" },
-    { label: "Regular+", color: "text-csgo-green", backgroundColor: "bg-csgo-green" },
-    { label: "Skilled-", color: "text-csgo-purple", backgroundColor: "bg-csgo-purple" },
-    { label: "Skilled", color: "text-csgo-purple", backgroundColor: "bg-csgo-purple" },
-    { label: "Skilled+", color: "text-csgo-purple", backgroundColor: "bg-csgo-purple" },
-    { label: "Expert-", color: "text-csgo-orchid", backgroundColor: "bg-csgo-orchid" },
-    { label: "Expert", color: "text-csgo-orchid", backgroundColor: "bg-csgo-orchid" },
-    { label: "Expert+", color: "text-csgo-orchid", backgroundColor: "bg-csgo-orchid" },
-    { label: "Semipro", color: "text-csgo-lightred", backgroundColor: "bg-csgo-lightred" },
-    { label: "Pro", color: "text-csgo-lightred", backgroundColor: "bg-csgo-lightred" },
-    { label: "Master", color: "text-csgo-red", backgroundColor: "bg-csgo-red" },
-    { label: "Legend", color: "text-csgo-gold", backgroundColor: "bg-csgo-gold" },
+    {
+        label: "New",
+        color: "text-csgo-grey",
+        backgroundColor: "bg-csgo-grey",
+        border: "border-csgo-grey",
+    },
+    {
+        label: "Beginner-",
+        color: "text-csgo-default",
+        backgroundColor: "bg-csgo-default",
+        border: "border-csgo-default",
+    },
+    {
+        label: "Beginner",
+        color: "text-csgo-default",
+        backgroundColor: "bg-csgo-default",
+        border: "border-csgo-default",
+    },
+    {
+        label: "Beginner+",
+        color: "text-csgo-default",
+        backgroundColor: "bg-csgo-default",
+        border: "border-csgo-default",
+    },
+    {
+        label: "Amateur-",
+        color: "text-csgo-blue",
+        backgroundColor: "bg-csgo-blue",
+        border: "border-csgo-blue",
+    },
+    {
+        label: "Amateur",
+        color: "text-csgo-blue",
+        backgroundColor: "bg-csgo-blue",
+        border: "border-csgo-blue",
+    },
+    {
+        label: "Amateur+",
+        color: "text-csgo-blue",
+        backgroundColor: "bg-csgo-blue",
+        border: "border-csgo-blue",
+    },
+    {
+        label: "Casual-",
+        color: "text-csgo-lightgreen",
+        backgroundColor: "bg-csgo-lightgreen",
+        border: "border-csgo-lightgreen",
+    },
+    {
+        label: "Casual",
+        color: "text-csgo-lightgreen",
+        backgroundColor: "bg-csgo-lightgreen",
+        border: "border-csgo-lightgreen",
+    },
+    {
+        label: "Casual+",
+        color: "text-csgo-lightgreen",
+        backgroundColor: "bg-csgo-lightgreen",
+        border: "border-csgo-lightgreen",
+    },
+    {
+        label: "Regular-",
+        color: "text-csgo-green",
+        backgroundColor: "bg-csgo-green",
+        border: "border-csgo-green",
+    },
+    {
+        label: "Regular",
+        color: "text-csgo-green",
+        backgroundColor: "bg-csgo-green",
+        border: "border-csgo-green",
+    },
+    {
+        label: "Regular+",
+        color: "text-csgo-green",
+        backgroundColor: "bg-csgo-green",
+        border: "border-csgo-green",
+    },
+    {
+        label: "Skilled-",
+        color: "text-csgo-purple",
+        backgroundColor: "bg-csgo-purple",
+        border: "border-csgo-purple",
+    },
+    {
+        label: "Skilled",
+        color: "text-csgo-purple",
+        backgroundColor: "bg-csgo-purple",
+        border: "border-csgo-purple",
+    },
+    {
+        label: "Skilled+",
+        color: "text-csgo-purple",
+        backgroundColor: "bg-csgo-purple",
+        border: "border-csgo-purple",
+    },
+    {
+        label: "Expert-",
+        color: "text-csgo-orchid",
+        backgroundColor: "bg-csgo-orchid",
+        border: "border-csgo-orchid",
+    },
+    {
+        label: "Expert",
+        color: "text-csgo-orchid",
+        backgroundColor: "bg-csgo-orchid",
+        border: "border-csgo-orchid",
+    },
+    {
+        label: "Expert+",
+        color: "text-csgo-orchid",
+        backgroundColor: "bg-csgo-orchid",
+        border: "border-csgo-orchid",
+    },
+    {
+        label: "Semipro",
+        color: "text-csgo-lightred",
+        backgroundColor: "bg-csgo-lightred",
+        border: "border-csgo-lightred",
+    },
+    {
+        label: "Pro",
+        color: "text-csgo-lightred",
+        backgroundColor: "bg-csgo-lightred",
+        border: "border-csgo-lightred",
+    },
+    {
+        label: "Master",
+        color: "text-csgo-red",
+        backgroundColor: "bg-csgo-red",
+        border: "border-csgo-red",
+    },
+    {
+        label: "Legend",
+        color: "text-csgo-gold",
+        backgroundColor: "bg-csgo-gold",
+        border: "border-csgo-gold",
+    },
 ]
 
 const rankCount = rankData.length
@@ -208,6 +323,7 @@ export type KZRank = {
     percent: number
     color: string
     backgroundColor: string
+    border: string
 }
 
 export const getKZRank = (gameMode: GameModeID, points: number): KZRank => {
@@ -230,6 +346,7 @@ export const getKZRank = (gameMode: GameModeID, points: number): KZRank => {
                 percent,
                 color: rankData[i].color,
                 backgroundColor: rankData[i].backgroundColor,
+                border: rankData[i].border,
             }
         }
     }
@@ -243,6 +360,7 @@ export const getKZRank = (gameMode: GameModeID, points: number): KZRank => {
         percent: 0,
         color: rankData[0].color,
         backgroundColor: rankData[0].backgroundColor,
+        border: rankData[0].border,
     }
 }
 

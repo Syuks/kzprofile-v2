@@ -1,6 +1,14 @@
-import { useEffect } from "react"
+import { PropsWithChildren, useEffect } from "react"
 
-import { Outlet, useParams, useNavigate } from "react-router-dom"
+import {
+    TextAlignLeftIcon,
+    StopwatchIcon,
+    ShuffleIcon,
+    BarChartIcon,
+    LockOpen1Icon,
+} from "@radix-ui/react-icons"
+
+import { Outlet, useParams, NavLink } from "react-router-dom"
 
 import useKZPlayer from "@/hooks/TanStackQueries/useKZPlayer"
 import useSteamProfiles from "@/hooks/TanStackQueries/useSteamProfiles"
@@ -18,7 +26,8 @@ import PlayerInfo from "./player-info"
 
 import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 export interface PlayerProfileOutletContext {
     playerProfileKZData: PlayerProfileKZData
@@ -26,7 +35,6 @@ export interface PlayerProfileOutletContext {
 
 function PlayerProfile() {
     const { steamid } = useParams() as { steamid: string }
-    const navigate = useNavigate()
 
     const [gameMode] = useGameMode()
 
@@ -89,33 +97,51 @@ function PlayerProfile() {
                     steamid={steamid}
                 />
             </div>
-            <Tabs defaultValue="" className="mb-10">
-                <TabsList>
-                    <TabsTrigger onClick={() => navigate("")} value="">
-                        Finishes
-                    </TabsTrigger>
-                    <TabsTrigger onClick={() => navigate("unfinishes")} value="unfinishes">
-                        Unfinishes
-                    </TabsTrigger>
-                    <TabsTrigger onClick={() => navigate("jumpstats")} value="jumpstats">
-                        Jumpstats
-                    </TabsTrigger>
-                    <TabsTrigger onClick={() => navigate("stats")} value="stats">
-                        Statistics
-                    </TabsTrigger>
-                    <TabsTrigger onClick={() => navigate("achievements")} value="achievements">
-                        Achievements
-                    </TabsTrigger>
-                </TabsList>
-            </Tabs>
-            <Outlet
-                context={
-                    {
-                        playerProfileKZData: playerProfileKZData.data,
-                    } satisfies PlayerProfileOutletContext
-                }
-            />
+            <div className="space-x-2">
+                <PlayerProfileNavLink
+                    path=""
+                    end={true}
+                    border={playerProfileKZData.data.rank.border}
+                >
+                    <TextAlignLeftIcon className="mr-2 h-4 w-4" />
+                    Finishes
+                </PlayerProfileNavLink>
+                <PlayerProfileNavLink
+                    path="unfinishes"
+                    border={playerProfileKZData.data.rank.border}
+                >
+                    <StopwatchIcon className="mr-2 h-4 w-4" />
+                    Unfinishes
+                </PlayerProfileNavLink>
+                <PlayerProfileNavLink
+                    path="jumpstats"
+                    border={playerProfileKZData.data.rank.border}
+                >
+                    <ShuffleIcon className="mr-2 h-4 w-4" />
+                    Jumpstats
+                </PlayerProfileNavLink>
+                <PlayerProfileNavLink path="stats" border={playerProfileKZData.data.rank.border}>
+                    <BarChartIcon className="mr-2 h-4 w-4" />
+                    Statistics
+                </PlayerProfileNavLink>
+                <PlayerProfileNavLink
+                    path="achievements"
+                    border={playerProfileKZData.data.rank.border}
+                >
+                    <LockOpen1Icon className="mr-2 h-4 w-4" />
+                    Achievements
+                </PlayerProfileNavLink>
+            </div>
             <ExperienceBar playerProfileKZData={playerProfileKZData.data} />
+            <div className="py-10">
+                <Outlet
+                    context={
+                        {
+                            playerProfileKZData: playerProfileKZData.data,
+                        } satisfies PlayerProfileOutletContext
+                    }
+                />
+            </div>
         </>
     )
 }
@@ -127,8 +153,8 @@ interface ExperienceBarProps {
 function ExperienceBar({ playerProfileKZData }: ExperienceBarProps) {
     return (
         <Tooltip delayDuration={200}>
-            <TooltipTrigger className="group container fixed bottom-0 left-0 right-0 inline-flex h-4 items-end overflow-hidden">
-                <div className="relative h-[1px] w-full bg-foreground/60 transition-all group-hover:h-2">
+            <TooltipTrigger className="h-4 w-full cursor-pointer overflow-hidden">
+                <div className="relative h-[1px] w-full bg-foreground/60">
                     <div className="absolute bottom-0 left-0 flex h-1 w-full">
                         <div className="h-2 w-1/12 border-r-4 border-r-background group-hover:border-r-2"></div>
                         <div className="h-2 w-1/12 border-r-4 border-r-background group-hover:border-r-2"></div>
@@ -150,14 +176,14 @@ function ExperienceBar({ playerProfileKZData }: ExperienceBarProps) {
                 </div>
             </TooltipTrigger>
             <TooltipContent
-                side="top"
+                side="bottom"
                 align="start"
                 className="border bg-background text-foreground"
             >
                 <div>{playerProfileKZData.rank.prevThreshold.toLocaleString()} pts.</div>
             </TooltipContent>
             <TooltipContent
-                side="top"
+                side="bottom"
                 align="center"
                 className="border bg-background text-foreground"
             >
@@ -166,10 +192,45 @@ function ExperienceBar({ playerProfileKZData }: ExperienceBarProps) {
                     {(playerProfileKZData.rank.percent * 100).toFixed(2)}%
                 </div>
             </TooltipContent>
-            <TooltipContent side="top" align="end" className="border bg-background text-foreground">
+            <TooltipContent
+                side="bottom"
+                align="end"
+                className="border bg-background text-foreground"
+            >
                 <div>{playerProfileKZData.rank.nextThreshold.toLocaleString()} pts.</div>
             </TooltipContent>
         </Tooltip>
+    )
+}
+
+interface PlayerProfileNavLinkProps {
+    path: string
+    border: string
+    end?: boolean | undefined
+}
+
+function PlayerProfileNavLink({
+    path,
+    border,
+    end,
+    children,
+}: PropsWithChildren<PlayerProfileNavLinkProps>) {
+    return (
+        <NavLink
+            to={path}
+            end={end}
+            className={({ isActive }) =>
+                cn(
+                    isActive
+                        ? buttonVariants({ variant: "outline" })
+                        : buttonVariants({ variant: "ghost" }),
+                    isActive ? border : "",
+                    "mt-1 justify-start",
+                )
+            }
+        >
+            {children}
+        </NavLink>
     )
 }
 

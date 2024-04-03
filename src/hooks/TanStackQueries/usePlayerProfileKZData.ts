@@ -15,6 +15,16 @@ export interface RecordsTopExtended extends RecordsTop {
     difficulty: TierID
 }
 
+export interface Unfinishes {
+    map_id: number
+    map_name: string
+    points: number
+    time: number
+    difficulty: TierID
+    created_on: string
+    server_name: string
+}
+
 export interface PlayerProfileKZData {
     rank: KZRank
     points: {
@@ -32,9 +42,9 @@ export interface PlayerProfileKZData {
         nub: RecordsTopExtended[]
     }
     unfinishes: {
-        pro: Partial<RecordsTopExtended>[]
-        tp: Partial<RecordsTopExtended>[]
-        nub: Partial<RecordsTopExtended>[]
+        pro: Unfinishes[]
+        tp: Unfinishes[]
+        nub: Unfinishes[]
     }
     completions: {
         pro: Completion
@@ -63,6 +73,7 @@ const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
                     percent: 0,
                     color: "",
                     backgroundColor: "",
+                    border: "",
                 },
                 points: {
                     total: 0,
@@ -143,8 +154,11 @@ const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
                     playerProfileKZData.unfinishes.pro.push({
                         map_id: globalMap.id,
                         map_name: globalMap.name,
+                        points: 0,
+                        time: 0,
                         difficulty: globalMap.difficulty,
                         created_on: globalMap.created_on,
+                        server_name: "",
                     })
                 }
 
@@ -166,8 +180,11 @@ const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
                         playerProfileKZData.unfinishes.tp.push({
                             map_id: globalMap.id,
                             map_name: globalMap.name,
+                            points: 0,
+                            time: 0,
                             difficulty: globalMap.difficulty,
                             created_on: globalMap.created_on,
+                            server_name: "",
                         })
                     }
                 }
@@ -187,8 +204,11 @@ const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
                     playerProfileKZData.unfinishes.nub.push({
                         map_id: globalMap.id,
                         map_name: globalMap.name,
+                        points: 0,
+                        time: 0,
                         difficulty: globalMap.difficulty,
                         created_on: globalMap.created_on,
+                        server_name: "",
                     })
                 }
             })

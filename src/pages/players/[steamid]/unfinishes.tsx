@@ -2,22 +2,17 @@ import { useState } from "react"
 
 import {
     DotsHorizontalIcon,
-    InfoCircledIcon,
-    FrameIcon,
     DownloadIcon,
-    OpenInNewWindowIcon,
-    MagnifyingGlassIcon,
     ImageIcon,
     PlayIcon,
     PersonIcon,
 } from "@radix-ui/react-icons"
 
-import { Link, useNavigate, useOutletContext } from "react-router-dom"
+import { Link, useOutletContext } from "react-router-dom"
 
 import { lightFormat } from "date-fns"
 
-import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
-import type { RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import type { Unfinishes } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
 import { DataTable } from "@/components/datatable/datatable"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
@@ -52,13 +47,11 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 
-const columnHelper = createColumnHelper<RecordsTopExtended>()
+const columnHelper = createColumnHelper<Unfinishes>()
 
 const columns = [
     columnHelper.accessor("map_name", {
@@ -76,18 +69,6 @@ const columns = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Points" />,
         cell: (props) => {
             const points = props.getValue()
-
-            if (points === 1000)
-                return <span className="flex justify-center text-csgo-gold">{points}</span>
-
-            if (points >= 900)
-                return <span className="flex justify-center text-csgo-darkred">{points}</span>
-
-            if (points >= 800)
-                return <span className="flex justify-center text-csgo-blue">{points}</span>
-
-            if (points >= 700)
-                return <span className="flex justify-center text-csgo-lime">{points}</span>
 
             return <span className="flex justify-center">{points}</span>
         },
@@ -126,28 +107,6 @@ const columns = [
     }),
     columnHelper.accessor("server_name", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Server" />,
-        cell: (props) => {
-            const navigate = useNavigate()
-
-            const server_name = props.getValue()
-
-            const connectToServer = async () => {
-                const globalServer = await fetchGlobalServerById(props.row.original.server_id)
-
-                if (!globalServer) {
-                    toast("Global API", { description: "No server found with this ID." })
-                    return
-                }
-
-                navigate(`steam://connect/${globalServer.ip}:${globalServer.port}`)
-            }
-
-            return (
-                <Button variant="link" onClick={connectToServer} className="max-w-full">
-                    <span className="truncate">{server_name}</span>
-                </Button>
-            )
-        },
     }),
     columnHelper.display({
         id: "actions",
@@ -161,38 +120,6 @@ const columns = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            RUN
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <FrameIcon className="mr-2 h-4 w-4" />
-                            <span>Get place</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <InfoCircledIcon className="mr-2 h-4 w-4" />
-                            <span>Get run ID</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Download replay</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            SERVER
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
-                            <span>Connect to server</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <InfoCircledIcon className="mr-2 h-4 w-4" />
-                            <span>Get server ID</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
-                            <span>Search server</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
                         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
                             MAP
                         </DropdownMenuLabel>
@@ -224,14 +151,14 @@ const columns = [
     }),
 ]
 
-function Finishes() {
+function Unfinishes() {
     const { playerProfileKZData } = useOutletContext<PlayerProfileOutletContext>()
 
     const [runType] = useRunType()
 
     const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [sorting, setSorting] = useState<SortingState>([{ id: "points", desc: true }])
+    const [sorting, setSorting] = useState<SortingState>([{ id: "created_on", desc: true }])
     const [pageIndex, setPageIndex] = useState<number>(0)
     const [localSettings, setLocalSettings] = useLocalSettings()
 
@@ -248,7 +175,7 @@ function Finishes() {
     }
 
     const table = useReactTable({
-        data: playerProfileKZData.finishes[runType],
+        data: playerProfileKZData.unfinishes[runType],
         columns,
         state: {
             sorting,
@@ -271,7 +198,7 @@ function Finishes() {
     return (
         <>
             <h2 className="mb-4 scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
-                Finishes
+                Unfinishes
             </h2>
             <div className="flex items-center justify-between py-4">
                 <div className="flex space-x-4">
@@ -293,4 +220,4 @@ function Finishes() {
     )
 }
 
-export default Finishes
+export default Unfinishes

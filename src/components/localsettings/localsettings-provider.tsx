@@ -24,6 +24,7 @@ type LocalSettings = {
     defaultSortOrderOthers: "points" | "created_at"
     defaultProfilePage: boolean
     dateFormat: "yyyy-MM-dd" | "MM-dd-yyyy" | "dd-MM-yyyy"
+    tablePageSize: number
 }
 
 type LocalSettingsContextType = [LocalSettings, Dispatch<SetStateAction<LocalSettings>>]
@@ -37,6 +38,7 @@ const defaultLocalSettings: LocalSettings = {
     defaultSortOrderOthers: "points",
     defaultProfilePage: false,
     dateFormat: "yyyy-MM-dd",
+    tablePageSize: 20,
 }
 
 const LocalSettingsContext = createContext<LocalSettingsContextType | undefined>(undefined)

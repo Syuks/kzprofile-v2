@@ -18,30 +18,38 @@ import {
 
 interface DataTablePaginationProps<TData> {
     table: Table<TData>
+    showPageSizeSelect?: boolean
 }
 
-export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
+const tablePageSizes: number[] = [10, 20, 30, 40, 50, 100, 9999]
+
+export function DataTablePagination<TData>({
+    table,
+    showPageSizeSelect = true,
+}: DataTablePaginationProps<TData>) {
     return (
         <div className="flex items-center justify-between py-4">
             <div className="flex-1 text-sm">
                 <div className="flex items-center space-x-2">
-                    <Select
-                        value={`${table.getState().pagination.pageSize}`}
-                        onValueChange={(value) => {
-                            table.setPageSize(Number(value))
-                        }}
-                    >
-                        <SelectTrigger className="w-20">
-                            <SelectValue placeholder={table.getState().pagination.pageSize} />
-                        </SelectTrigger>
-                        <SelectContent side="top">
-                            {[10, 20, 30, 40, 50, 100, 9999].map((pageSize) => (
-                                <SelectItem key={pageSize} value={`${pageSize}`}>
-                                    {pageSize === 9999 ? "∞" : pageSize}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    {showPageSizeSelect && (
+                        <Select
+                            value={`${table.getState().pagination.pageSize}`}
+                            onValueChange={(value) => {
+                                table.setPageSize(Number(value))
+                            }}
+                        >
+                            <SelectTrigger className="w-20">
+                                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                            </SelectTrigger>
+                            <SelectContent side="top">
+                                {tablePageSizes.map((pageSize) => (
+                                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                                        {pageSize === 9999 ? "∞" : pageSize}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    )}
                     <p className="text-sm font-medium">Filas por página</p>
                 </div>
             </div>

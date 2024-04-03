@@ -8,6 +8,7 @@ import Layout from "./pages/layout"
 import PlayerSearch from "./pages/players/search"
 import PlayerProfile from "./pages/players/[steamid]"
 import Finishes from "./pages/players/[steamid]/finishes"
+import Unfinishes from "./pages/players/[steamid]/unfinishes"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
                             {
                                 index: true,
                                 element: <Finishes />,
+                            },
+                            {
+                                path: "unfinishes",
+                                element: <Unfinishes />,
                             },
                         ],
                     },
