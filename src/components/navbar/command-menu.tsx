@@ -97,7 +97,7 @@ function CommandMenu({ ...props }: DialogProps) {
                     Any
                 </kbd>
             </Button>
-            <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+            <CommandDialog open={open} onOpenChange={setOpen}>
                 <CommandInput
                     ref={searchInputRef}
                     placeholder="Search a map..."
