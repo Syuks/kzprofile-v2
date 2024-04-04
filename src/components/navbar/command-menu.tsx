@@ -16,17 +16,20 @@ import {
     CommandGroup,
     CommandDialog,
 } from "@/components/ui/command"
+import { Input } from "../ui/input"
+import { getTierData } from "@/lib/gokz"
+import { Badge } from "../ui/badge"
 
+/* TODO: Add virtualization */
 function CommandMenu({ ...props }: DialogProps) {
     const navigate = useNavigate()
 
     const globalMapsQuery = useGlobalMaps()
-    /*const [filteredGlobalMaps, setFilteredGlobalMaps] = useState<GlobalMap[]>([])*/
 
     const [open, setOpen] = useState(false)
 
     const [searchInput, setSearchInput] = useState("")
-    const searchInputRef = useRef<HTMLInputElement>(null)
+    const searchInputRefClone = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -40,19 +43,12 @@ function CommandMenu({ ...props }: DialogProps) {
                     return
                 }
 
-                e.preventDefault()
-                setOpen((open) => !open)
+                // Anything that is typed from the first keypress that opens the command dialog
+                // until the input in the command dialog is focused, will be set in state by this input.
+                setSearchInput("")
+                searchInputRefClone.current?.focus()
 
-                setSearchInput(e.key)
-                // To prevent the autoFocus on dialog open selecting the input value
-                // and replacing it with the next key stroke. setTimeout with delay 0
-                // is added to the call stack and waits until the dialog really opens.
-                setTimeout(() => {
-                    searchInputRef.current?.setSelectionRange(
-                        searchInputRef.current.value.length,
-                        searchInputRef.current.value.length,
-                    )
-                }, 0)
+                setOpen((open) => !open)
             }
         }
 
@@ -64,20 +60,6 @@ function CommandMenu({ ...props }: DialogProps) {
         setOpen(false)
         command()
     }, [])
-
-    /*const onSearchInputValueChange = (search: string) => {
-        setSearchInput(search)
-
-        if (!globalMapsQuery.data) {
-            return
-        }
-
-        const filteredMaps = globalMapsQuery.data
-            .filter((map) => map.name.toLowerCase().includes(search.toLowerCase()))
-            .slice(0, 20)
-
-        setFilteredGlobalMaps(filteredMaps)
-    }*/
 
     return (
         <>
@@ -97,12 +79,16 @@ function CommandMenu({ ...props }: DialogProps) {
                     Any
                 </kbd>
             </Button>
-            <CommandDialog open={open} onOpenChange={setOpen}>
+            <CommandDialog
+                open={open}
+                onOpenChange={setOpen}
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <CommandInput
-                    ref={searchInputRef}
                     placeholder="Search a map..."
                     value={searchInput}
                     onValueChange={setSearchInput}
+                    autoFocus
                 />
                 <CommandList>
                     {globalMapsQuery.isLoading && (
@@ -113,20 +99,34 @@ function CommandMenu({ ...props }: DialogProps) {
                     {globalMapsQuery.isError && <CommandEmpty>Error fetching maps.</CommandEmpty>}
                     <CommandEmpty>No maps found.</CommandEmpty>
                     <CommandGroup>
-                        {globalMapsQuery.data?.map((globalMap) => (
-                            <CommandItem
-                                key={globalMap.id}
-                                value={globalMap.name}
-                                onSelect={() => {
-                                    runCommand(() => navigate(`/maps/${globalMap.id}`))
-                                }}
-                            >
-                                {globalMap.name}
-                            </CommandItem>
-                        ))}
+                        {globalMapsQuery.data?.map((globalMap) => {
+                            const tierData = getTierData(globalMap.difficulty)
+
+                            return (
+                                <CommandItem
+                                    key={globalMap.id}
+                                    value={globalMap.name}
+                                    onSelect={() => {
+                                        runCommand(() => navigate(`/maps/${globalMap.id}`))
+                                    }}
+                                    className="flex cursor-pointer justify-between"
+                                >
+                                    <span>{globalMap.name}</span>
+                                    <Badge className={tierData.color} variant="outline">
+                                        {tierData.label}
+                                    </Badge>
+                                </CommandItem>
+                            )
+                        })}
                     </CommandGroup>
                 </CommandList>
             </CommandDialog>
+            <Input
+                ref={searchInputRefClone}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="fixed -left-96 -top-96"
+            />
         </>
     )
 }
