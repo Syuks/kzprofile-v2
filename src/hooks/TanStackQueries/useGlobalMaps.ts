@@ -3,7 +3,7 @@ import { queryClient } from "@/main"
 import { GlobalAPI_GetMaps } from "./APIs/GlobalAPI"
 import { TierID } from "@/lib/gokz"
 
-interface Map {
+export interface GlobalMap {
     id: number
     name: string
     filesize: number
@@ -16,11 +16,11 @@ interface Map {
     download_url: string
 }
 
-const globalMapsQueryOptions: UseQueryOptions<Map[]> = {
+const globalMapsQueryOptions: UseQueryOptions<GlobalMap[]> = {
     queryKey: ["maps", "globalMaps"],
     queryFn: async () => {
         const response = await GlobalAPI_GetMaps({ is_validated: true, limit: 9999 })
-        const json: Map[] = await response.json()
+        const json: GlobalMap[] = await response.json()
         return json
     },
     staleTime: Infinity,

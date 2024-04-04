@@ -2,19 +2,26 @@ import { useState, useEffect, useCallback, useRef } from "react"
 
 import { useNavigate } from "react-router-dom"
 
+import useGlobalMaps from "@/hooks/TanStackQueries/useGlobalMaps"
+
 import { cn } from "@/lib/utils"
 import { DialogProps } from "@radix-ui/react-dialog"
 import { Button } from "@/components/ui/button"
 import {
-    CommandDialog,
     CommandEmpty,
+    CommandLoading,
     CommandInput,
     CommandItem,
     CommandList,
+    CommandGroup,
+    CommandDialog,
 } from "@/components/ui/command"
 
 function CommandMenu({ ...props }: DialogProps) {
     const navigate = useNavigate()
+
+    const globalMapsQuery = useGlobalMaps()
+    /*const [filteredGlobalMaps, setFilteredGlobalMaps] = useState<GlobalMap[]>([])*/
 
     const [open, setOpen] = useState(false)
 
@@ -58,16 +65,19 @@ function CommandMenu({ ...props }: DialogProps) {
         command()
     }, [])
 
-    const maps = [
-        {
-            id: 0,
-            name: "kz_apricity_v3",
-        },
-        {
-            id: 1,
-            name: "kz_zhop_city",
-        },
-    ]
+    /*const onSearchInputValueChange = (search: string) => {
+        setSearchInput(search)
+
+        if (!globalMapsQuery.data) {
+            return
+        }
+
+        const filteredMaps = globalMapsQuery.data
+            .filter((map) => map.name.toLowerCase().includes(search.toLowerCase()))
+            .slice(0, 20)
+
+        setFilteredGlobalMaps(filteredMaps)
+    }*/
 
     return (
         <>
@@ -87,7 +97,7 @@ function CommandMenu({ ...props }: DialogProps) {
                     Any
                 </kbd>
             </Button>
-            <CommandDialog open={open} onOpenChange={setOpen}>
+            <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
                 <CommandInput
                     ref={searchInputRef}
                     placeholder="Search a map..."
@@ -95,18 +105,26 @@ function CommandMenu({ ...props }: DialogProps) {
                     onValueChange={setSearchInput}
                 />
                 <CommandList>
+                    {globalMapsQuery.isLoading && (
+                        <CommandLoading className="py-6 text-center text-sm">
+                            Loading maps...
+                        </CommandLoading>
+                    )}
+                    {globalMapsQuery.isError && <CommandEmpty>Error fetching maps.</CommandEmpty>}
                     <CommandEmpty>No maps found.</CommandEmpty>
-                    {maps.map((map) => (
-                        <CommandItem
-                            key={map.id}
-                            value={map.name}
-                            onSelect={() => {
-                                runCommand(() => navigate(`/maps/${map.id}`))
-                            }}
-                        >
-                            {map.name}
-                        </CommandItem>
-                    ))}
+                    <CommandGroup>
+                        {globalMapsQuery.data?.map((globalMap) => (
+                            <CommandItem
+                                key={globalMap.id}
+                                value={globalMap.name}
+                                onSelect={() => {
+                                    runCommand(() => navigate(`/maps/${globalMap.id}`))
+                                }}
+                            >
+                                {globalMap.name}
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
                 </CommandList>
             </CommandDialog>
         </>
