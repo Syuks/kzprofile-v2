@@ -139,7 +139,6 @@ export function DatatableFacetedMinMaxFilter<TData, TValue>({
                         <Separator />
                         <div className="p-1">
                             <Button
-                                onSelect={() => column.setFilterValue(undefined)}
                                 className="w-full cursor-default justify-center text-center"
                                 variant="ghost"
                                 onClick={() => column.setFilterValue(undefined)}

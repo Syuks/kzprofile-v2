@@ -12,7 +12,6 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
 } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
@@ -128,20 +127,21 @@ export function DataTableFacetedFilter<TData, TValue>({
                                 )
                             })}
                         </CommandGroup>
-                        {selectedValues.size > 0 && (
-                            <>
-                                <CommandSeparator />
-                                <CommandGroup>
-                                    <CommandItem
-                                        onSelect={() => column.setFilterValue(undefined)}
-                                        className="justify-center text-center"
-                                    >
-                                        Clear filters
-                                    </CommandItem>
-                                </CommandGroup>
-                            </>
-                        )}
                     </CommandList>
+                    {selectedValues.size > 0 && (
+                        <>
+                            <Separator />
+                            <div className="p-1">
+                                <Button
+                                    className="w-full cursor-default justify-center text-center"
+                                    variant="ghost"
+                                    onClick={() => column.setFilterValue(undefined)}
+                                >
+                                    Clear filters
+                                </Button>
+                            </div>
+                        </>
+                    )}
                 </Command>
             </PopoverContent>
         </Popover>

@@ -320,12 +320,18 @@ function Finishes() {
 
     return (
         <>
-            <h2 className="mb-4 scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
-                Finishes
-            </h2>
+            <div className="flex justify-between">
+                <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
+                    Finishes
+                </h2>
+                <AddFilters
+                    selectedFilters={selectedFilters}
+                    onSelectedFiltersChange={handleSelectedFiltersChange}
+                />
+            </div>
             <div className="flex items-center justify-between py-4">
-                <div className="flex space-x-4">
-                    <div className="max-w-sm">
+                <div className="flex flex-wrap">
+                    <div className="mr-4 mt-4 max-w-sm">
                         <Input
                             placeholder="Search map..."
                             value={(table.getColumn("map_name")?.getFilterValue() as string) ?? ""}
@@ -335,50 +341,59 @@ function Finishes() {
                         />
                     </div>
                     {selectedFilters.points.show && (
-                        <DatatableFacetedMinMaxFilter
-                            column={table.getColumn("points")}
-                            title="Points"
-                        />
+                        <div className="mr-4 mt-4">
+                            <DatatableFacetedMinMaxFilter
+                                column={table.getColumn("points")}
+                                title="Points"
+                            />
+                        </div>
                     )}
                     {selectedFilters.time.show && (
-                        <DatatableFacetedMinMaxFilter
-                            column={table.getColumn("time")}
-                            title="Time"
-                            numberFormater={(value) =>
-                                value ? getTimeString(value) : getTimeString(0)
-                            }
-                        />
+                        <div className="mr-4 mt-4">
+                            <DatatableFacetedMinMaxFilter
+                                column={table.getColumn("time")}
+                                title="Time"
+                                numberFormater={(value) =>
+                                    value ? getTimeString(value) : getTimeString(0)
+                                }
+                            />
+                        </div>
                     )}
                     {selectedFilters.difficulty.show && (
-                        <DataTableFacetedFilter
-                            options={[
-                                { label: "Very Easy", value: 1 },
-                                { label: "Easy", value: 2 },
-                                { label: "Medium", value: 3 },
-                                { label: "Hard", value: 4 },
-                                { label: "Very Hard", value: 5 },
-                                { label: "Extreme", value: 6 },
-                                { label: "Death", value: 7 },
-                            ]}
-                            title="Tier"
-                            column={table.getColumn("difficulty")}
-                        />
+                        <div className="mr-4 mt-4">
+                            <DataTableFacetedFilter
+                                options={[
+                                    { label: "Very Easy", value: 1 },
+                                    { label: "Easy", value: 2 },
+                                    { label: "Medium", value: 3 },
+                                    { label: "Hard", value: 4 },
+                                    { label: "Very Hard", value: 5 },
+                                    { label: "Extreme", value: 6 },
+                                    { label: "Death", value: 7 },
+                                ]}
+                                title="Tier"
+                                column={table.getColumn("difficulty")}
+                            />
+                        </div>
                     )}
                     {selectedFilters.created_on.show && (
-                        <DataTableDateFilter column={table.getColumn("created_on")} title="Date" />
+                        <div className="mr-4 mt-4">
+                            <DataTableDateFilter
+                                column={table.getColumn("created_on")}
+                                title="Date"
+                            />
+                        </div>
                     )}
                     {selectedFilters.server_name.show && (
-                        <DataTableFacetedFilter
-                            options={serverNameFacetedFilterOptions}
-                            column={table.getColumn("server_name")}
-                            title="Server"
-                        />
+                        <div className="mr-4 mt-4">
+                            <DataTableFacetedFilter
+                                options={serverNameFacetedFilterOptions}
+                                column={table.getColumn("server_name")}
+                                title="Server"
+                            />
+                        </div>
                     )}
                 </div>
-                <AddFilters
-                    selectedFilters={selectedFilters}
-                    onSelectedFiltersChange={handleSelectedFiltersChange}
-                />
             </div>
             <DataTable table={table} columns={columns} />
             <DataTablePagination table={table} />
