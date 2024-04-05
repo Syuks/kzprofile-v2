@@ -16,13 +16,13 @@ function ModeChooser() {
 
     return (
         <div className="flex h-16 items-center justify-center">
-            <RadioGroup value={gameMode} onValueChange={setGameMode} className="flex">
+            <RadioGroup value={gameMode} onValueChange={setGameMode} className="flex gap-0">
                 <CustomRadioGroupItem value="kz_timer" label="KZ Timer" id="r_kz_timer" />
                 <CustomRadioGroupItem value="kz_simple" label="KZ Simple" id="r_kz_simple" />
                 <CustomRadioGroupItem value="kz_vanilla" label="KZ Vanilla" id="r_kz_vanilla" />
             </RadioGroup>
 
-            <div className="mx-2 h-5 w-[2px] bg-foreground sm:mx-4"></div>
+            <div className="mx-2 h-5 w-[2px] bg-foreground sm:mx-3"></div>
 
             <RadioGroup value={runType} onValueChange={setRunType} className="flex">
                 <CustomRadioGroupItem value="pro" label="Pro" id="r_pro" />
@@ -45,11 +45,11 @@ interface CustomRadioGroupItemProps {
 
 function CustomRadioGroupItem({ value, label, id }: CustomRadioGroupItemProps) {
     return (
-        <div className="mx-1 flex sm:mx-3">
+        <div className="mx-2 flex sm:mx-3">
             <RadioGroupItem value={value} id={id} className="peer sr-only" />
             <Label
                 htmlFor={id}
-                className="cursor-pointer text-base text-foreground/60 transition-colors hover:text-foreground/80 peer-aria-checked:text-foreground"
+                className="cursor-pointer text-sm text-foreground/60 transition-colors hover:text-foreground/80 peer-aria-checked:text-foreground"
             >
                 {label}
             </Label>

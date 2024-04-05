@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom"
 import useGlobalMaps from "@/hooks/TanStackQueries/useGlobalMaps"
 
 import { cn } from "@/lib/utils"
-import { DialogProps } from "@radix-ui/react-dialog"
+import { getTierData } from "@/lib/gokz"
+
 import { Button } from "@/components/ui/button"
 import {
     CommandEmpty,
@@ -16,12 +17,11 @@ import {
     CommandGroup,
     CommandDialog,
 } from "@/components/ui/command"
-import { Input } from "../ui/input"
-import { getTierData } from "@/lib/gokz"
-import { Badge } from "../ui/badge"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
 
 /* TODO: Add virtualization */
-function CommandMenu({ ...props }: DialogProps) {
+function CommandMenu() {
     const navigate = useNavigate()
 
     const globalMapsQuery = useGlobalMaps()
@@ -72,7 +72,6 @@ function CommandMenu({ ...props }: DialogProps) {
                     setOpen(true)
                     setSearchInput("")
                 }}
-                {...props}
             >
                 <span className="inline-flex">Search...</span>
                 <kbd className="pointer-events-none h-5 rounded border bg-muted px-1.5 font-mono text-xs">
@@ -107,7 +106,7 @@ function CommandMenu({ ...props }: DialogProps) {
                                     key={globalMap.id}
                                     value={globalMap.name}
                                     onSelect={() => {
-                                        runCommand(() => navigate(`/maps/${globalMap.id}`))
+                                        runCommand(() => navigate(`/maps/${globalMap.name}`))
                                     }}
                                     className="flex cursor-pointer justify-between"
                                 >

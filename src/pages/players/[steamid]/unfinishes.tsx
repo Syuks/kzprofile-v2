@@ -91,12 +91,12 @@ const columns = [
             return <span className={`flex justify-center ${tierData.color}`}>{tierData.label}</span>
         },
     }),
-    columnHelper.accessor("created_on", {
+    columnHelper.accessor("created_on_date", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Date" />,
         cell: (props) => {
             const [localSettings] = useLocalSettings()
 
-            const date = new Date(props.getValue())
+            const date = props.getValue()
 
             return (
                 <span className="flex justify-center">

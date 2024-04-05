@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
     DotsHorizontalIcon,
@@ -10,6 +10,7 @@ import {
     ImageIcon,
     PlayIcon,
     PersonIcon,
+    PlusCircledIcon,
 } from "@radix-ui/react-icons"
 
 import { Link, useNavigate, useOutletContext } from "react-router-dom"
@@ -22,10 +23,18 @@ import type { RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfil
 import { DataTable } from "@/components/datatable/datatable"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
-import { DataTableViewOptions } from "@/components/datatable/datatable-view-options"
+import {
+    DataTableFacetedFilter,
+    DatatableFacetedFilterOption,
+} from "@/components/datatable/datatable-faceted-filter"
+import { DatatableFacetedMinMaxFilter } from "@/components/datatable/datatable-faceted-min-max-filter"
+import {
+    DataTableDateFilter,
+    dateFilterFunction,
+} from "@/components/datatable/datatable-date-filter"
 
 import { getTimeString } from "@/lib/utils"
-import { getTierData } from "@/lib/gokz"
+import { TierID, getTierData } from "@/lib/gokz"
 
 import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
 
@@ -35,7 +44,6 @@ import {
     createColumnHelper,
     ColumnFiltersState,
     SortingState,
-    VisibilityState,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
@@ -45,10 +53,12 @@ import {
     getFacetedRowModel,
     PaginationState,
     OnChangeFn,
+    getFacetedMinMaxValues,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
@@ -91,6 +101,7 @@ const columns = [
 
             return <span className="flex justify-center">{points}</span>
         },
+        filterFn: "inNumberRange",
     }),
     columnHelper.accessor("time", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Time" />,
@@ -99,6 +110,7 @@ const columns = [
 
             return <span className="flex justify-center">{getTimeString(time)}</span>
         },
+        filterFn: "inNumberRange",
     }),
     columnHelper.accessor("difficulty", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Tier" />,
@@ -109,13 +121,16 @@ const columns = [
 
             return <span className={`flex justify-center ${tierData.color}`}>{tierData.label}</span>
         },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue<TierID>(id))
+        },
     }),
     columnHelper.accessor("created_on", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Date" />,
         cell: (props) => {
             const [localSettings] = useLocalSettings()
 
-            const date = new Date(props.getValue())
+            const date = props.getValue()
 
             return (
                 <span className="flex justify-center">
@@ -123,6 +138,7 @@ const columns = [
                 </span>
             )
         },
+        filterFn: dateFilterFunction,
     }),
     columnHelper.accessor("server_name", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Server" />,
@@ -147,6 +163,9 @@ const columns = [
                     <span className="truncate">{server_name}</span>
                 </Button>
             )
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue<string>(id))
         },
     }),
     columnHelper.display({
@@ -229,11 +248,19 @@ function Finishes() {
 
     const [runType] = useRunType()
 
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: SelectedFilter }>({
+        points: { label: "Points", show: false },
+        time: { label: "Time", show: false },
+        difficulty: { label: "Tier", show: false },
+        created_on: { label: "Date", show: false },
+        server_name: { label: "Server", show: false },
+    })
+
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [sorting, setSorting] = useState<SortingState>([{ id: "points", desc: true }])
-    const [pageIndex, setPageIndex] = useState<number>(0)
+    // For pageSize of pagination:
     const [localSettings, setLocalSettings] = useLocalSettings()
+    const [pageIndex, setPageIndex] = useState<number>(0)
 
     const onPaginationChange: OnChangeFn<PaginationState> = (updaterOrValue) => {
         const updatedPaginationState =
@@ -252,13 +279,11 @@ function Finishes() {
         columns,
         state: {
             sorting,
-            columnVisibility,
             columnFilters,
             pagination: { pageSize: localSettings.tablePageSize, pageIndex: pageIndex },
         },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
-        onColumnVisibilityChange: setColumnVisibility,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -266,7 +291,32 @@ function Finishes() {
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
     })
+
+    const handleSelectedFiltersChange = (filter: string, isChecked: boolean) => {
+        setSelectedFilters((oldSelectedFilter) => {
+            return {
+                ...oldSelectedFilter,
+                [filter]: {
+                    ...oldSelectedFilter[filter],
+                    show: isChecked,
+                },
+            }
+        })
+        table.getColumn(filter)?.setFilterValue(undefined)
+    }
+
+    const serverNameFacetedFilterOptions: DatatableFacetedFilterOption[] = useMemo(() => {
+        const serverNames = playerProfileKZData.finishes[runType].map((obj) => obj.server_name)
+        const uniqueServerNames = [...new Set(serverNames)]
+        return uniqueServerNames.map((name) => {
+            return {
+                label: name,
+                value: name,
+            }
+        })
+    }, [playerProfileKZData])
 
     return (
         <>
@@ -284,12 +334,92 @@ function Finishes() {
                             }}
                         />
                     </div>
+                    {selectedFilters.points.show && (
+                        <DatatableFacetedMinMaxFilter
+                            column={table.getColumn("points")}
+                            title="Points"
+                        />
+                    )}
+                    {selectedFilters.time.show && (
+                        <DatatableFacetedMinMaxFilter
+                            column={table.getColumn("time")}
+                            title="Time"
+                            numberFormater={(value) =>
+                                value ? getTimeString(value) : getTimeString(0)
+                            }
+                        />
+                    )}
+                    {selectedFilters.difficulty.show && (
+                        <DataTableFacetedFilter
+                            options={[
+                                { label: "Very Easy", value: 1 },
+                                { label: "Easy", value: 2 },
+                                { label: "Medium", value: 3 },
+                                { label: "Hard", value: 4 },
+                                { label: "Very Hard", value: 5 },
+                                { label: "Extreme", value: 6 },
+                                { label: "Death", value: 7 },
+                            ]}
+                            title="Tier"
+                            column={table.getColumn("difficulty")}
+                        />
+                    )}
+                    {selectedFilters.created_on.show && (
+                        <DataTableDateFilter column={table.getColumn("created_on")} title="Date" />
+                    )}
+                    {selectedFilters.server_name.show && (
+                        <DataTableFacetedFilter
+                            options={serverNameFacetedFilterOptions}
+                            column={table.getColumn("server_name")}
+                            title="Server"
+                        />
+                    )}
                 </div>
-                <DataTableViewOptions table={table} />
+                <AddFilters
+                    selectedFilters={selectedFilters}
+                    onSelectedFiltersChange={handleSelectedFiltersChange}
+                />
             </div>
             <DataTable table={table} columns={columns} />
             <DataTablePagination table={table} />
         </>
+    )
+}
+
+interface SelectedFilter {
+    label: string
+    show: boolean
+}
+
+interface AddFiltersProps {
+    selectedFilters: { [key: string]: SelectedFilter }
+    onSelectedFiltersChange: (filter: string, isChecked: boolean) => void
+}
+
+function AddFilters({ selectedFilters, onSelectedFiltersChange }: AddFiltersProps) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-dashed">
+                    <PlusCircledIcon className="mr-2 h-4 w-4" />
+                    Add filter
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+                {Object.keys(selectedFilters).map((key) => {
+                    return (
+                        <DropdownMenuCheckboxItem
+                            key={key}
+                            className="capitalize"
+                            checked={selectedFilters[key].show}
+                            onCheckedChange={(checked) => onSelectedFiltersChange(key, checked)}
+                        >
+                            {selectedFilters[key].label}
+                        </DropdownMenuCheckboxItem>
+                    )
+                })}
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 }
 

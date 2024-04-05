@@ -135,7 +135,7 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                     </span>
                 </div>
                 <div className="mt-3 text-4xl font-light text-foreground/60">
-                    {`${playerProfileKZData.points.total.toLocaleString()} (${playerProfileKZData.points.average.toFixed(2)})`}
+                    {`${playerProfileKZData.points.total.toLocaleString()} • (${playerProfileKZData.points.average.toFixed(2)})`}
                 </div>
                 {/*<div className="inline-flex mb-2 ">{PlayerRoles}</div>*/}
             </div>
