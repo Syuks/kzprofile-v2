@@ -2,10 +2,15 @@ import { useState } from "react"
 
 import {
     DotsHorizontalIcon,
+    InfoCircledIcon,
+    FrameIcon,
     DownloadIcon,
+    OpenInNewWindowIcon,
+    MagnifyingGlassIcon,
     ImageIcon,
     PlayIcon,
     PersonIcon,
+    PlusCircledIcon,
 } from "@radix-ui/react-icons"
 
 import { Link, useOutletContext } from "react-router-dom"
@@ -17,10 +22,14 @@ import type { Unfinishes } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 import { DataTable } from "@/components/datatable/datatable"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
-import { DataTableViewOptions } from "@/components/datatable/datatable-view-options"
+import { DataTableFacetedFilter } from "@/components/datatable/datatable-faceted-filter"
+import {
+    DataTableDateFilter,
+    dateFilterFunction,
+} from "@/components/datatable/datatable-date-filter"
 
 import { getTimeString } from "@/lib/utils"
-import { getTierData } from "@/lib/gokz"
+import { TierID, getTierData } from "@/lib/gokz"
 
 import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
 
@@ -30,7 +39,6 @@ import {
     createColumnHelper,
     ColumnFiltersState,
     SortingState,
-    VisibilityState,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
@@ -40,13 +48,16 @@ import {
     getFacetedRowModel,
     PaginationState,
     OnChangeFn,
+    getFacetedMinMaxValues,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
+    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -90,8 +101,11 @@ const columns = [
 
             return <span className={`flex justify-center ${tierData.color}`}>{tierData.label}</span>
         },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue<TierID>(id))
+        },
     }),
-    columnHelper.accessor("created_on_date", {
+    columnHelper.accessor("created_on", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Date" />,
         cell: (props) => {
             const [localSettings] = useLocalSettings()
@@ -104,6 +118,7 @@ const columns = [
                 </span>
             )
         },
+        filterFn: dateFilterFunction,
     }),
     columnHelper.accessor("server_name", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Server" />,
@@ -120,6 +135,38 @@ const columns = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end">
+                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                            RUN
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem>
+                            <FrameIcon className="mr-2 h-4 w-4" />
+                            <span>Get place</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <InfoCircledIcon className="mr-2 h-4 w-4" />
+                            <span>Get run ID</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <DownloadIcon className="mr-2 h-4 w-4" />
+                            <span>Download replay</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                            SERVER
+                        </DropdownMenuLabel>
+                        <DropdownMenuItem>
+                            <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
+                            <span>Connect to server</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <InfoCircledIcon className="mr-2 h-4 w-4" />
+                            <span>Get server ID</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>
+                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                            <span>Search server</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
                             MAP
                         </DropdownMenuLabel>
@@ -156,11 +203,16 @@ function Unfinishes() {
 
     const [runType] = useRunType()
 
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: SelectedFilter }>({
+        difficulty: { label: "Tier", show: false },
+        created_on: { label: "Date", show: false },
+    })
+
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [sorting, setSorting] = useState<SortingState>([{ id: "created_on", desc: true }])
-    const [pageIndex, setPageIndex] = useState<number>(0)
+    // For pageSize of pagination:
     const [localSettings, setLocalSettings] = useLocalSettings()
+    const [pageIndex, setPageIndex] = useState<number>(0)
 
     const onPaginationChange: OnChangeFn<PaginationState> = (updaterOrValue) => {
         const updatedPaginationState =
@@ -179,13 +231,11 @@ function Unfinishes() {
         columns,
         state: {
             sorting,
-            columnVisibility,
             columnFilters,
             pagination: { pageSize: localSettings.tablePageSize, pageIndex: pageIndex },
         },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
-        onColumnVisibilityChange: setColumnVisibility,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -193,30 +243,115 @@ function Unfinishes() {
         getSortedRowModel: getSortedRowModel(),
         getFacetedRowModel: getFacetedRowModel(),
         getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
     })
+
+    const handleSelectedFiltersChange = (filter: string, isChecked: boolean) => {
+        setSelectedFilters((oldSelectedFilter) => {
+            return {
+                ...oldSelectedFilter,
+                [filter]: {
+                    ...oldSelectedFilter[filter],
+                    show: isChecked,
+                },
+            }
+        })
+        table.getColumn(filter)?.setFilterValue(undefined)
+    }
 
     return (
         <>
-            <h2 className="mb-4 scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
-                Unfinishes
-            </h2>
-            <div className="flex items-center justify-between py-4">
-                <div className="flex space-x-4">
-                    <div className="max-w-sm">
-                        <Input
-                            placeholder="Search map..."
-                            value={(table.getColumn("map_name")?.getFilterValue() as string) ?? ""}
-                            onChange={(event) => {
-                                table.getColumn("map_name")?.setFilterValue(event.target.value)
-                            }}
-                        />
+            <div className="flex justify-between">
+                <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
+                    Unfinishes
+                </h2>
+                <AddFilters
+                    selectedFilters={selectedFilters}
+                    onSelectedFiltersChange={handleSelectedFiltersChange}
+                />
+            </div>
+            <div className="mb-52">
+                <div className="flex items-center justify-between py-4">
+                    <div className="flex flex-wrap">
+                        <div className="mr-4 mt-4 max-w-sm">
+                            <Input
+                                placeholder="Search map..."
+                                value={
+                                    (table.getColumn("map_name")?.getFilterValue() as string) ?? ""
+                                }
+                                onChange={(event) => {
+                                    table.getColumn("map_name")?.setFilterValue(event.target.value)
+                                }}
+                            />
+                        </div>
+                        {selectedFilters.difficulty.show && (
+                            <div className="mr-4 mt-4">
+                                <DataTableFacetedFilter
+                                    options={[
+                                        { label: "Very Easy", value: 1 },
+                                        { label: "Easy", value: 2 },
+                                        { label: "Medium", value: 3 },
+                                        { label: "Hard", value: 4 },
+                                        { label: "Very Hard", value: 5 },
+                                        { label: "Extreme", value: 6 },
+                                        { label: "Death", value: 7 },
+                                    ]}
+                                    title="Tier"
+                                    column={table.getColumn("difficulty")}
+                                />
+                            </div>
+                        )}
+                        {selectedFilters.created_on.show && (
+                            <div className="mr-4 mt-4">
+                                <DataTableDateFilter
+                                    column={table.getColumn("created_on")}
+                                    title="Date"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
-                <DataTableViewOptions table={table} />
+                <DataTable table={table} columns={columns} />
+                <DataTablePagination table={table} />
             </div>
-            <DataTable table={table} columns={columns} />
-            <DataTablePagination table={table} />
         </>
+    )
+}
+
+interface SelectedFilter {
+    label: string
+    show: boolean
+}
+
+interface AddFiltersProps {
+    selectedFilters: { [key: string]: SelectedFilter }
+    onSelectedFiltersChange: (filter: string, isChecked: boolean) => void
+}
+
+function AddFilters({ selectedFilters, onSelectedFiltersChange }: AddFiltersProps) {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="border-dashed">
+                    <PlusCircledIcon className="mr-2 h-4 w-4" />
+                    Add filter
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40">
+                {Object.keys(selectedFilters).map((key) => {
+                    return (
+                        <DropdownMenuCheckboxItem
+                            key={key}
+                            className="capitalize"
+                            checked={selectedFilters[key].show}
+                            onCheckedChange={(checked) => onSelectedFiltersChange(key, checked)}
+                        >
+                            {selectedFilters[key].label}
+                        </DropdownMenuCheckboxItem>
+                    )
+                })}
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 }
 
