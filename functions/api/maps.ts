@@ -13,7 +13,7 @@ export const onRequest: PagesFunction<Env> = async ({ env }) => {
 
     // Cache the "maps-v2" KV until midnight UTC.
     let d = new Date()
-    const cacheMaxAge = -(d.getTime() - d.setHours(24, 0, 0, 0)) / 1000
+    const cacheMaxAge = Math.floor(-(d.getTime() - d.setHours(24, 0, 0, 0)) / 1000)
 
     const maps = await env.KZPROFILE.get("maps-v2")
     return new Response(maps, {
