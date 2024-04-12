@@ -161,6 +161,39 @@
     html {
         font-family: "Inter", sans-serif;
     }
+    .rgb-effect,
+    .rgb-effect > td {
+        /*https://codepen.io/frozen4code/pen/LBVrLN*/
+        font-weight: 500 !important;
+        background: linear-gradient(
+            to right,
+            #ff0080,
+            #ff0080,
+            #ff8c00,
+            #ffff1c,
+            #00f260,
+            #12d8fa,
+            #1fa2ff,
+            #3567ff,
+            #6100ff,
+            #fc00ff,
+            #ff0080,
+            #ff0080
+        );
+        background-size: 1200%;
+        animation: rgb 6s linear infinite;
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    @keyframes rgb {
+        from {
+            background-position: 0%;
+        }
+        to {
+            background-position: 100%;
+        }
+    }
 }
 
 @media (max-width: 640px) {

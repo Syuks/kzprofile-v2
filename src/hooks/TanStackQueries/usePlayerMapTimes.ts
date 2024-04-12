@@ -1,17 +1,18 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, queryOptions } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordsTop, GetRecordsTopParams } from "./APIs/GlobalAPI"
 
 import { getGameModeName, GameMode } from "@/lib/gokz"
 
 import type { RecordsTop } from "./usePlayerTimes"
 
-const usePlayerMapTimes = (
+const playerMapTimesQueryOptions = (
     steamID: string,
     gameMode: GameMode,
     mapName: string,
     mapStage: number,
 ) => {
-    return useQuery({
+    return queryOptions({
         queryKey: ["playerMapTimes", steamID, gameMode, mapName, mapStage],
         queryFn: async () => {
             const baseParams: GetRecordsTopParams = {
@@ -52,4 +53,23 @@ const usePlayerMapTimes = (
     })
 }
 
+const usePlayerMapTimes = (
+    steamID: string,
+    gameMode: GameMode,
+    mapName: string,
+    mapStage: number,
+) => {
+    return useQuery(playerMapTimesQueryOptions(steamID, gameMode, mapName, mapStage))
+}
+
+const fetchPlayerMapTimes = (
+    steamID: string,
+    gameMode: GameMode,
+    mapName: string,
+    mapStage: number,
+) => {
+    return queryClient.fetchQuery(playerMapTimesQueryOptions(steamID, gameMode, mapName, mapStage))
+}
+
 export default usePlayerMapTimes
+export { fetchPlayerMapTimes }

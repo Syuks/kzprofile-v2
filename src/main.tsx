@@ -9,6 +9,7 @@ import PlayerSearch from "./pages/players/search"
 import PlayerProfile from "./pages/players/[steamid]"
 import Finishes from "./pages/players/[steamid]/finishes"
 import Unfinishes from "./pages/players/[steamid]/unfinishes"
+import Jumpstats from "./pages/players/[steamid]/jumpstats"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
                             {
                                 path: "unfinishes",
                                 element: <Unfinishes />,
+                            },
+                            {
+                                path: "jumpstats",
+                                element: <Jumpstats />,
                             },
                         ],
                     },

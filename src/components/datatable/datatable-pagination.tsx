@@ -18,14 +18,16 @@ import {
 
 interface DataTablePaginationProps<TData> {
     table: Table<TData>
+    hasNextPage?: boolean
     showPageSizeSelect?: boolean
+    tablePageSizes?: number[]
 }
-
-const tablePageSizes: number[] = [10, 20, 30, 40, 50, 100, 9999]
 
 export function DataTablePagination<TData>({
     table,
+    hasNextPage,
     showPageSizeSelect = true,
+    tablePageSizes = [10, 20, 30, 40, 50, 100, 9999],
 }: DataTablePaginationProps<TData>) {
     return (
         <div className="flex items-center justify-between py-4">
@@ -80,7 +82,9 @@ export function DataTablePagination<TData>({
                         variant="outline"
                         className="h-10 w-10 p-0"
                         onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        disabled={
+                            hasNextPage !== undefined ? !hasNextPage : !table.getCanNextPage()
+                        }
                     >
                         <span className="sr-only">Go to next page</span>
                         <ChevronRightIcon className="h-4 w-4" />

@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, queryOptions } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
 
 import { getGameModeName, GameMode } from "@/lib/gokz"
@@ -28,8 +29,8 @@ interface RecordsTopRecent {
     replay_id: number
 }
 
-const useMapWRs = (mapName: string, gameMode: GameMode, stage: number) => {
-    return useQuery({
+const mapWRsQueryOptions = (mapName: string, gameMode: GameMode, stage: number) => {
+    return queryOptions({
         queryKey: ["mapWRs", mapName, gameMode, stage],
         queryFn: async () => {
             const baseParams: GetRecordsTopRecentParams = {
@@ -81,4 +82,13 @@ const useMapWRs = (mapName: string, gameMode: GameMode, stage: number) => {
     })
 }
 
+const useMapWRs = (mapName: string, gameMode: GameMode, stage: number) => {
+    return useQuery(mapWRsQueryOptions(mapName, gameMode, stage))
+}
+
+const fetchMapWRs = (mapName: string, gameMode: GameMode, stage: number) => {
+    return queryClient.fetchQuery(mapWRsQueryOptions(mapName, gameMode, stage))
+}
+
 export default useMapWRs
+export { fetchMapWRs }

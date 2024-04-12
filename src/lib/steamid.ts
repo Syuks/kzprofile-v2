@@ -38,7 +38,7 @@ export const getSteam32 = (input: string) => {
 
     //if (regEx_SteamVanityProfile.test(input)) {}
 
-    return null
+    return undefined
 }
 
 export const getSteam64 = (input: string) => {
@@ -74,5 +74,5 @@ export const getSteam64 = (input: string) => {
 
     //if (regEx_SteamVanityProfile.test(input)) {}
 
-    return null
+    return undefined
 }

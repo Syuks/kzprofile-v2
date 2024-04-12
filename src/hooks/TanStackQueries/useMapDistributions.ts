@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, queryOptions } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 
 import {
     GlobalAPI_GetRecordFilterDistributions,
@@ -23,8 +24,8 @@ interface ChartData {
     distribution: { x: number; y: number; percentile: number }[]
 }
 
-const useMapDistributions = (mapID: number, gameMode: GameMode, stage: number) => {
-    return useQuery({
+const mapDistributionsQueryOptions = (mapID: number, gameMode: GameMode, stage: number) => {
+    return queryOptions({
         queryKey: ["mapDistributions", mapID, gameMode, stage],
         queryFn: async () => {
             // SOURCE: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.burr12.html
@@ -118,4 +119,13 @@ const useMapDistributions = (mapID: number, gameMode: GameMode, stage: number) =
     })
 }
 
+const useMapDistributions = (mapID: number, gameMode: GameMode, stage: number) => {
+    return useQuery(mapDistributionsQueryOptions(mapID, gameMode, stage))
+}
+
+const fetchMapDistributions = (mapID: number, gameMode: GameMode, stage: number) => {
+    return queryClient.fetchQuery(mapDistributionsQueryOptions(mapID, gameMode, stage))
+}
+
 export default useMapDistributions
+export { fetchMapDistributions }

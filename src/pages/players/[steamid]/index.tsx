@@ -30,6 +30,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export interface PlayerProfileOutletContext {
+    steamid: string
     playerProfileKZData: PlayerProfileKZData
 }
 
@@ -137,6 +138,7 @@ function PlayerProfile() {
                 <Outlet
                     context={
                         {
+                            steamid: steamid,
                             playerProfileKZData: playerProfileKZData.data,
                         } satisfies PlayerProfileOutletContext
                     }

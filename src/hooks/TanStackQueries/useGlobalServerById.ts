@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from "@tanstack/react-query"
+import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetServerById } from "./APIs/GlobalAPI"
 
@@ -10,8 +10,8 @@ export interface GlobalServer {
     owner_steamid64: string
 }
 
-const globalServerByIdQueryOptions = (id: number): UseQueryOptions<GlobalServer> => {
-    return {
+const globalServerByIdQueryOptions = (id: number) => {
+    return queryOptions({
         queryKey: ["servers", "globalServers"],
         queryFn: async () => {
             const response = await GlobalAPI_GetServerById(id)
@@ -20,7 +20,7 @@ const globalServerByIdQueryOptions = (id: number): UseQueryOptions<GlobalServer>
         },
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
-    }
+    })
 }
 
 const useGlobalServerById = (id: number) => {

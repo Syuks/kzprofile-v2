@@ -1,3 +1,5 @@
+import { JumpTypeID, JumpTypeLabel } from "@/lib/gokz"
+
 const globalAPI = {
     baseURL: "https://kztimerglobal.com/api/v2.0",
 }
@@ -85,9 +87,9 @@ export interface GetJumpstatsParams {
     server_id?: number //Server id to query
     steamid64?: string //SteamID64 to query
     steam_id?: string //SteamID2 to query
-    jumptype?: string //Jump type to query
+    jumptype?: JumpTypeLabel //Jump type to query
     steamid64_list?: string[] //Unsupported at the moment-
-    jumptype_list?: string[] //Unsupported at the moment-
+    jumptype_list?: JumpTypeID[] //Unsupported at the moment-
     greater_than_distance?: number //Greater than distance to query
     less_than_distance?: number //Less than distance to query
     is_msl?: boolean //Whether to query for isMsl or not

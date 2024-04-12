@@ -10,7 +10,6 @@ import {
     ImageIcon,
     PlayIcon,
     PersonIcon,
-    PlusCircledIcon,
 } from "@radix-ui/react-icons"
 
 import { Link, useOutletContext } from "react-router-dom"
@@ -27,6 +26,10 @@ import {
     DataTableDateFilter,
     dateFilterFunction,
 } from "@/components/datatable/datatable-date-filter"
+import {
+    DatatableAddFiltersDropdown,
+    type SelectedFilter,
+} from "@/components/datatable/datatable-add-filters-dropdown"
 
 import { getTimeString } from "@/lib/utils"
 import { TierID, getTierData } from "@/lib/gokz"
@@ -53,7 +56,6 @@ import {
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
-    DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
@@ -265,7 +267,7 @@ function Unfinishes() {
                 <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Unfinishes
                 </h2>
-                <AddFilters
+                <DatatableAddFiltersDropdown
                     selectedFilters={selectedFilters}
                     onSelectedFiltersChange={handleSelectedFiltersChange}
                 />
@@ -315,43 +317,6 @@ function Unfinishes() {
                 <DataTablePagination table={table} />
             </div>
         </>
-    )
-}
-
-interface SelectedFilter {
-    label: string
-    show: boolean
-}
-
-interface AddFiltersProps {
-    selectedFilters: { [key: string]: SelectedFilter }
-    onSelectedFiltersChange: (filter: string, isChecked: boolean) => void
-}
-
-function AddFilters({ selectedFilters, onSelectedFiltersChange }: AddFiltersProps) {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-dashed">
-                    <PlusCircledIcon className="mr-2 h-4 w-4" />
-                    Add filter
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-40">
-                {Object.keys(selectedFilters).map((key) => {
-                    return (
-                        <DropdownMenuCheckboxItem
-                            key={key}
-                            className="capitalize"
-                            checked={selectedFilters[key].show}
-                            onCheckedChange={(checked) => onSelectedFiltersChange(key, checked)}
-                        >
-                            {selectedFilters[key].label}
-                        </DropdownMenuCheckboxItem>
-                    )
-                })}
-            </DropdownMenuContent>
-        </DropdownMenu>
     )
 }
 

@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, queryOptions } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 import { GlobalAPI_GetPlayers } from "./APIs/GlobalAPI"
 
 interface Player {
@@ -9,8 +10,8 @@ interface Player {
     name: string
 }
 
-const useKZPlayer = (steamID: string) => {
-    return useQuery({
+const KZPlayerQueryOptions = (steamID: string) => {
+    return queryOptions({
         queryKey: ["kz_player", steamID],
         queryFn: async () => {
             const response = await GlobalAPI_GetPlayers({ steamid64_list: [steamID] })
@@ -22,4 +23,13 @@ const useKZPlayer = (steamID: string) => {
     })
 }
 
+const useKZPlayer = (steamID: string) => {
+    return useQuery(KZPlayerQueryOptions(steamID))
+}
+
+const fetchKZPlayer = (steamID: string) => {
+    return queryClient.fetchQuery(KZPlayerQueryOptions(steamID))
+}
+
 export default useKZPlayer
+export { fetchKZPlayer }

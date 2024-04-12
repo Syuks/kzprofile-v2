@@ -9,6 +9,15 @@ export const onRequest: PagesFunction<Env> = async ({ env }) => {
 
     // await env.KZPROFILE.put("maps", JSON.stringify(kzProfileMaps))
 
+    // Cache the "maps" KV until midnight UTC.
+    let d = new Date()
+    const cacheMaxAge = -(d.getTime() - d.setHours(24, 0, 0, 0)) / 1000
+
     const maps = await env.KZPROFILE.get("maps")
-    return new Response(JSON.stringify(maps))
+    return new Response(JSON.stringify(maps), {
+        headers: {
+            "content-type": "application/json;charset=UTF-8",
+            "Cache-Control": `max-age=${cacheMaxAge}`,
+        },
+    })
 }

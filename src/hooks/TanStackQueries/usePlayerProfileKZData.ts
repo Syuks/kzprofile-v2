@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
-
+import { useQuery, queryOptions } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 import { getGameModeID, GameMode, getKZRank, KZRank, TierID } from "@/lib/gokz"
 
 import { fetchGlobalMaps } from "./useGlobalMaps"
@@ -53,8 +53,8 @@ export interface PlayerProfileKZData {
     }
 }
 
-const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
-    return useQuery({
+const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) => {
+    return queryOptions({
         queryKey: ["playerProfileKZData", steamID, gameMode],
         queryFn: async () => {
             // Global API Queries needed for proper finishes, rank, points, completions, etc
@@ -228,4 +228,13 @@ const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
     })
 }
 
+const usePlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
+    return useQuery(playerProfileKZDataQueryOptions(steamID, gameMode))
+}
+
+const fetchPlayerProfileKZData = (steamID: string, gameMode: GameMode) => {
+    return queryClient.fetchQuery(playerProfileKZDataQueryOptions(steamID, gameMode))
+}
+
 export default usePlayerProfileKZData
+export { fetchPlayerProfileKZData }

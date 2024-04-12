@@ -69,91 +69,121 @@ export const getTierData = (tier: TierID) => {
 }
 
 // JUMPSTATS
+// For testing, julianio's id: 76561197998450788
 
-const jumptypeNameByID = {
-    1: "longjump",
-    2: "bhop",
-    3: "multibhop",
-    4: "weirdjump",
-    5: "dropbhop",
-    6: "countjump",
-    7: "ladderjump",
+export type JumpTypeID = 1 | 2 | 3 | 4 | 5 | 6 | 7
+export type JumpTypeLabel =
+    | "longjump"
+    | "bhop"
+    | "multibhop"
+    | "weirdjump"
+    | "dropbhop"
+    | "countjump"
+    | "ladderjump"
+export const jumpTypeLabelSchema = z.enum([
+    "longjump",
+    "bhop",
+    "multibhop",
+    "weirdjump",
+    "dropbhop",
+    "countjump",
+    "ladderjump",
+])
+
+type JumpTypeData = {
+    label: JumpTypeLabel
+    maxDistance: number
+    bindUnits: number[]
+    unbindUnits: number[]
 }
 
-const maxDistance = {
-    1: 294,
-    2: 350,
-    3: 365,
-    4: 210,
-    5: 308,
-    6: 350,
-    7: 315,
+type JumpStatData = {
+    label: string
+    color: string
 }
 
-const bindUnits = {
-    1: [0, 265, 270, 275, 285, 288, 291],
-    2: [0, 320, 325, 330, 342, 344, 348],
-    3: [0, 340, 345, 350, 358, 360, 363],
-    4: [0, 280, 285, 290, 300, 302, 306],
-    5: [0, 315, 320, 325, 340, 342, 348],
-    6: [0, 285, 290, 295, 305, 307, 313],
-    7: [0, 155, 165, 175, 193, 200, 208],
-}
-
-const unbindUnits = {
-    1: [0, 265, 270, 275, 282, 284, 287],
-    2: [0, 320, 325, 330, 340, 342, 344],
-    3: [0, 340, 345, 350, 355, 357, 358],
-    4: [0, 280, 285, 290, 298, 300, 302],
-    5: [0, 315, 320, 325, 340, 342, 348],
-    6: [0, 285, 290, 295, 305, 307, 313],
-    7: [0, 155, 165, 175, 193, 200, 208],
-}
-
-const jumpstatClass = ["meh", "perfect", "impressive", "godlike", "ownage", "wrecker", "rgb-effect"]
-
-type JumpstatID = 1 | 2 | 3 | 4 | 5 | 6 | 7
-
-export const getJumpstatMaxDistance = (jumptype: JumpstatID) => {
-    return maxDistance[jumptype]
-}
-
-export const getJumpstatClass = (jumptype: JumpstatID, bind: boolean, units: number) => {
-    const jump_thresholds = bind ? bindUnits[jumptype] : unbindUnits[jumptype]
-
-    for (let i = jumpstatClass.length - 1; i >= 0; i--) {
-        if (units >= jump_thresholds[i]) {
-            return jumpstatClass[i]
-        }
-    }
-}
-
-export const getJumpstatLabel = (jumptype: JumpstatID, bind: boolean, units: number) => {
-    const jump_thresholds = bind ? bindUnits[jumptype] : unbindUnits[jumptype]
-
-    for (let i = jumpstatClass.length - 1; i >= 0; i--) {
-        if (units >= jump_thresholds[i]) {
-            if (jumpstatClass[i] === "rgb-effect") {
-                return `${jump_thresholds[i]} CLUB`
-            }
-            return jumpstatClass[i]
-        }
-    }
-}
-
-export const getJumptypeNameByID = (jumptype: JumpstatID) => {
-    return jumptypeNameByID[jumptype]
-}
-
-export const jumptypeDropdownItems = [
-    { label: "Longjump", value: "longjump" },
-    { label: "Bhop", value: "bhop" },
-    { label: "Multibhop", value: "multibhop" },
-    { label: "Ladderjump", value: "ladderjump" },
-    { label: "Weirdjump", value: "weirdjump" },
-    { label: "Dropbhop", value: "dropbhop" },
-    { label: "Countjump", value: "countjump" },
+const jumpTypeData: JumpTypeData[] = [
+    {
+        label: "longjump",
+        maxDistance: 294,
+        bindUnits: [0, 265, 270, 275, 285, 288, 291],
+        unbindUnits: [0, 265, 270, 275, 282, 284, 287],
+    },
+    {
+        label: "bhop",
+        maxDistance: 350,
+        bindUnits: [0, 320, 325, 330, 342, 344, 348],
+        unbindUnits: [0, 320, 325, 330, 340, 342, 344],
+    },
+    {
+        label: "multibhop",
+        maxDistance: 365,
+        bindUnits: [0, 340, 345, 350, 358, 360, 363],
+        unbindUnits: [0, 340, 345, 350, 355, 357, 358],
+    },
+    {
+        label: "weirdjump",
+        maxDistance: 210,
+        bindUnits: [0, 280, 285, 290, 300, 302, 306],
+        unbindUnits: [0, 280, 285, 290, 298, 300, 302],
+    },
+    {
+        label: "dropbhop",
+        maxDistance: 308,
+        bindUnits: [0, 315, 320, 325, 340, 342, 348],
+        unbindUnits: [0, 315, 320, 325, 340, 342, 348],
+    },
+    {
+        label: "countjump",
+        maxDistance: 350,
+        bindUnits: [0, 285, 290, 295, 305, 307, 313],
+        unbindUnits: [0, 285, 290, 295, 305, 307, 313],
+    },
+    {
+        label: "ladderjump",
+        maxDistance: 315,
+        bindUnits: [0, 155, 165, 175, 193, 200, 208],
+        unbindUnits: [0, 155, 165, 175, 193, 200, 208],
+    },
 ]
+
+const jumpStatData: JumpStatData[] = [
+    { label: "Meh", color: "text-foreground" },
+    { label: "Perfect", color: "text-csgo-blue" },
+    { label: "Impressive", color: "text-csgo-green" },
+    { label: "Godlike", color: "text-csgo-darkred" },
+    { label: "Ownage", color: "text-csgo-gold" },
+    { label: "Wrecker", color: "text-csgo-orchid" },
+    { label: "CLUB", color: "rgb-effect" },
+]
+
+export const getJumpTypeData = (jumpType: JumpTypeID) => {
+    return jumpTypeData[jumpType - 1]
+}
+
+export const getJumpStatData = (
+    jumpType: JumpTypeID,
+    crouchbind: boolean,
+    units: number,
+): JumpStatData => {
+    const currentJumpTypeData = getJumpTypeData(jumpType)
+
+    const thresholds = crouchbind ? currentJumpTypeData.bindUnits : currentJumpTypeData.unbindUnits
+
+    for (let i = thresholds.length - 1; i >= 0; i--) {
+        if (units >= thresholds[i]) {
+            if (jumpStatData[i].label === "CLUB") {
+                return {
+                    label: `${thresholds[i]} CLUB`,
+                    color: jumpStatData[i].color,
+                }
+            }
+            return jumpStatData[i]
+        }
+    }
+
+    return jumpStatData[0]
+}
 
 // RANKS
 

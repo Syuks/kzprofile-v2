@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, queryOptions } from "@tanstack/react-query"
+import { queryClient } from "@/main"
 import {
     GlobalAPI_GetRecordsTopWorldRecords,
     GetRecordsTopWorldRecordsParams,
@@ -13,8 +14,8 @@ interface RecordsTopWorldRecord {
     player_name: string
 }
 
-const useTopWorldRecords = (gameMode: GameMode, runType: RunType, stages: number) => {
-    return useQuery({
+const topWorldRecordsQueryOptions = (gameMode: GameMode, runType: RunType, stages: number) => {
+    return queryOptions({
         queryKey: ["topWorldRecords", gameMode, runType, stages],
         queryFn: async () => {
             const params: GetRecordsTopWorldRecordsParams = {
@@ -42,4 +43,13 @@ const useTopWorldRecords = (gameMode: GameMode, runType: RunType, stages: number
     })
 }
 
+const useTopWorldRecords = (gameMode: GameMode, runType: RunType, stages: number) => {
+    return useQuery(topWorldRecordsQueryOptions(gameMode, runType, stages))
+}
+
+const fetchTopWorldRecords = (gameMode: GameMode, runType: RunType, stages: number) => {
+    return queryClient.fetchQuery(topWorldRecordsQueryOptions(gameMode, runType, stages))
+}
+
 export default useTopWorldRecords
+export { fetchTopWorldRecords }
