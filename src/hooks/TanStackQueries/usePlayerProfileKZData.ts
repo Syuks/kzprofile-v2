@@ -2,7 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { getGameModeID, GameMode, getKZRank, KZRank, TierID } from "@/lib/gokz"
 
-import { fetchGlobalMaps } from "./useGlobalMaps"
+import { fetchKZProfileMaps } from "./useKZProfileMaps"
 import { fetchGlobalFilters } from "./useGlobalFilters"
 import { fetchPlayerTimes, RecordsTop } from "./usePlayerTimes"
 
@@ -59,7 +59,7 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
         queryFn: async () => {
             // Global API Queries needed for proper finishes, rank, points, completions, etc
             const [globalMaps, globalFilters, playerTimes] = await Promise.all([
-                fetchGlobalMaps(),
+                fetchKZProfileMaps(),
                 fetchGlobalFilters(gameMode),
                 fetchPlayerTimes(steamID, gameMode),
             ])

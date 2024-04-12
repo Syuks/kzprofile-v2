@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 
 import { useNavigate } from "react-router-dom"
 
-import useGlobalMaps from "@/hooks/TanStackQueries/useGlobalMaps"
+import useKZProfileMaps from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { cn } from "@/lib/utils"
 import { getTierData } from "@/lib/gokz"
@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge"
 function CommandMenu() {
     const navigate = useNavigate()
 
-    const globalMapsQuery = useGlobalMaps()
+    const kzProfileMapsQuery = useKZProfileMaps()
 
     const [open, setOpen] = useState(false)
 
@@ -90,15 +90,17 @@ function CommandMenu() {
                     autoFocus
                 />
                 <CommandList>
-                    {globalMapsQuery.isLoading && (
+                    {kzProfileMapsQuery.isLoading && (
                         <CommandLoading className="py-6 text-center text-sm">
                             Loading maps...
                         </CommandLoading>
                     )}
-                    {globalMapsQuery.isError && <CommandEmpty>Error fetching maps.</CommandEmpty>}
+                    {kzProfileMapsQuery.isError && (
+                        <CommandEmpty>Error fetching maps.</CommandEmpty>
+                    )}
                     <CommandEmpty>No maps found.</CommandEmpty>
                     <CommandGroup>
-                        {globalMapsQuery.data?.map((globalMap) => {
+                        {kzProfileMapsQuery.data?.map((globalMap) => {
                             const tierData = getTierData(globalMap.difficulty)
 
                             return (

@@ -1,10 +1,19 @@
 import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { KZProfileAPI_GetMaps } from "./APIs/KZProfileAPI"
+import { TierID, GameModeID } from "@/lib/gokz"
 
 interface KZProfileMap {
     id: number
-    mappers: { name: string; steamid: string }[]
+    name: string
+    filesize: number
+    difficulty: TierID
+    created_on: string
+    workshop_id: string
+    filters: GameModeID[]
+    bonus_count: number
+    mapperNames: string[]
+    mapperIds: string[]
     videos: string[]
 }
 
