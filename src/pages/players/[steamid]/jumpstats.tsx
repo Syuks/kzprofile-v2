@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react"
 
-import { DotsHorizontalIcon, FrameIcon, StretchHorizontallyIcon } from "@radix-ui/react-icons"
+import {
+    DotsHorizontalIcon,
+    FrameIcon,
+    ReloadIcon,
+    StretchHorizontallyIcon,
+} from "@radix-ui/react-icons"
 
 import { useOutletContext, useSearchParams } from "react-router-dom"
 
@@ -11,6 +16,7 @@ import usePlayerJumpstats, {
     type Jumpstat,
     type CrouchbindMode,
     crouchbindModeSchema,
+    refetchPlayerJumpstats,
 } from "@/hooks/TanStackQueries/usePlayerJumpstats"
 
 import { DataTable } from "@/components/datatable/datatable"
@@ -18,7 +24,7 @@ import { DataTablePagination } from "@/components/datatable/datatable-pagination
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
 
 import { cn } from "@/lib/utils"
-import { JumpTypeLabel, getJumpStatData, jumpTypeLabelSchema } from "@/lib/gokz"
+import { JumpTypeLabel, getJumpStatData, getJumpTypeData, jumpTypeLabelSchema } from "@/lib/gokz"
 
 import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
 
@@ -181,7 +187,27 @@ const columns = [
     }),
     columnHelper.display({
         id: "actions",
-        cell: () => {
+        cell: (props) => {
+            const jumpstat = props.row.original
+
+            const getJumpstatId = () => {
+                const jumptypeData = getJumpTypeData(jumpstat.jump_type)
+                const crouchbind = jumpstat.is_crouch_boost ? "chrouchbinded" : "unbinded"
+
+                toast(`ID of "${jumpstat.distance} ${crouchbind} ${jumptypeData.label}"`, {
+                    description: jumpstat.id,
+                })
+            }
+
+            const getJumpstatMslCount = () => {
+                const jumptypeData = getJumpTypeData(jumpstat.jump_type)
+                const crouchbind = jumpstat.is_crouch_boost ? "chrouchbinded" : "unbinded"
+
+                toast(`MSL count of "${jumpstat.distance} ${crouchbind} ${jumptypeData.label}"`, {
+                    description: jumpstat.msl_count.toString(),
+                })
+            }
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -194,11 +220,11 @@ const columns = [
                         <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
                             JUMPSTAT
                         </DropdownMenuLabel>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onSelect={getJumpstatId}>
                             <FrameIcon className="mr-2 h-4 w-4" />
                             <span>Get ID</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onSelect={getJumpstatMslCount}>
                             <StretchHorizontallyIcon className="mr-2 h-4 w-4" />
                             <span>Get MSL count</span>
                         </DropdownMenuItem>
@@ -312,9 +338,30 @@ function Jumpstats() {
 
     return (
         <>
-            <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
-                Jumpstats
-            </h2>
+            <div className="flex justify-between">
+                <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
+                    Jumpstats
+                </h2>
+                <Button
+                    variant="outline"
+                    onClick={() => {
+                        refetchPlayerJumpstats(
+                            steamid,
+                            currentJumpType,
+                            crouchbind,
+                            pagination.pageSize,
+                        )
+                    }}
+                    disabled={playerJumpstatsInfiniteQuery.isRefetching}
+                >
+                    {playerJumpstatsInfiniteQuery.isRefetching ? (
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                        <ReloadIcon className="mr-2 h-4 w-4" />
+                    )}
+                    Reload
+                </Button>
+            </div>
             <div className="mb-52">
                 <div className="flex items-center py-4">
                     <div className="flex flex-wrap">

@@ -10,9 +10,40 @@ import PlayerProfile from "./pages/players/[steamid]"
 import Finishes from "./pages/players/[steamid]/finishes"
 import Unfinishes from "./pages/players/[steamid]/unfinishes"
 import Jumpstats from "./pages/players/[steamid]/jumpstats"
+import Stats from "./pages/players/[steamid]/stats"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    RadialLinearScale,
+    TimeScale,
+    BarElement,
+    PointElement,
+    LineElement,
+    Filler,
+    Title,
+    Tooltip,
+    Legend,
+} from "chart.js"
+import "chartjs-adapter-date-fns"
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    RadialLinearScale,
+    TimeScale,
+    BarElement,
+    PointElement,
+    LineElement,
+    Filler,
+    Title,
+    Tooltip,
+    Legend,
+)
 
 export const queryClient = new QueryClient({
     defaultOptions: {
@@ -50,6 +81,10 @@ const router = createBrowserRouter([
                             {
                                 path: "jumpstats",
                                 element: <Jumpstats />,
+                            },
+                            {
+                                path: "stats",
+                                element: <Stats />,
                             },
                         ],
                     },

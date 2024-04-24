@@ -84,5 +84,21 @@ const fetchPlayerJumpstats = (
     )
 }
 
+const refetchPlayerJumpstats = (
+    steamid: string,
+    jumpType: JumpTypeLabel,
+    crouchbind: CrouchbindMode,
+    pageSize: number,
+) => {
+    const options = playerJumpstatsInfiniteQueryOptions(steamid, jumpType, crouchbind, pageSize)
+
+    queryClient.setQueryData(options.queryKey, (data) => ({
+        pages: data ? data.pages.slice(0, 1) : [],
+        pageParams: [0],
+    }))
+
+    queryClient.refetchQueries({ queryKey: options.queryKey })
+}
+
 export default usePlayerJumpstats
-export { fetchPlayerJumpstats }
+export { fetchPlayerJumpstats, refetchPlayerJumpstats }

@@ -2,21 +2,19 @@ import { useState } from "react"
 
 import {
     DotsHorizontalIcon,
-    InfoCircledIcon,
-    FrameIcon,
-    DownloadIcon,
-    OpenInNewWindowIcon,
     MagnifyingGlassIcon,
     ImageIcon,
     PlayIcon,
     PersonIcon,
+    ReloadIcon,
 } from "@radix-ui/react-icons"
 
-import { Link, useOutletContext } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 
 import { lightFormat } from "date-fns"
 
 import type { Unfinishes } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import { fetchKZProfileMaps } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { DataTable } from "@/components/datatable/datatable"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
@@ -30,6 +28,9 @@ import {
     DatatableAddFiltersDropdown,
     type SelectedFilter,
 } from "@/components/datatable/datatable-add-filters-dropdown"
+
+import MapHoverCard from "@/components/maps/map-hover-card"
+import MapVideoGallery from "@/components/maps/map-video-gallery"
 
 import { getTimeString } from "@/lib/utils"
 import { TierID, getTierData } from "@/lib/gokz"
@@ -63,6 +64,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { toast } from "sonner"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 
 const columnHelper = createColumnHelper<Unfinishes>()
 
@@ -71,11 +74,7 @@ const columns = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Map" />,
         cell: (props) => {
             const map_name = props.getValue()
-            return (
-                <Button asChild variant="link">
-                    <Link to={`/maps/${map_name}`}>{map_name}</Link>
-                </Button>
-            )
+            return <MapHoverCard mapId={props.row.original.map_id} mapName={map_name} />
         },
     }),
     columnHelper.accessor("points", {
@@ -128,70 +127,107 @@ const columns = [
     columnHelper.display({
         id: "actions",
         cell: (props) => {
+            const record = props.row.original
+            const navigate = useNavigate()
+            const [mapVideos, setMapVideos] = useState<string[]>([])
+            const [mapVideosDialogOpen, setMapVideosDialogOpen] = useState(false)
+
+            const goToMapper = async () => {
+                const kzProfileMaps = await fetchKZProfileMaps()
+
+                const map = kzProfileMaps.find((kzProfileMap) => kzProfileMap.id === record.map_id)
+
+                if (!map) {
+                    toast.error("Global API", { description: "No map found with this ID." })
+                    return
+                }
+
+                if (!map.mapperNames.length) {
+                    toast("No mappers found", {
+                        description: "We don't know the mappers of this map. Help us find them!",
+                    })
+                    return
+                }
+
+                if (map.mapperIds[0] === "") {
+                    toast("No mapper steamid", {
+                        description: "We don't know the steamid of this mapper. Help us find it!",
+                    })
+                    return
+                }
+
+                navigate(`/players/${map.mapperIds[0]}`)
+            }
+
+            const watchVideo = async () => {
+                const kzProfileMaps = await fetchKZProfileMaps()
+
+                const map = kzProfileMaps.find((kzProfileMap) => kzProfileMap.id === record.map_id)
+
+                if (!map) {
+                    toast.error("Global API", { description: "No map found with this ID." })
+                    return
+                }
+
+                if (!map.videos.length) {
+                    toast("No videos found", {
+                        description: "We don't have any videos for this map. Help us find one!",
+                        action: {
+                            label: "Github",
+                            onClick: () =>
+                                window.open("https://github.com/Syuks/KZProfile", "_blank"),
+                        },
+                    })
+                    return
+                }
+
+                setMapVideos(map.videos)
+                setMapVideosDialogOpen(true)
+            }
+
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir menu</span>
-                            <DotsHorizontalIcon className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end">
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            RUN
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <FrameIcon className="mr-2 h-4 w-4" />
-                            <span>Get place</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <InfoCircledIcon className="mr-2 h-4 w-4" />
-                            <span>Get run ID</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Download replay</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            SERVER
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
-                            <span>Connect to server</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <InfoCircledIcon className="mr-2 h-4 w-4" />
-                            <span>Get server ID</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
-                            <span>Search server</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            MAP
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                            <Link to={`/maps/${props.row.original.map_name}`}>
-                                <ImageIcon className="mr-2 h-4 w-4" />
-                                <span>Go to map</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <PlayIcon className="mr-2 h-4 w-4" />
-                            <span>Watch video</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Download WR replay</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <PersonIcon className="mr-2 h-4 w-4" />
-                            <span>Go to mapper</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <Dialog open={mapVideosDialogOpen} onOpenChange={setMapVideosDialogOpen}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Abrir menu</span>
+                                <DotsHorizontalIcon className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end">
+                            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                                SERVER
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/servers?map=${record.map_name}`}>
+                                    <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                                    <span>Search servers</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                                MAP
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/maps/${record.map_name}`}>
+                                    <ImageIcon className="mr-2 h-4 w-4" />
+                                    <span>Go to map</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={goToMapper}>
+                                <PersonIcon className="mr-2 h-4 w-4" />
+                                <span>Go to mapper</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={watchVideo}>
+                                <PlayIcon className="mr-2 h-4 w-4" />
+                                <span>Watch video</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DialogContent className="w-[85vw] max-w-screen-xl sm:w-[90vw]">
+                        <MapVideoGallery videos={mapVideos} />
+                    </DialogContent>
+                </Dialog>
             )
         },
         meta: {
@@ -201,7 +237,8 @@ const columns = [
 ]
 
 function Unfinishes() {
-    const { playerProfileKZData } = useOutletContext<PlayerProfileOutletContext>()
+    const { playerProfileKZData, playerProfileKZDataRefetch, playerProfileKZDataFetching } =
+        useOutletContext<PlayerProfileOutletContext>()
 
     const [runType] = useRunType()
 
@@ -267,10 +304,24 @@ function Unfinishes() {
                 <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Unfinishes
                 </h2>
-                <DatatableAddFiltersDropdown
-                    selectedFilters={selectedFilters}
-                    onSelectedFiltersChange={handleSelectedFiltersChange}
-                />
+                <div className="flex space-x-2">
+                    <DatatableAddFiltersDropdown
+                        selectedFilters={selectedFilters}
+                        onSelectedFiltersChange={handleSelectedFiltersChange}
+                    />
+                    <Button
+                        variant="outline"
+                        onClick={() => playerProfileKZDataRefetch()}
+                        disabled={playerProfileKZDataFetching}
+                    >
+                        {playerProfileKZDataFetching ? (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <ReloadIcon className="mr-2 h-4 w-4" />
+                        )}
+                        Reload
+                    </Button>
+                </div>
             </div>
             <div className="mb-52">
                 <div className="flex items-center justify-between py-4">

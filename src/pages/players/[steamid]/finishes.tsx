@@ -10,14 +10,18 @@ import {
     ImageIcon,
     PlayIcon,
     PersonIcon,
+    ReloadIcon,
 } from "@radix-ui/react-icons"
 
-import { Link, useOutletContext } from "react-router-dom"
+import { Link, useNavigate, useOutletContext } from "react-router-dom"
 
 import { lightFormat } from "date-fns"
 
 import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
 import type { RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import { fetchRecordPlaceByRunId } from "@/hooks/TanStackQueries/useRecordPlaceByRunId"
+import { fetchRecordReplay } from "@/hooks/TanStackQueries/useRecordReplay"
+import { fetchKZProfileMaps } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { DataTable } from "@/components/datatable/datatable"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
@@ -36,10 +40,17 @@ import {
     type SelectedFilter,
 } from "@/components/datatable/datatable-add-filters-dropdown"
 
+import MapHoverCard from "@/components/maps/map-hover-card"
+import MapVideoGallery from "@/components/maps/map-video-gallery"
+
 import { getTimeString } from "@/lib/utils"
 import { TierID, getTierData } from "@/lib/gokz"
 
-import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
+import {
+    useGameMode,
+    useLocalSettings,
+    useRunType,
+} from "@/components/localsettings/localsettings-provider"
 
 import { PlayerProfileOutletContext } from "."
 
@@ -69,6 +80,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 
 const columnHelper = createColumnHelper<RecordsTopExtended>()
 
@@ -77,11 +89,7 @@ const columns = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Map" />,
         cell: (props) => {
             const map_name = props.getValue()
-            return (
-                <Button asChild variant="link">
-                    <Link to={`/maps/${map_name}`}>{map_name}</Link>
-                </Button>
-            )
+            return <MapHoverCard mapId={props.row.original.map_id} mapName={map_name} />
         },
     }),
     columnHelper.accessor("points", {
@@ -151,7 +159,7 @@ const columns = [
                 const globalServer = await fetchGlobalServerById(props.row.original.server_id)
 
                 if (!globalServer) {
-                    toast("Global API", { description: "No server found with this ID." })
+                    toast.error("Global API", { description: "No server found with this ID." })
                     return
                 }
 
@@ -171,70 +179,212 @@ const columns = [
     columnHelper.display({
         id: "actions",
         cell: (props) => {
+            const record = props.row.original
+            const [runType] = useRunType()
+            const [gameMode] = useGameMode()
+            const navigate = useNavigate()
+            const [mapVideos, setMapVideos] = useState<string[]>([])
+            const [mapVideosDialogOpen, setMapVideosDialogOpen] = useState(false)
+
+            const getRecordPlace = async () => {
+                const recordPlace = await fetchRecordPlaceByRunId(record.id)
+
+                toast(record.map_name, {
+                    description: `Your position in the leaderboard is ${recordPlace}.`,
+                })
+            }
+
+            const getRecordId = () => {
+                toast(`${runType.toUpperCase()} run ID of "${record.map_name}" in "${gameMode}"`, {
+                    description: record.id,
+                })
+            }
+
+            const downloadReplay = async () => {
+                if (record.replay_id === 0) {
+                    toast("No replay available", {
+                        description: "This run has no replay available.",
+                    })
+                    return
+                }
+
+                const recordReplayBlob = await fetchRecordReplay(record.replay_id)
+
+                toast(`Replay ID: ${record.replay_id}`, {
+                    description: `${runType.toUpperCase()} replay of "${record.map_name}" in "${gameMode}"`,
+                    action: {
+                        label: "Download",
+                        onClick: () => {
+                            const file = window.URL.createObjectURL(recordReplayBlob)
+                            window.location.assign(file)
+                        },
+                    },
+                })
+            }
+
+            const connectToServer = async () => {
+                const globalServer = await fetchGlobalServerById(record.server_id)
+
+                if (!globalServer) {
+                    toast.error("Global API", { description: "No server found with this ID." })
+                    return
+                }
+
+                window.location.replace(`steam://connect/${globalServer.ip}:${globalServer.port}`)
+            }
+
+            const getServerInfo = async () => {
+                const globalServer = await fetchGlobalServerById(record.server_id)
+
+                if (!globalServer) {
+                    toast.error("Global API", { description: "No server found with this ID." })
+                    return
+                }
+
+                toast(record.server_name, {
+                    description: `
+                        <div>IP: ${globalServer.ip}:${globalServer.port}</div>
+                        <div>Owner: ${globalServer.owner_steamid64}</div>
+                    `,
+                    action: {
+                        label: "Connect",
+                        onClick: () =>
+                            window.location.replace(
+                                `steam://connect/${globalServer.ip}:${globalServer.port}`,
+                            ),
+                    },
+                })
+            }
+
+            const searchServer = async () => {
+                const globalServer = await fetchGlobalServerById(record.server_id)
+
+                if (!globalServer) {
+                    toast.error("Global API", { description: "No server found with this ID." })
+                    return
+                }
+
+                navigate(`/servers?ip=${globalServer.ip}:${globalServer.port}`)
+            }
+
+            const goToMapper = async () => {
+                const kzProfileMaps = await fetchKZProfileMaps()
+
+                const map = kzProfileMaps.find((kzProfileMap) => kzProfileMap.id === record.map_id)
+
+                if (!map) {
+                    toast.error("Global API", { description: "No map found with this ID." })
+                    return
+                }
+
+                if (!map.mapperNames.length) {
+                    toast("No mappers found", {
+                        description: "We don't know the mappers of this map. Help us find them!",
+                    })
+                    return
+                }
+
+                if (map.mapperIds[0] === "") {
+                    toast("No mapper steamid", {
+                        description: "We don't know the steamid of this mapper. Help us find it!",
+                    })
+                    return
+                }
+
+                navigate(`/players/${map.mapperIds[0]}`)
+            }
+
+            const watchVideo = async () => {
+                const kzProfileMaps = await fetchKZProfileMaps()
+
+                const map = kzProfileMaps.find((kzProfileMap) => kzProfileMap.id === record.map_id)
+
+                if (!map) {
+                    toast.error("Global API", { description: "No map found with this ID." })
+                    return
+                }
+
+                if (!map.videos.length) {
+                    toast("No videos found", {
+                        description: "We don't have any videos for this map. Help us find one!",
+                        action: {
+                            label: "Github",
+                            onClick: () =>
+                                window.open("https://github.com/Syuks/KZProfile", "_blank"),
+                        },
+                    })
+                    return
+                }
+
+                setMapVideos(map.videos)
+                setMapVideosDialogOpen(true)
+            }
+
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir menu</span>
-                            <DotsHorizontalIcon className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56" align="end">
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            RUN
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <FrameIcon className="mr-2 h-4 w-4" />
-                            <span>Get place</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <InfoCircledIcon className="mr-2 h-4 w-4" />
-                            <span>Get run ID</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Download replay</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            SERVER
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem>
-                            <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
-                            <span>Connect to server</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <InfoCircledIcon className="mr-2 h-4 w-4" />
-                            <span>Get server ID</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
-                            <span>Search server</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            MAP
-                        </DropdownMenuLabel>
-                        <DropdownMenuItem asChild>
-                            <Link to={`/maps/${props.row.original.map_name}`}>
-                                <ImageIcon className="mr-2 h-4 w-4" />
-                                <span>Go to map</span>
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <PlayIcon className="mr-2 h-4 w-4" />
-                            <span>Watch video</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <DownloadIcon className="mr-2 h-4 w-4" />
-                            <span>Download WR replay</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                            <PersonIcon className="mr-2 h-4 w-4" />
-                            <span>Go to mapper</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <Dialog open={mapVideosDialogOpen} onOpenChange={setMapVideosDialogOpen}>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Abrir menu</span>
+                                <DotsHorizontalIcon className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56" align="end">
+                            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                                RUN
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem onSelect={getRecordPlace}>
+                                <FrameIcon className="mr-2 h-4 w-4" />
+                                <span>Get place</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={getRecordId}>
+                                <InfoCircledIcon className="mr-2 h-4 w-4" />
+                                <span>Get run ID</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={downloadReplay}>
+                                <DownloadIcon className="mr-2 h-4 w-4" />
+                                <span>Download replay</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                                SERVER
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem onSelect={getServerInfo}>
+                                <InfoCircledIcon className="mr-2 h-4 w-4" />
+                                <span>Get server info</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={connectToServer}>
+                                <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
+                                <span>Connect to server</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={searchServer}>
+                                <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                                <span>Search server</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                                MAP
+                            </DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                                <Link to={`/maps/${record.map_name}`}>
+                                    <ImageIcon className="mr-2 h-4 w-4" />
+                                    <span>Go to map</span>
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={goToMapper}>
+                                <PersonIcon className="mr-2 h-4 w-4" />
+                                <span>Go to mapper</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={watchVideo}>
+                                <PlayIcon className="mr-2 h-4 w-4" />
+                                <span>Watch video</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <DialogContent className="w-[85vw] max-w-screen-xl sm:w-[90vw]">
+                        <MapVideoGallery videos={mapVideos} />
+                    </DialogContent>
+                </Dialog>
             )
         },
         meta: {
@@ -244,7 +394,8 @@ const columns = [
 ]
 
 function Finishes() {
-    const { playerProfileKZData } = useOutletContext<PlayerProfileOutletContext>()
+    const { playerProfileKZData, playerProfileKZDataRefetch, playerProfileKZDataFetching } =
+        useOutletContext<PlayerProfileOutletContext>()
 
     const [runType] = useRunType()
 
@@ -324,10 +475,24 @@ function Finishes() {
                 <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Finishes
                 </h2>
-                <DatatableAddFiltersDropdown
-                    selectedFilters={selectedFilters}
-                    onSelectedFiltersChange={handleSelectedFiltersChange}
-                />
+                <div className="flex space-x-2">
+                    <DatatableAddFiltersDropdown
+                        selectedFilters={selectedFilters}
+                        onSelectedFiltersChange={handleSelectedFiltersChange}
+                    />
+                    <Button
+                        variant="outline"
+                        onClick={() => playerProfileKZDataRefetch()}
+                        disabled={playerProfileKZDataFetching}
+                    >
+                        {playerProfileKZDataFetching ? (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <ReloadIcon className="mr-2 h-4 w-4" />
+                        )}
+                        Reload
+                    </Button>
+                </div>
             </div>
             <div className="mb-52">
                 <div className="flex items-center py-4">

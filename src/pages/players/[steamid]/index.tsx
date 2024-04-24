@@ -32,6 +32,8 @@ import { cn } from "@/lib/utils"
 export interface PlayerProfileOutletContext {
     steamid: string
     playerProfileKZData: PlayerProfileKZData
+    playerProfileKZDataRefetch: () => void
+    playerProfileKZDataFetching: boolean
 }
 
 function PlayerProfile() {
@@ -140,6 +142,8 @@ function PlayerProfile() {
                         {
                             steamid: steamid,
                             playerProfileKZData: playerProfileKZData.data,
+                            playerProfileKZDataRefetch: playerProfileKZData.refetch,
+                            playerProfileKZDataFetching: playerProfileKZData.isFetching,
                         } satisfies PlayerProfileOutletContext
                     }
                 />
