@@ -12,6 +12,7 @@ import {
 
 import { useOutletContext } from "react-router-dom"
 
+import { cn } from "@/lib/utils"
 import { TierData, TierID, getPointsColor, getTierData, tierLabels } from "@/lib/gokz"
 import { type RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
@@ -35,100 +36,6 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { lightFormat } from "date-fns"
-import { cn } from "@/lib/utils"
-
-const radarOptions: ChartOptions<"radar"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        r: {
-            min: 0,
-            max: 100,
-            grid: {
-                color: "hsl(240 3.7% 15.9%)",
-            },
-            angleLines: {
-                color: "hsl(240 3.7% 15.9%)",
-            },
-            ticks: {
-                display: false,
-            },
-        },
-    },
-    plugins: {
-        legend: {
-            display: false,
-        },
-        tooltip: {
-            borderWidth: 1,
-            borderColor: "hsl(240 3.7% 15.9%)",
-            backgroundColor: "hsl(240 10% 3.9%)",
-            padding: 8,
-            titleFont: { size: 14 },
-            bodyFont: { size: 14 },
-            caretSize: 0,
-            displayColors: false,
-        },
-    },
-}
-
-const radarData: ChartData<"radar"> = {
-    labels: tierLabels,
-    datasets: [
-        {
-            label: "Finishes",
-            data: [67.77, 58.46, 64.85, 67.33, 53.85, 17.46, 0],
-            backgroundColor: "hsla(212, 61%, 61%, 0.2)",
-            borderColor: "hsla(212, 61%, 61%, 1)",
-        },
-    ],
-}
-
-const barOptions2: ChartOptions<"bar"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        y: {
-            min: 0,
-            max: 100,
-        },
-    },
-    plugins: {
-        legend: {
-            display: false,
-        },
-        tooltip: {
-            borderWidth: 1,
-            borderColor: "hsl(240 3.7% 15.9%)",
-            backgroundColor: "hsl(240 10% 3.9%)",
-            padding: 8,
-            titleFont: { size: 14 },
-            bodyFont: { size: 14 },
-            caretSize: 0,
-            displayColors: false,
-        },
-    },
-}
-
-const barData2: ChartData<"bar"> = {
-    labels: tierLabels,
-    datasets: [
-        {
-            label: "Finishes",
-            data: [67.77, 58.46, 64.85, 67.33, 53.85, 17.46, 0],
-            borderRadius: 8,
-            backgroundColor: [
-                "hsl(120, 99%, 62%)",
-                "hsl(90, 99%, 64%)",
-                "hsl(55, 75%, 70%)",
-                "hsl(41, 75%, 56%)",
-                "hsl(0, 99%, 62%)",
-                "hsl(0, 100%, 50%)",
-                "hsl(294, 78%, 54%)",
-            ],
-        },
-    ],
-}
 
 const lineOptions: ChartOptions<"line"> = {
     responsive: true,
@@ -297,6 +204,105 @@ function Stats() {
         { data: TierData; percentage: number } | undefined
     >()
 
+    const completionRadarOptions = useMemo<ChartOptions<"radar">>(
+        () => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0,
+                    max: 100,
+                    grid: {
+                        color: "hsl(240 3.7% 15.9%)",
+                    },
+                    angleLines: {
+                        color: "hsl(240 3.7% 15.9%)",
+                    },
+                    ticks: {
+                        display: false,
+                    },
+                },
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    borderWidth: 1,
+                    borderColor: "hsl(240 3.7% 15.9%)",
+                    backgroundColor: "hsl(240 10% 3.9%)",
+                    padding: 8,
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 14 },
+                    caretSize: 0,
+                    displayColors: false,
+                },
+            },
+        }),
+        [],
+    )
+
+    const [completionRadarData, setCompletionRadarData] = useState<ChartData<"radar">>({
+        labels: tierLabels,
+        datasets: [
+            {
+                label: "Completion",
+                data: [],
+                backgroundColor: "hsla(212, 61%, 61%, 0.2)",
+                borderColor: "hsla(212, 61%, 61%, 1)",
+            },
+        ],
+    })
+
+    const completionBarOptions = useMemo<ChartOptions<"bar">>(
+        () => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    min: 0,
+                    max: 100,
+                },
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    borderWidth: 1,
+                    borderColor: "hsl(240 3.7% 15.9%)",
+                    backgroundColor: "hsl(240 10% 3.9%)",
+                    padding: 8,
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 14 },
+                    caretSize: 0,
+                    displayColors: false,
+                },
+            },
+        }),
+        [],
+    )
+
+    const [completionBarData, setCompletionBarData] = useState<ChartData<"bar">>({
+        labels: tierLabels,
+        datasets: [
+            {
+                label: "Completion",
+                data: [],
+                borderRadius: 8,
+                backgroundColor: [
+                    "hsl(120, 99%, 62%)",
+                    "hsl(90, 99%, 64%)",
+                    "hsl(55, 75%, 70%)",
+                    "hsl(41, 75%, 56%)",
+                    "hsl(0, 99%, 62%)",
+                    "hsl(0, 100%, 50%)",
+                    "hsl(294, 78%, 54%)",
+                ],
+            },
+        ],
+    })
+
     useEffect(() => {
         const finishesLength = playerProfileKZData.finishes[runType].length
         const unfinishesLength = playerProfileKZData.unfinishes[runType].length
@@ -385,6 +391,16 @@ function Stats() {
                 percentage: least_completed,
             }
         })
+
+        setCompletionRadarData((oldData) => ({
+            ...oldData,
+            datasets: [{ ...oldData.datasets[0], data: completion_per_tier }],
+        }))
+
+        setCompletionBarData((oldData) => ({
+            ...oldData,
+            datasets: [{ ...oldData.datasets[0], data: completion_per_tier }],
+        }))
     }, [playerProfileKZData, runType])
 
     return (
@@ -414,6 +430,112 @@ function Stats() {
                     <TabsTrigger value="playtime">Playtime</TabsTrigger>
                 </TabsList>
                 <TabsContent value="completion" className="space-y-4">
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Completion percentage
+                                </CardTitle>
+                                <CheckCircledIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {completionPercentage.toFixed(3)} %
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {mapsFinished}/{mapsTotal} maps
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Incompletion percentage
+                                </CardTitle>
+                                <CrossCircledIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {incompletionPercentage.toFixed(3)} %
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {mapsUnfinished}/{mapsTotal} maps
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Most completed tier
+                                </CardTitle>
+                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div
+                                    className={cn(
+                                        "text-2xl font-bold",
+                                        mostCompletedTier?.data.color,
+                                    )}
+                                >
+                                    {mostCompletedTier?.data.label}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {mostCompletedTier &&
+                                        `${mostCompletedTier.percentage.toFixed(3)} %`}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Least completed tier
+                                </CardTitle>
+                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div
+                                    className={cn(
+                                        "text-2xl font-bold",
+                                        leastCompletedTier?.data.color,
+                                    )}
+                                >
+                                    {leastCompletedTier?.data.label}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {leastCompletedTier &&
+                                        `${leastCompletedTier.percentage.toFixed(3)} %`}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                        <Card className="col-span-3">
+                            <CardHeader>
+                                <CardTitle>Completion per tier</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Radar
+                                    options={completionRadarOptions}
+                                    data={completionRadarData}
+                                    height={350}
+                                />
+                            </CardContent>
+                        </Card>
+                        <Card className="col-span-4">
+                            <CardHeader>
+                                <CardTitle>Completion per tier</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Bar
+                                    options={completionBarOptions}
+                                    data={completionBarData}
+                                    height={350}
+                                />
+                            </CardContent>
+                        </Card>
+                    </div>
+
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -544,104 +666,6 @@ function Stats() {
                                         })}
                                     </TableBody>
                                 </Table>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Completion percentage
-                                </CardTitle>
-                                <CheckCircledIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {completionPercentage.toFixed(3)} %
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {mapsFinished}/{mapsTotal} maps
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Incompletion percentage
-                                </CardTitle>
-                                <CrossCircledIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {incompletionPercentage.toFixed(3)} %
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {mapsUnfinished}/{mapsTotal} maps
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Most completed tier
-                                </CardTitle>
-                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        "text-2xl font-bold",
-                                        mostCompletedTier?.data.color,
-                                    )}
-                                >
-                                    {mostCompletedTier?.data.label}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {mostCompletedTier &&
-                                        `${mostCompletedTier.percentage.toFixed(3)} %`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Least completed tier
-                                </CardTitle>
-                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        "text-2xl font-bold",
-                                        leastCompletedTier?.data.color,
-                                    )}
-                                >
-                                    {leastCompletedTier?.data.label}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {leastCompletedTier &&
-                                        `${leastCompletedTier.percentage.toFixed(3)} %`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                    </div>
-
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        <Card className="col-span-3">
-                            <CardHeader>
-                                <CardTitle>Completion per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Radar options={radarOptions} data={radarData} height={350} />
-                            </CardContent>
-                        </Card>
-                        <Card className="col-span-4">
-                            <CardHeader>
-                                <CardTitle>Completion percentage per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Bar options={barOptions2} data={barData2} height={350} />
                             </CardContent>
                         </Card>
                     </div>
