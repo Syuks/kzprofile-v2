@@ -23,13 +23,14 @@ import { Badge, badgeVariants } from "@/components/ui/badge"
 interface MapHoverCardProps {
     mapId: number
     mapName: string
+    className?: string
 }
 
-function MapHoverCard({ mapId, mapName }: MapHoverCardProps) {
+function MapHoverCard({ mapId, mapName, className }: MapHoverCardProps) {
     return (
         <HoverCard>
             <HoverCardTrigger asChild>
-                <Button asChild variant="link">
+                <Button asChild variant="link" className={className}>
                     <Link to={`/maps/${mapName}`}>{mapName}</Link>
                 </Button>
             </HoverCardTrigger>

@@ -43,8 +43,8 @@ import {
 import MapHoverCard from "@/components/maps/map-hover-card"
 import MapVideoGallery from "@/components/maps/map-video-gallery"
 
-import { getTimeString } from "@/lib/utils"
-import { TierID, getTierData } from "@/lib/gokz"
+import { getTimeString, cn } from "@/lib/utils"
+import { TierID, getTierData, getPointsColor } from "@/lib/gokz"
 
 import {
     useGameMode,
@@ -96,20 +96,9 @@ const columns = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Points" />,
         cell: (props) => {
             const points = props.getValue()
+            const pointsColor = getPointsColor(points)
 
-            if (points === 1000)
-                return <span className="flex justify-center text-csgo-gold">{points}</span>
-
-            if (points >= 900)
-                return <span className="flex justify-center text-csgo-darkred">{points}</span>
-
-            if (points >= 800)
-                return <span className="flex justify-center text-csgo-blue">{points}</span>
-
-            if (points >= 700)
-                return <span className="flex justify-center text-csgo-lime">{points}</span>
-
-            return <span className="flex justify-center">{points}</span>
+            return <span className={cn("flex justify-center", pointsColor)}>{points}</span>
         },
         filterFn: "inNumberRange",
     }),

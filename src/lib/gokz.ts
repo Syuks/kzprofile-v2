@@ -54,7 +54,13 @@ export const tierLabels: TierLabel[] = [
     "Death",
 ]
 
-const tierData: { label: TierLabel; color: string; backgroundColor: string }[] = [
+export interface TierData {
+    label: TierLabel
+    color: string
+    backgroundColor: string
+}
+
+const tierData: TierData[] = [
     { label: "Very Easy", color: "text-csgo-green", backgroundColor: "bg-csgo-green" },
     { label: "Easy", color: "text-csgo-lime", backgroundColor: "bg-csgo-lime" },
     { label: "Medium", color: "text-csgo-yellow", backgroundColor: "bg-csgo-yellow" },
@@ -66,6 +72,20 @@ const tierData: { label: TierLabel; color: string; backgroundColor: string }[] =
 
 export const getTierData = (tier: TierID) => {
     return tierData[tier - 1]
+}
+
+// POINTS
+
+export const getPointsColor = (points: number) => {
+    if (points === 1000) return "text-csgo-gold"
+
+    if (points >= 900) return "text-csgo-darkred"
+
+    if (points >= 800) return "text-csgo-blue"
+
+    if (points >= 700) return "text-csgo-lime"
+
+    return "text-foreground"
 }
 
 // JUMPSTATS

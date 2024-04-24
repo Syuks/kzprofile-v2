@@ -1,6 +1,9 @@
+import { useEffect, useMemo, useState } from "react"
+
 import {
     CheckCircledIcon,
     CrossCircledIcon,
+    DesktopIcon,
     LapTimerIcon,
     PersonIcon,
     ReloadIcon,
@@ -9,7 +12,13 @@ import {
 
 import { useOutletContext } from "react-router-dom"
 
-import { PlayerProfileOutletContext } from "."
+import { TierData, TierID, getPointsColor, getTierData, tierLabels } from "@/lib/gokz"
+import { type RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
+
+import { PlayerProfileOutletContext } from ".."
+
+import MapHoverCard from "@/components/maps/map-hover-card"
 
 import { Bar, Radar, Line } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"
@@ -25,49 +34,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { lightFormat } from "date-fns"
+import { cn } from "@/lib/utils"
 
-export const barOptions: ChartOptions<"bar"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        legend: {
-            display: false,
-        },
-        tooltip: {
-            borderWidth: 1,
-            borderColor: "hsl(240 3.7% 15.9%)",
-            backgroundColor: "hsl(240 10% 3.9%)",
-            padding: 8,
-            titleFont: { size: 14 },
-            bodyFont: { size: 14 },
-            caretSize: 0,
-            displayColors: false,
-        },
-    },
-}
-
-const tierLabels = ["Very Easy", "Easy", "Medium", "Hard", "Very Hard", "Extreme", "Death"]
-
-export const barData: ChartData<"bar"> = {
-    labels: tierLabels,
-    datasets: [
-        {
-            data: [82, 159, 155, 101, 35, 11, 0],
-            borderRadius: 8,
-            backgroundColor: [
-                "hsl(120, 99%, 62%)",
-                "hsl(90, 99%, 64%)",
-                "hsl(55, 75%, 70%)",
-                "hsl(41, 75%, 56%)",
-                "hsl(0, 99%, 62%)",
-                "hsl(0, 100%, 50%)",
-                "hsl(294, 78%, 54%)",
-            ],
-        },
-    ],
-}
-
-export const radarOptions: ChartOptions<"radar"> = {
+const radarOptions: ChartOptions<"radar"> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -102,7 +72,7 @@ export const radarOptions: ChartOptions<"radar"> = {
     },
 }
 
-export const radarData: ChartData<"radar"> = {
+const radarData: ChartData<"radar"> = {
     labels: tierLabels,
     datasets: [
         {
@@ -114,7 +84,7 @@ export const radarData: ChartData<"radar"> = {
     ],
 }
 
-export const barOptions2: ChartOptions<"bar"> = {
+const barOptions2: ChartOptions<"bar"> = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
@@ -140,7 +110,7 @@ export const barOptions2: ChartOptions<"bar"> = {
     },
 }
 
-export const barData2: ChartData<"bar"> = {
+const barData2: ChartData<"bar"> = {
     labels: tierLabels,
     datasets: [
         {
@@ -207,7 +177,7 @@ const lineData: ChartData<"line"> = {
 
 const mapperLabels = ["Spider1", "p", "zPrince", "NykaN", "Cyclo", "nopey", ""]
 
-export const mapperBarData: ChartData<"bar"> = {
+const mapperBarData: ChartData<"bar"> = {
     labels: mapperLabels,
     datasets: [
         {
@@ -226,9 +196,196 @@ export const mapperBarData: ChartData<"bar"> = {
     ],
 }
 
+const serverLabels = [
+    "MDQ Servers",
+    "House of Climb #1",
+    "House of Climb #4",
+    "Latam GOKZ",
+    "Latam GOKZ",
+    "Latam GOKZ",
+    "",
+]
+
+const serverBarData: ChartData<"bar"> = {
+    labels: serverLabels,
+    datasets: [
+        {
+            data: [9, 6, 12, 15, 7, 1, 0],
+            borderRadius: 8,
+            backgroundColor: [
+                "hsl(120, 99%, 62%)",
+                "hsl(90, 99%, 64%)",
+                "hsl(55, 75%, 70%)",
+                "hsl(41, 75%, 56%)",
+                "hsl(0, 99%, 62%)",
+                "hsl(0, 100%, 50%)",
+                "hsl(294, 78%, 54%)",
+            ],
+        },
+    ],
+}
+
 function Stats() {
-    const { playerProfileKZDataRefetch, playerProfileKZDataFetching } =
+    const [localSettings] = useLocalSettings()
+
+    const { playerProfileKZData, playerProfileKZDataRefetch, playerProfileKZDataFetching } =
         useOutletContext<PlayerProfileOutletContext>()
+
+    const [runType] = useRunType()
+
+    const [mapsTotal, setMapsTotal] = useState(0)
+    const [mapsFinished, setMapsFinished] = useState(0)
+    const [mapsUnfinished, setMapsUnfinished] = useState(0)
+    const [tierWithMostFinishes, setTierWithMostFinishes] = useState<
+        { data: TierData; amount: number } | undefined
+    >()
+    const [tierWithFewerFinishes, setTierWithFewerFinishes] = useState<
+        { data: TierData; amount: number } | undefined
+    >()
+
+    const finishesBarOptions = useMemo<ChartOptions<"bar">>(
+        () => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    borderWidth: 1,
+                    borderColor: "hsl(240 3.7% 15.9%)",
+                    backgroundColor: "hsl(240 10% 3.9%)",
+                    padding: 8,
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 14 },
+                    caretSize: 0,
+                    displayColors: false,
+                },
+            },
+        }),
+        [],
+    )
+
+    const [finishesBarData, setFinishesBarData] = useState<ChartData<"bar">>({
+        labels: tierLabels,
+        datasets: [
+            {
+                label: "Finishes",
+                data: [0, 0, 0, 0, 0, 0, 0],
+                borderRadius: 8,
+                backgroundColor: [
+                    "hsl(120, 99%, 62%)",
+                    "hsl(90, 99%, 64%)",
+                    "hsl(55, 75%, 70%)",
+                    "hsl(41, 75%, 56%)",
+                    "hsl(0, 99%, 62%)",
+                    "hsl(0, 100%, 50%)",
+                    "hsl(294, 78%, 54%)",
+                ],
+            },
+        ],
+    })
+
+    const [lastFinishPerTier, setLastFinishPerTier] = useState<RecordsTopExtended[]>([])
+
+    const [completionPercentage, setCompletionPercentage] = useState(0)
+    const [incompletionPercentage, setIncompletionPercentage] = useState(0)
+    const [mostCompletedTier, setMostCompletedTier] = useState<
+        { data: TierData; percentage: number } | undefined
+    >()
+    const [leastCompletedTier, setLeastCompletedTier] = useState<
+        { data: TierData; percentage: number } | undefined
+    >()
+
+    useEffect(() => {
+        const finishesLength = playerProfileKZData.finishes[runType].length
+        const unfinishesLength = playerProfileKZData.unfinishes[runType].length
+
+        let finishes_per_tier = [0, 0, 0, 0, 0, 0, 0]
+        let last_finish_per_tier: { [difficulty: number]: RecordsTopExtended } = {}
+
+        let maps_per_tier = [0, 0, 0, 0, 0, 0, 0]
+
+        playerProfileKZData.finishes[runType].forEach((finish) => {
+            finishes_per_tier[finish.difficulty - 1]++
+            maps_per_tier[finish.difficulty - 1]++
+
+            // Last finish per tier
+            if (
+                !last_finish_per_tier[finish.difficulty] ||
+                new Date(finish.created_on) >
+                    new Date(last_finish_per_tier[finish.difficulty].created_on)
+            ) {
+                last_finish_per_tier[finish.difficulty] = finish
+            }
+        })
+
+        playerProfileKZData.unfinishes[runType].forEach((unfinish) => {
+            maps_per_tier[unfinish.difficulty - 1]++
+        })
+
+        const completion_per_tier = finishes_per_tier.map((finishes, index) => {
+            return (finishes / maps_per_tier[index]) * 100
+        })
+
+        setMapsTotal(finishesLength + unfinishesLength)
+        setMapsFinished(finishesLength)
+        setMapsUnfinished(unfinishesLength)
+        setTierWithMostFinishes(() => {
+            const most_finishes = Math.max(...finishes_per_tier)
+            const tier_with_most_finishes_data = getTierData(
+                (finishes_per_tier.indexOf(most_finishes) + 1) as TierID,
+            )
+
+            return {
+                data: tier_with_most_finishes_data,
+                amount: most_finishes,
+            }
+        })
+        setTierWithFewerFinishes(() => {
+            const fewer_finishes = Math.min(...finishes_per_tier)
+            const tier_with_fewer_finishes_data = getTierData(
+                (finishes_per_tier.indexOf(fewer_finishes) + 1) as TierID,
+            )
+
+            return {
+                data: tier_with_fewer_finishes_data,
+                amount: fewer_finishes,
+            }
+        })
+
+        setFinishesBarData((oldData) => ({
+            ...oldData,
+            datasets: [{ ...oldData.datasets[0], data: finishes_per_tier }],
+        }))
+
+        setLastFinishPerTier(Object.values(last_finish_per_tier))
+
+        setCompletionPercentage((finishesLength / (finishesLength + unfinishesLength)) * 100)
+        setIncompletionPercentage((unfinishesLength / (finishesLength + unfinishesLength)) * 100)
+        setMostCompletedTier(() => {
+            const most_completed = Math.max(...completion_per_tier)
+            const most_completed_tier_data = getTierData(
+                (completion_per_tier.indexOf(most_completed) + 1) as TierID,
+            )
+
+            return {
+                data: most_completed_tier_data,
+                percentage: most_completed,
+            }
+        })
+        setLeastCompletedTier(() => {
+            const least_completed = Math.min(...completion_per_tier)
+            const least_completed_tier_data = getTierData(
+                (completion_per_tier.indexOf(least_completed) + 1) as TierID,
+            )
+
+            return {
+                data: least_completed_tier_data,
+                percentage: least_completed,
+            }
+        })
+    }, [playerProfileKZData, runType])
 
     return (
         <>
@@ -250,13 +407,13 @@ function Stats() {
                     Reload
                 </Button>
             </div>
-            <Tabs defaultValue="completions" className="space-y-4 py-4">
+            <Tabs defaultValue="completion" className="space-y-4 py-4">
                 <TabsList>
-                    <TabsTrigger value="completions">Completions</TabsTrigger>
+                    <TabsTrigger value="completion">Completion</TabsTrigger>
                     <TabsTrigger value="progression">Progression</TabsTrigger>
                     <TabsTrigger value="playtime">Playtime</TabsTrigger>
                 </TabsList>
-                <TabsContent value="completions" className="space-y-4">
+                <TabsContent value="completion" className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -264,8 +421,10 @@ function Stats() {
                                 <CheckCircledIcon className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">684</div>
-                                <p className="text-xs text-muted-foreground">Out of 1019 maps</p>
+                                <div className="text-2xl font-bold">{mapsFinished}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    Out of {mapsTotal} maps
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -276,8 +435,10 @@ function Stats() {
                                 <CrossCircledIcon className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">312</div>
-                                <p className="text-xs text-muted-foreground">Out of 1019 maps</p>
+                                <div className="text-2xl font-bold">{mapsUnfinished}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    Out of {mapsTotal} maps
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -288,20 +449,40 @@ function Stats() {
                                 <StopwatchIcon className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-csgo-green">Very Easy</div>
-                                <p className="text-xs text-muted-foreground">125 finishes</p>
+                                <div
+                                    className={cn(
+                                        "text-2xl font-bold",
+                                        tierWithMostFinishes?.data.color,
+                                    )}
+                                >
+                                    {tierWithMostFinishes?.data.label}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {tierWithMostFinishes &&
+                                        `${tierWithMostFinishes.amount} finishes`}
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
                             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                 <CardTitle className="text-sm font-medium">
-                                    Most completed tier
+                                    Tier with fewer finishes
                                 </CardTitle>
-                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
+                                <StopwatchIcon className="h-4 w-4 text-muted-foreground" />
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold text-csgo-gold">Hard</div>
-                                <p className="text-xs text-muted-foreground">86 %</p>
+                                <div
+                                    className={cn(
+                                        "text-2xl font-bold",
+                                        tierWithFewerFinishes?.data.color,
+                                    )}
+                                >
+                                    {tierWithFewerFinishes?.data.label}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {tierWithFewerFinishes &&
+                                        `${tierWithFewerFinishes.amount} finishes`}
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
@@ -312,7 +493,11 @@ function Stats() {
                                 <CardTitle>Finishes per tier</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <Bar options={barOptions} data={barData} height={350} />
+                                <Bar
+                                    options={finishesBarOptions}
+                                    data={finishesBarData}
+                                    height={350}
+                                />
                             </CardContent>
                         </Card>
                         <Card className="col-span-3">
@@ -323,67 +508,121 @@ function Stats() {
                                 <Table>
                                     <TableHeader>
                                         <TableRow>
+                                            <TableHead>Tier</TableHead>
                                             <TableHead>Map</TableHead>
                                             <TableHead>Points</TableHead>
-                                            <TableHead>Time</TableHead>
-                                            <TableHead>Tier</TableHead>
+                                            <TableHead>Date</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-green">
-                                                Very Easy
-                                            </TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-lime">Easy</TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-yellow">
-                                                Medium
-                                            </TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-gold">Hard</TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-red">
-                                                Very Hard
-                                            </TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-darkred">
-                                                Extreme
-                                            </TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
-                                        <TableRow>
-                                            <TableCell className="text-csgo-orchid">
-                                                Death
-                                            </TableCell>
-                                            <TableCell>bkz_apricity_v3</TableCell>
-                                            <TableCell>980</TableCell>
-                                            <TableCell>00:12:25.654</TableCell>
-                                        </TableRow>
+                                        {lastFinishPerTier.map((finish) => {
+                                            const tierData = getTierData(finish.difficulty)
+                                            const pointsColor = getPointsColor(finish.points)
+                                            const dateString = lightFormat(
+                                                finish.created_on,
+                                                localSettings.dateFormat,
+                                            )
+
+                                            return (
+                                                <TableRow key={finish.id}>
+                                                    <TableCell className={tierData.color}>
+                                                        {tierData.label}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <MapHoverCard
+                                                            mapId={finish.map_id}
+                                                            mapName={finish.map_name}
+                                                            className="h-7"
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell className={pointsColor}>
+                                                        {finish.points}
+                                                    </TableCell>
+                                                    <TableCell>{dateString}</TableCell>
+                                                </TableRow>
+                                            )
+                                        })}
                                     </TableBody>
                                 </Table>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Completion percentage
+                                </CardTitle>
+                                <CheckCircledIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {completionPercentage.toFixed(3)} %
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {mapsFinished}/{mapsTotal} maps
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Incompletion percentage
+                                </CardTitle>
+                                <CrossCircledIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {incompletionPercentage.toFixed(3)} %
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {mapsUnfinished}/{mapsTotal} maps
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Most completed tier
+                                </CardTitle>
+                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div
+                                    className={cn(
+                                        "text-2xl font-bold",
+                                        mostCompletedTier?.data.color,
+                                    )}
+                                >
+                                    {mostCompletedTier?.data.label}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {mostCompletedTier &&
+                                        `${mostCompletedTier.percentage.toFixed(3)} %`}
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Least completed tier
+                                </CardTitle>
+                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div
+                                    className={cn(
+                                        "text-2xl font-bold",
+                                        leastCompletedTier?.data.color,
+                                    )}
+                                >
+                                    {leastCompletedTier?.data.label}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {leastCompletedTier &&
+                                        `${leastCompletedTier.percentage.toFixed(3)} %`}
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
@@ -549,7 +788,102 @@ function Stats() {
                                 <CardTitle>Mapper with most finishes per tier</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <Bar options={barOptions} data={mapperBarData} height={350} />
+                                <Bar
+                                    options={finishesBarOptions}
+                                    data={mapperBarData}
+                                    height={350}
+                                />
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Server with most PBs
+                                </CardTitle>
+                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">MDQ Servers</div>
+                                <p className="text-xs text-muted-foreground">23 PBs</p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Server with most easy PBs
+                                </CardTitle>
+                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">MDQ Servers</div>
+                                <p className="text-xs text-muted-foreground">
+                                    11 very easy, easy and medium PBs
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Server with most hard PBs
+                                </CardTitle>
+                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">MDQ Servers</div>
+                                <p className="text-xs text-muted-foreground">
+                                    12 hard, very hard, extreme and death PBs
+                                </p>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">
+                                    Server with least PBs
+                                </CardTitle>
+                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">House of Climb</div>
+                                <p className="text-xs text-muted-foreground">1 PB</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                        <Card className="col-span-3">
+                            <CardHeader>
+                                <CardTitle>PBs per server</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Server</TableHead>
+                                            <TableHead>PBs</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        <TableRow>
+                                            <TableCell>MDQ Servers</TableCell>
+                                            <TableCell>23</TableCell>
+                                        </TableRow>
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                        <Card className="col-span-4">
+                            <CardHeader>
+                                <CardTitle>Server with most PBs per tier</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Bar
+                                    options={finishesBarOptions}
+                                    data={serverBarData}
+                                    height={350}
+                                />
                             </CardContent>
                         </Card>
                     </div>
