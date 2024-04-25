@@ -10,6 +10,8 @@ import {
     StopwatchIcon,
 } from "@radix-ui/react-icons"
 
+import { lightFormat, format } from "date-fns"
+
 import { useOutletContext } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
@@ -35,7 +37,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { lightFormat } from "date-fns"
 
 const lineOptions: ChartOptions<"line"> = {
     responsive: true,
@@ -303,6 +304,19 @@ function Stats() {
         ],
     })
 
+    const [dayWithMostPBs, setDayWithMostPBs] = useState<
+        { day: string; amount: number } | undefined
+    >()
+    const [monthWithMostPBs, setMonthWithMostPBs] = useState<
+        { month: string; amount: number } | undefined
+    >()
+    const [quarterWithMostPBs, setQuarterWithMostPBs] = useState<
+        { quarter: string; amount: number } | undefined
+    >()
+    const [yearWithMostPBs, setYearWithMostPBs] = useState<
+        { year: string; amount: number } | undefined
+    >()
+
     useEffect(() => {
         const finishesLength = playerProfileKZData.finishes[runType].length
         const unfinishesLength = playerProfileKZData.unfinishes[runType].length
@@ -311,6 +325,20 @@ function Stats() {
         let last_finish_per_tier: { [difficulty: number]: RecordsTopExtended } = {}
 
         let maps_per_tier = [0, 0, 0, 0, 0, 0, 0]
+
+        function getDateInfo(dateString: string) {
+            const date = new Date(dateString)
+            const day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+            const month = `${date.getFullYear()}-${date.getMonth() + 1}`
+            const quarter = `Q${Math.floor((date.getMonth() + 3) / 3)} ${date.getFullYear()}`
+            const year = date.getFullYear()
+            return { day, month, quarter, year }
+        }
+
+        let dayCounts: Record<string, number> = {}
+        let monthCounts: Record<string, number> = {}
+        let quarterCounts: Record<string, number> = {}
+        let yearCounts: Record<string, number> = {}
 
         playerProfileKZData.finishes[runType].forEach((finish) => {
             finishes_per_tier[finish.difficulty - 1]++
@@ -324,6 +352,14 @@ function Stats() {
             ) {
                 last_finish_per_tier[finish.difficulty] = finish
             }
+
+            // Dates with most finishes
+            const { day, month, quarter, year } = getDateInfo(finish.created_on)
+
+            dayCounts[day] = (dayCounts[day] || 0) + 1
+            monthCounts[month] = (monthCounts[month] || 0) + 1
+            quarterCounts[quarter] = (quarterCounts[quarter] || 0) + 1
+            yearCounts[year] = (yearCounts[year] || 0) + 1
         })
 
         playerProfileKZData.unfinishes[runType].forEach((unfinish) => {
@@ -401,6 +437,43 @@ function Stats() {
             ...oldData,
             datasets: [{ ...oldData.datasets[0], data: completion_per_tier }],
         }))
+
+        setDayWithMostPBs(() => {
+            const maxDay = Object.keys(dayCounts).reduce((a, b) =>
+                dayCounts[a] > dayCounts[b] ? a : b,
+            )
+            return {
+                day: format(maxDay, "MMM do, yyyy"),
+                amount: dayCounts[maxDay],
+            }
+        })
+        setMonthWithMostPBs(() => {
+            const maxMonth = Object.keys(monthCounts).reduce((a, b) =>
+                monthCounts[a] > monthCounts[b] ? a : b,
+            )
+            return {
+                month: format(maxMonth, "MMM yyyy"),
+                amount: monthCounts[maxMonth],
+            }
+        })
+        setQuarterWithMostPBs(() => {
+            const maxQuarter = Object.keys(quarterCounts).reduce((a, b) =>
+                quarterCounts[a] > quarterCounts[b] ? a : b,
+            )
+            return {
+                quarter: maxQuarter,
+                amount: quarterCounts[maxQuarter],
+            }
+        })
+        setYearWithMostPBs(() => {
+            const maxYear = Object.keys(yearCounts).reduce((a, b) =>
+                yearCounts[a] > yearCounts[b] ? a : b,
+            )
+            return {
+                year: maxYear,
+                amount: yearCounts[maxYear],
+            }
+        })
     }, [playerProfileKZData, runType])
 
     return (
@@ -679,8 +752,10 @@ function Stats() {
                                 <div className="text-sm text-muted-foreground">1d</div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">May 3rd, 2022</div>
-                                <p className="text-xs text-muted-foreground">3 PBs</p>
+                                <div className="text-2xl font-bold">{dayWithMostPBs?.day}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {dayWithMostPBs && `${dayWithMostPBs.amount} PBs`}
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -691,8 +766,10 @@ function Stats() {
                                 <div className="text-sm text-muted-foreground">30d</div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">July 2023</div>
-                                <p className="text-xs text-muted-foreground">24 PBs</p>
+                                <div className="text-2xl font-bold">{monthWithMostPBs?.month}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {monthWithMostPBs && `${monthWithMostPBs.amount} PBs`}
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -703,8 +780,12 @@ function Stats() {
                                 <div className="text-sm text-muted-foreground">90d</div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">Q3 2023</div>
-                                <p className="text-xs text-muted-foreground">125 PBs</p>
+                                <div className="text-2xl font-bold">
+                                    {quarterWithMostPBs?.quarter}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {quarterWithMostPBs && `${quarterWithMostPBs.amount} PBs`}
+                                </p>
                             </CardContent>
                         </Card>
                         <Card>
@@ -715,15 +796,17 @@ function Stats() {
                                 <div className="text-sm text-muted-foreground">360d</div>
                             </CardHeader>
                             <CardContent>
-                                <div className="text-2xl font-bold">2023</div>
-                                <p className="text-xs text-muted-foreground">198 PBs</p>
+                                <div className="text-2xl font-bold">{yearWithMostPBs?.year}</div>
+                                <p className="text-xs text-muted-foreground">
+                                    {yearWithMostPBs && `${yearWithMostPBs.amount} PBs`}
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
 
                     <Card className="col-span-4">
                         <CardHeader>
-                            <CardTitle>Completion per tier</CardTitle>
+                            <CardTitle>PBs per day</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <Line options={lineOptions} data={lineData} height={350} />
