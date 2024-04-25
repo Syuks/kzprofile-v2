@@ -23,7 +23,7 @@ import { PlayerProfileOutletContext } from ".."
 
 import MapHoverCard from "@/components/maps/map-hover-card"
 
-import { Bar, Radar, Line } from "react-chartjs-2"
+import { Bar, Radar, Scatter } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"
 
 import { Button } from "@/components/ui/button"
@@ -37,51 +37,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-
-const lineOptions: ChartOptions<"line"> = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-        x: {
-            type: "time",
-        },
-    },
-    plugins: {
-        legend: {
-            display: false,
-        },
-        tooltip: {
-            borderWidth: 1,
-            borderColor: "hsl(240 3.7% 15.9%)",
-            backgroundColor: "hsl(240 10% 3.9%)",
-            padding: 8,
-            titleFont: { size: 14 },
-            bodyFont: { size: 14 },
-            caretSize: 0,
-            displayColors: false,
-        },
-    },
-}
-
-const lineData: ChartData<"line"> = {
-    datasets: [
-        {
-            label: "Finishes",
-            data: [
-                {
-                    x: new Date().getTime(),
-                    y: 10,
-                },
-                {
-                    x: new Date().getTime() + 3600000000,
-                    y: 5,
-                },
-            ],
-            backgroundColor: "hsla(212, 61%, 61%, 0.2)",
-            borderColor: "hsla(212, 61%, 61%, 1)",
-        },
-    ],
-}
 
 const mapperLabels = ["Spider1", "p", "zPrince", "NykaN", "Cyclo", "nopey", ""]
 
@@ -317,28 +272,70 @@ function Stats() {
         { year: string; amount: number } | undefined
     >()
 
+    const pbsPerDayScatterOptions = useMemo<ChartOptions<"scatter">>(
+        () => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    type: "time",
+                },
+                y: {
+                    min: 0,
+                },
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                },
+                tooltip: {
+                    borderWidth: 1,
+                    borderColor: "hsl(240 3.7% 15.9%)",
+                    backgroundColor: "hsl(240 10% 3.9%)",
+                    padding: 8,
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 14 },
+                    caretSize: 0,
+                    displayColors: false,
+                },
+            },
+        }),
+        [],
+    )
+
+    const [pbsPerDayScatterData, setPbsPerDayScatterData] = useState<ChartData<"scatter">>({
+        datasets: [
+            {
+                label: "PBs",
+                data: [],
+                backgroundColor: "hsla(212, 61%, 61%, 0.2)",
+                //borderColor: "hsla(212, 61%, 61%, 1)",
+            },
+        ],
+    })
+
+    const getDateInfo = (dateString: string) => {
+        const date = new Date(dateString)
+        const day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+        const month = `${date.getFullYear()}-${date.getMonth() + 1}`
+        const quarter = `Q${Math.floor((date.getMonth() + 3) / 3)} ${date.getFullYear()}`
+        const year = date.getFullYear()
+        return { day, month, quarter, year }
+    }
+
     useEffect(() => {
-        const finishesLength = playerProfileKZData.finishes[runType].length
-        const unfinishesLength = playerProfileKZData.unfinishes[runType].length
+        const finishes_length = playerProfileKZData.finishes[runType].length
+        const unfinishes_length = playerProfileKZData.unfinishes[runType].length
 
         let finishes_per_tier = [0, 0, 0, 0, 0, 0, 0]
         let last_finish_per_tier: { [difficulty: number]: RecordsTopExtended } = {}
 
         let maps_per_tier = [0, 0, 0, 0, 0, 0, 0]
 
-        function getDateInfo(dateString: string) {
-            const date = new Date(dateString)
-            const day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-            const month = `${date.getFullYear()}-${date.getMonth() + 1}`
-            const quarter = `Q${Math.floor((date.getMonth() + 3) / 3)} ${date.getFullYear()}`
-            const year = date.getFullYear()
-            return { day, month, quarter, year }
-        }
-
-        let dayCounts: Record<string, number> = {}
-        let monthCounts: Record<string, number> = {}
-        let quarterCounts: Record<string, number> = {}
-        let yearCounts: Record<string, number> = {}
+        let pbs_per_day_count: Record<string, number> = {}
+        let pbs_per_month_count: Record<string, number> = {}
+        let pbs_per_quarter_count: Record<string, number> = {}
+        let pbs_per_year_count: Record<string, number> = {}
 
         playerProfileKZData.finishes[runType].forEach((finish) => {
             finishes_per_tier[finish.difficulty - 1]++
@@ -356,10 +353,10 @@ function Stats() {
             // Dates with most finishes
             const { day, month, quarter, year } = getDateInfo(finish.created_on)
 
-            dayCounts[day] = (dayCounts[day] || 0) + 1
-            monthCounts[month] = (monthCounts[month] || 0) + 1
-            quarterCounts[quarter] = (quarterCounts[quarter] || 0) + 1
-            yearCounts[year] = (yearCounts[year] || 0) + 1
+            pbs_per_day_count[day] = (pbs_per_day_count[day] || 0) + 1
+            pbs_per_month_count[month] = (pbs_per_month_count[month] || 0) + 1
+            pbs_per_quarter_count[quarter] = (pbs_per_quarter_count[quarter] || 0) + 1
+            pbs_per_year_count[year] = (pbs_per_year_count[year] || 0) + 1
         })
 
         playerProfileKZData.unfinishes[runType].forEach((unfinish) => {
@@ -370,9 +367,9 @@ function Stats() {
             return (finishes / maps_per_tier[index]) * 100
         })
 
-        setMapsTotal(finishesLength + unfinishesLength)
-        setMapsFinished(finishesLength)
-        setMapsUnfinished(unfinishesLength)
+        setMapsTotal(finishes_length + unfinishes_length)
+        setMapsFinished(finishes_length)
+        setMapsUnfinished(unfinishes_length)
         setTierWithMostFinishes(() => {
             const most_finishes = Math.max(...finishes_per_tier)
             const tier_with_most_finishes_data = getTierData(
@@ -403,8 +400,8 @@ function Stats() {
 
         setLastFinishPerTier(Object.values(last_finish_per_tier))
 
-        setCompletionPercentage((finishesLength / (finishesLength + unfinishesLength)) * 100)
-        setIncompletionPercentage((unfinishesLength / (finishesLength + unfinishesLength)) * 100)
+        setCompletionPercentage((finishes_length / (finishes_length + unfinishes_length)) * 100)
+        setIncompletionPercentage((unfinishes_length / (finishes_length + unfinishes_length)) * 100)
         setMostCompletedTier(() => {
             const most_completed = Math.max(...completion_per_tier)
             const most_completed_tier_data = getTierData(
@@ -439,41 +436,54 @@ function Stats() {
         }))
 
         setDayWithMostPBs(() => {
-            const maxDay = Object.keys(dayCounts).reduce((a, b) =>
-                dayCounts[a] > dayCounts[b] ? a : b,
+            const maxDay = Object.keys(pbs_per_day_count).reduce((a, b) =>
+                pbs_per_day_count[a] > pbs_per_day_count[b] ? a : b,
             )
             return {
                 day: format(maxDay, "MMM do, yyyy"),
-                amount: dayCounts[maxDay],
+                amount: pbs_per_day_count[maxDay],
             }
         })
         setMonthWithMostPBs(() => {
-            const maxMonth = Object.keys(monthCounts).reduce((a, b) =>
-                monthCounts[a] > monthCounts[b] ? a : b,
+            const maxMonth = Object.keys(pbs_per_month_count).reduce((a, b) =>
+                pbs_per_month_count[a] > pbs_per_month_count[b] ? a : b,
             )
             return {
                 month: format(maxMonth, "MMM yyyy"),
-                amount: monthCounts[maxMonth],
+                amount: pbs_per_month_count[maxMonth],
             }
         })
         setQuarterWithMostPBs(() => {
-            const maxQuarter = Object.keys(quarterCounts).reduce((a, b) =>
-                quarterCounts[a] > quarterCounts[b] ? a : b,
+            const maxQuarter = Object.keys(pbs_per_quarter_count).reduce((a, b) =>
+                pbs_per_quarter_count[a] > pbs_per_quarter_count[b] ? a : b,
             )
             return {
                 quarter: maxQuarter,
-                amount: quarterCounts[maxQuarter],
+                amount: pbs_per_quarter_count[maxQuarter],
             }
         })
         setYearWithMostPBs(() => {
-            const maxYear = Object.keys(yearCounts).reduce((a, b) =>
-                yearCounts[a] > yearCounts[b] ? a : b,
+            const maxYear = Object.keys(pbs_per_year_count).reduce((a, b) =>
+                pbs_per_year_count[a] > pbs_per_year_count[b] ? a : b,
             )
             return {
                 year: maxYear,
-                amount: yearCounts[maxYear],
+                amount: pbs_per_year_count[maxYear],
             }
         })
+
+        setPbsPerDayScatterData((oldData) => ({
+            ...oldData,
+            datasets: [
+                {
+                    ...oldData.datasets[0],
+                    data: Object.entries(pbs_per_day_count).map(([date, value]) => ({
+                        x: new Date(date).getTime(),
+                        y: value,
+                    })),
+                },
+            ],
+        }))
     }, [playerProfileKZData, runType])
 
     return (
@@ -809,7 +819,11 @@ function Stats() {
                             <CardTitle>PBs per day</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <Line options={lineOptions} data={lineData} height={350} />
+                            <Scatter
+                                options={pbsPerDayScatterOptions}
+                                data={pbsPerDayScatterData}
+                                height={350}
+                            />
                         </CardContent>
                     </Card>
 
