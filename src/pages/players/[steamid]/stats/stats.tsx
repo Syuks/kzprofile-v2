@@ -1,489 +1,149 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 
-import {
-    CheckCircledIcon,
-    CrossCircledIcon,
-    DesktopIcon,
-    LapTimerIcon,
-    PersonIcon,
-    ReloadIcon,
-    StopwatchIcon,
-} from "@radix-ui/react-icons"
-
-import { lightFormat, format } from "date-fns"
+import { ReloadIcon } from "@radix-ui/react-icons"
 
 import { useOutletContext } from "react-router-dom"
 
-import { cn } from "@/lib/utils"
-import { TierData, TierID, getPointsColor, getTierData, tierLabels } from "@/lib/gokz"
-import { type RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
-import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
+import { TierID } from "@/lib/gokz"
+import { useRunType } from "@/components/localsettings/localsettings-provider"
 
 import { PlayerProfileOutletContext } from ".."
 
-import MapHoverCard from "@/components/maps/map-hover-card"
-
-import { Bar, Radar, Scatter } from "react-chartjs-2"
-import type { ChartOptions, ChartData } from "chart.js"
+import Completion_CardCompletion from "./completion/cards-completion"
+import Completion_CardFinishes from "./completion/cards-finishes"
+import Completion_CardDates from "./completion/cards-dates"
+import Completion_CardMappers from "./completion/cards-mappers"
+import Completion_CardServers from "./completion/cards-servers"
+import Completion_ChartRadarCompletion from "./completion/chart-radar-completion"
+import Completion_ChartBarCompletion from "./completion/chart-bar-completion"
+import Completion_ChartBarFinishes from "./completion/chart-bar-finishes"
+import Completion_TableLastFinish from "./completion/table-last-finish"
+import Completion_ChartScatterDays from "./completion/chart-scatter-days"
+import Completion_TableMappers from "./completion/table-mappers"
+import Completion_ChartBarMappers from "./completion/chart-bar-mappers"
+import Completion_TableServers from "./completion/table-servers"
+import Completion_ChartBarServers from "./completion/chart-bar-servers"
 
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
 
-const mapperLabels = ["Spider1", "p", "zPrince", "NykaN", "Cyclo", "nopey", ""]
-
-const mapperBarData: ChartData<"bar"> = {
-    labels: mapperLabels,
-    datasets: [
-        {
-            data: [32, 12, 6, 9, 2, 4, 0],
-            borderRadius: 8,
-            backgroundColor: [
-                "hsl(120, 99%, 62%)",
-                "hsl(90, 99%, 64%)",
-                "hsl(55, 75%, 70%)",
-                "hsl(41, 75%, 56%)",
-                "hsl(0, 99%, 62%)",
-                "hsl(0, 100%, 50%)",
-                "hsl(294, 78%, 54%)",
-            ],
-        },
-    ],
+export interface RecordTopStat {
+    map_id: number
+    map_name: string
+    mapperNames: string[]
+    mapperIds: string[]
+    difficulty: TierID
+    points: number
+    time: number
+    server_name: string
+    created_on: string
 }
 
-const serverLabels = [
-    "MDQ Servers",
-    "House of Climb #1",
-    "House of Climb #4",
-    "Latam GOKZ",
-    "Latam GOKZ",
-    "Latam GOKZ",
-    "",
-]
+export interface RecordsTopStatistics {
+    finishes: RecordTopStat[]
+    unfinishes: RecordTopStat[]
 
-const serverBarData: ChartData<"bar"> = {
-    labels: serverLabels,
-    datasets: [
-        {
-            data: [9, 6, 12, 15, 7, 1, 0],
-            borderRadius: 8,
-            backgroundColor: [
-                "hsl(120, 99%, 62%)",
-                "hsl(90, 99%, 64%)",
-                "hsl(55, 75%, 70%)",
-                "hsl(41, 75%, 56%)",
-                "hsl(0, 99%, 62%)",
-                "hsl(0, 100%, 50%)",
-                "hsl(294, 78%, 54%)",
-            ],
-        },
-    ],
+    finishesPerTier: Record<TierID, RecordTopStat[]>
+    unfinishesPerTier: Record<TierID, RecordTopStat[]>
+    mapsPerTier: Record<TierID, number>
+
+    finishesPerDay: Record<string, RecordTopStat[]>
+    finishesPerMonth: Record<string, RecordTopStat[]>
+    finishesPerQuarter: Record<string, RecordTopStat[]>
+    finishesPerYear: Record<string, RecordTopStat[]>
+
+    finishesPerMapper: Record<string, RecordTopStat[]>
+    unfinishesPerMapper: Record<string, RecordTopStat[]>
+    mapsPerMapper: Record<string, RecordTopStat[]>
+
+    finishesPerServer: Record<string, RecordTopStat[]>
 }
 
 function Stats() {
-    const [localSettings] = useLocalSettings()
-
     const { playerProfileKZData, playerProfileKZDataRefetch, playerProfileKZDataFetching } =
         useOutletContext<PlayerProfileOutletContext>()
 
     const [runType] = useRunType()
 
-    const [mapsTotal, setMapsTotal] = useState(0)
-    const [mapsFinished, setMapsFinished] = useState(0)
-    const [mapsUnfinished, setMapsUnfinished] = useState(0)
-    const [tierWithMostFinishes, setTierWithMostFinishes] = useState<
-        { data: TierData; amount: number } | undefined
-    >()
-    const [tierWithFewerFinishes, setTierWithFewerFinishes] = useState<
-        { data: TierData; amount: number } | undefined
-    >()
+    const recordsTopStatistics = useMemo<RecordsTopStatistics>(() => {
+        let statistics: RecordsTopStatistics = {
+            finishes: playerProfileKZData.finishes[runType],
+            unfinishes: playerProfileKZData.unfinishes[runType],
 
-    const finishesBarOptions = useMemo<ChartOptions<"bar">>(
-        () => ({
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                tooltip: {
-                    borderWidth: 1,
-                    borderColor: "hsl(240 3.7% 15.9%)",
-                    backgroundColor: "hsl(240 10% 3.9%)",
-                    padding: 8,
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 14 },
-                    caretSize: 0,
-                    displayColors: false,
-                },
-            },
-        }),
-        [],
-    )
+            finishesPerTier: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] },
+            unfinishesPerTier: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] },
+            mapsPerTier: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0 },
 
-    const [finishesBarData, setFinishesBarData] = useState<ChartData<"bar">>({
-        labels: tierLabels,
-        datasets: [
-            {
-                label: "Finishes",
-                data: [0, 0, 0, 0, 0, 0, 0],
-                borderRadius: 8,
-                backgroundColor: [
-                    "hsl(120, 99%, 62%)",
-                    "hsl(90, 99%, 64%)",
-                    "hsl(55, 75%, 70%)",
-                    "hsl(41, 75%, 56%)",
-                    "hsl(0, 99%, 62%)",
-                    "hsl(0, 100%, 50%)",
-                    "hsl(294, 78%, 54%)",
-                ],
-            },
-        ],
-    })
+            finishesPerDay: {},
+            finishesPerMonth: {},
+            finishesPerQuarter: {},
+            finishesPerYear: {},
 
-    const [lastFinishPerTier, setLastFinishPerTier] = useState<RecordsTopExtended[]>([])
+            finishesPerMapper: {},
+            unfinishesPerMapper: {},
+            mapsPerMapper: {},
 
-    const [completionPercentage, setCompletionPercentage] = useState(0)
-    const [incompletionPercentage, setIncompletionPercentage] = useState(0)
-    const [mostCompletedTier, setMostCompletedTier] = useState<
-        { data: TierData; percentage: number } | undefined
-    >()
-    const [leastCompletedTier, setLeastCompletedTier] = useState<
-        { data: TierData; percentage: number } | undefined
-    >()
+            finishesPerServer: {},
+        }
 
-    const completionRadarOptions = useMemo<ChartOptions<"radar">>(
-        () => ({
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    min: 0,
-                    max: 100,
-                    grid: {
-                        color: "hsl(240 3.7% 15.9%)",
-                    },
-                    angleLines: {
-                        color: "hsl(240 3.7% 15.9%)",
-                    },
-                    ticks: {
-                        display: false,
-                    },
-                },
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                tooltip: {
-                    borderWidth: 1,
-                    borderColor: "hsl(240 3.7% 15.9%)",
-                    backgroundColor: "hsl(240 10% 3.9%)",
-                    padding: 8,
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 14 },
-                    caretSize: 0,
-                    displayColors: false,
-                },
-            },
-        }),
-        [],
-    )
+        for (const finish of playerProfileKZData.finishes[runType]) {
+            // Per Tier
+            statistics.finishesPerTier[finish.difficulty].push(finish)
+            statistics.mapsPerTier[finish.difficulty]++
 
-    const [completionRadarData, setCompletionRadarData] = useState<ChartData<"radar">>({
-        labels: tierLabels,
-        datasets: [
-            {
-                label: "Completion",
-                data: [],
-                backgroundColor: "hsla(212, 61%, 61%, 0.2)",
-                borderColor: "hsla(212, 61%, 61%, 1)",
-            },
-        ],
-    })
+            // Per Date
+            const date = new Date(finish.created_on)
+            const dayKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+            const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`
+            const quarterKey = `Q${Math.floor((date.getMonth() + 3) / 3)} ${date.getFullYear()}`
+            const yearKey = `${date.getFullYear()}`
 
-    const completionBarOptions = useMemo<ChartOptions<"bar">>(
-        () => ({
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    min: 0,
-                    max: 100,
-                },
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                tooltip: {
-                    borderWidth: 1,
-                    borderColor: "hsl(240 3.7% 15.9%)",
-                    backgroundColor: "hsl(240 10% 3.9%)",
-                    padding: 8,
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 14 },
-                    caretSize: 0,
-                    displayColors: false,
-                },
-            },
-        }),
-        [],
-    )
+            statistics.finishesPerDay[dayKey] = statistics.finishesPerDay[dayKey] || []
+            statistics.finishesPerDay[dayKey].push(finish)
 
-    const [completionBarData, setCompletionBarData] = useState<ChartData<"bar">>({
-        labels: tierLabels,
-        datasets: [
-            {
-                label: "Completion",
-                data: [],
-                borderRadius: 8,
-                backgroundColor: [
-                    "hsl(120, 99%, 62%)",
-                    "hsl(90, 99%, 64%)",
-                    "hsl(55, 75%, 70%)",
-                    "hsl(41, 75%, 56%)",
-                    "hsl(0, 99%, 62%)",
-                    "hsl(0, 100%, 50%)",
-                    "hsl(294, 78%, 54%)",
-                ],
-            },
-        ],
-    })
+            statistics.finishesPerMonth[monthKey] = statistics.finishesPerMonth[monthKey] || []
+            statistics.finishesPerMonth[monthKey].push(finish)
 
-    const [dayWithMostPBs, setDayWithMostPBs] = useState<
-        { day: string; amount: number } | undefined
-    >()
-    const [monthWithMostPBs, setMonthWithMostPBs] = useState<
-        { month: string; amount: number } | undefined
-    >()
-    const [quarterWithMostPBs, setQuarterWithMostPBs] = useState<
-        { quarter: string; amount: number } | undefined
-    >()
-    const [yearWithMostPBs, setYearWithMostPBs] = useState<
-        { year: string; amount: number } | undefined
-    >()
+            statistics.finishesPerQuarter[quarterKey] =
+                statistics.finishesPerQuarter[quarterKey] || []
+            statistics.finishesPerQuarter[quarterKey].push(finish)
 
-    const pbsPerDayScatterOptions = useMemo<ChartOptions<"scatter">>(
-        () => ({
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    type: "time",
-                },
-                y: {
-                    min: 0,
-                },
-            },
-            plugins: {
-                legend: {
-                    display: false,
-                },
-                tooltip: {
-                    borderWidth: 1,
-                    borderColor: "hsl(240 3.7% 15.9%)",
-                    backgroundColor: "hsl(240 10% 3.9%)",
-                    padding: 8,
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 14 },
-                    caretSize: 0,
-                    displayColors: false,
-                },
-            },
-        }),
-        [],
-    )
+            statistics.finishesPerYear[yearKey] = statistics.finishesPerYear[yearKey] || []
+            statistics.finishesPerYear[yearKey].push(finish)
 
-    const [pbsPerDayScatterData, setPbsPerDayScatterData] = useState<ChartData<"scatter">>({
-        datasets: [
-            {
-                label: "PBs",
-                data: [],
-                backgroundColor: "hsla(212, 61%, 61%, 0.2)",
-                //borderColor: "hsla(212, 61%, 61%, 1)",
-            },
-        ],
-    })
+            // Per Mapper
+            for (const mapperName of finish.mapperNames) {
+                statistics.finishesPerMapper[mapperName] =
+                    statistics.finishesPerMapper[mapperName] || []
+                statistics.finishesPerMapper[mapperName].push(finish)
 
-    const getDateInfo = (dateString: string) => {
-        const date = new Date(dateString)
-        const day = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-        const month = `${date.getFullYear()}-${date.getMonth() + 1}`
-        const quarter = `Q${Math.floor((date.getMonth() + 3) / 3)} ${date.getFullYear()}`
-        const year = date.getFullYear()
-        return { day, month, quarter, year }
-    }
-
-    useEffect(() => {
-        const finishes_length = playerProfileKZData.finishes[runType].length
-        const unfinishes_length = playerProfileKZData.unfinishes[runType].length
-
-        let finishes_per_tier = [0, 0, 0, 0, 0, 0, 0]
-        let last_finish_per_tier: { [difficulty: number]: RecordsTopExtended } = {}
-
-        let maps_per_tier = [0, 0, 0, 0, 0, 0, 0]
-
-        let pbs_per_day_count: Record<string, number> = {}
-        let pbs_per_month_count: Record<string, number> = {}
-        let pbs_per_quarter_count: Record<string, number> = {}
-        let pbs_per_year_count: Record<string, number> = {}
-
-        playerProfileKZData.finishes[runType].forEach((finish) => {
-            finishes_per_tier[finish.difficulty - 1]++
-            maps_per_tier[finish.difficulty - 1]++
-
-            // Last finish per tier
-            if (
-                !last_finish_per_tier[finish.difficulty] ||
-                new Date(finish.created_on) >
-                    new Date(last_finish_per_tier[finish.difficulty].created_on)
-            ) {
-                last_finish_per_tier[finish.difficulty] = finish
+                statistics.mapsPerMapper[mapperName] = statistics.mapsPerMapper[mapperName] || []
+                statistics.mapsPerMapper[mapperName].push(finish)
             }
 
-            // Dates with most finishes
-            const { day, month, quarter, year } = getDateInfo(finish.created_on)
+            // Per Server
+            statistics.finishesPerServer[finish.server_name] =
+                statistics.finishesPerServer[finish.server_name] || []
+            statistics.finishesPerServer[finish.server_name].push(finish)
+        }
 
-            pbs_per_day_count[day] = (pbs_per_day_count[day] || 0) + 1
-            pbs_per_month_count[month] = (pbs_per_month_count[month] || 0) + 1
-            pbs_per_quarter_count[quarter] = (pbs_per_quarter_count[quarter] || 0) + 1
-            pbs_per_year_count[year] = (pbs_per_year_count[year] || 0) + 1
-        })
+        for (const unfinish of playerProfileKZData.unfinishes[runType]) {
+            // Per Tier
+            statistics.unfinishesPerTier[unfinish.difficulty].push(unfinish)
+            statistics.mapsPerTier[unfinish.difficulty]++
 
-        playerProfileKZData.unfinishes[runType].forEach((unfinish) => {
-            maps_per_tier[unfinish.difficulty - 1]++
-        })
+            // Per Mapper
+            for (const mapperName of unfinish.mapperNames) {
+                statistics.unfinishesPerMapper[mapperName] =
+                    statistics.unfinishesPerMapper[mapperName] || []
+                statistics.unfinishesPerMapper[mapperName].push(unfinish)
 
-        const completion_per_tier = finishes_per_tier.map((finishes, index) => {
-            return (finishes / maps_per_tier[index]) * 100
-        })
-
-        setMapsTotal(finishes_length + unfinishes_length)
-        setMapsFinished(finishes_length)
-        setMapsUnfinished(unfinishes_length)
-        setTierWithMostFinishes(() => {
-            const most_finishes = Math.max(...finishes_per_tier)
-            const tier_with_most_finishes_data = getTierData(
-                (finishes_per_tier.indexOf(most_finishes) + 1) as TierID,
-            )
-
-            return {
-                data: tier_with_most_finishes_data,
-                amount: most_finishes,
+                statistics.mapsPerMapper[mapperName] = statistics.mapsPerMapper[mapperName] || []
+                statistics.mapsPerMapper[mapperName].push(unfinish)
             }
-        })
-        setTierWithFewerFinishes(() => {
-            const fewer_finishes = Math.min(...finishes_per_tier)
-            const tier_with_fewer_finishes_data = getTierData(
-                (finishes_per_tier.indexOf(fewer_finishes) + 1) as TierID,
-            )
+        }
 
-            return {
-                data: tier_with_fewer_finishes_data,
-                amount: fewer_finishes,
-            }
-        })
-
-        setFinishesBarData((oldData) => ({
-            ...oldData,
-            datasets: [{ ...oldData.datasets[0], data: finishes_per_tier }],
-        }))
-
-        setLastFinishPerTier(Object.values(last_finish_per_tier))
-
-        setCompletionPercentage((finishes_length / (finishes_length + unfinishes_length)) * 100)
-        setIncompletionPercentage((unfinishes_length / (finishes_length + unfinishes_length)) * 100)
-        setMostCompletedTier(() => {
-            const most_completed = Math.max(...completion_per_tier)
-            const most_completed_tier_data = getTierData(
-                (completion_per_tier.indexOf(most_completed) + 1) as TierID,
-            )
-
-            return {
-                data: most_completed_tier_data,
-                percentage: most_completed,
-            }
-        })
-        setLeastCompletedTier(() => {
-            const least_completed = Math.min(...completion_per_tier)
-            const least_completed_tier_data = getTierData(
-                (completion_per_tier.indexOf(least_completed) + 1) as TierID,
-            )
-
-            return {
-                data: least_completed_tier_data,
-                percentage: least_completed,
-            }
-        })
-
-        setCompletionRadarData((oldData) => ({
-            ...oldData,
-            datasets: [{ ...oldData.datasets[0], data: completion_per_tier }],
-        }))
-
-        setCompletionBarData((oldData) => ({
-            ...oldData,
-            datasets: [{ ...oldData.datasets[0], data: completion_per_tier }],
-        }))
-
-        setDayWithMostPBs(() => {
-            const maxDay = Object.keys(pbs_per_day_count).reduce((a, b) =>
-                pbs_per_day_count[a] > pbs_per_day_count[b] ? a : b,
-            )
-            return {
-                day: format(maxDay, "MMM do, yyyy"),
-                amount: pbs_per_day_count[maxDay],
-            }
-        })
-        setMonthWithMostPBs(() => {
-            const maxMonth = Object.keys(pbs_per_month_count).reduce((a, b) =>
-                pbs_per_month_count[a] > pbs_per_month_count[b] ? a : b,
-            )
-            return {
-                month: format(maxMonth, "MMM yyyy"),
-                amount: pbs_per_month_count[maxMonth],
-            }
-        })
-        setQuarterWithMostPBs(() => {
-            const maxQuarter = Object.keys(pbs_per_quarter_count).reduce((a, b) =>
-                pbs_per_quarter_count[a] > pbs_per_quarter_count[b] ? a : b,
-            )
-            return {
-                quarter: maxQuarter,
-                amount: pbs_per_quarter_count[maxQuarter],
-            }
-        })
-        setYearWithMostPBs(() => {
-            const maxYear = Object.keys(pbs_per_year_count).reduce((a, b) =>
-                pbs_per_year_count[a] > pbs_per_year_count[b] ? a : b,
-            )
-            return {
-                year: maxYear,
-                amount: pbs_per_year_count[maxYear],
-            }
-        })
-
-        setPbsPerDayScatterData((oldData) => ({
-            ...oldData,
-            datasets: [
-                {
-                    ...oldData.datasets[0],
-                    data: Object.entries(pbs_per_day_count).map(([date, value]) => ({
-                        x: new Date(date).getTime(),
-                        y: value,
-                    })),
-                },
-            ],
-        }))
+        return statistics
     }, [playerProfileKZData, runType])
 
     return (
@@ -514,499 +174,69 @@ function Stats() {
                 </TabsList>
                 <TabsContent value="completion" className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Completion percentage
-                                </CardTitle>
-                                <CheckCircledIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {completionPercentage.toFixed(3)} %
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {mapsFinished}/{mapsTotal} maps
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Incompletion percentage
-                                </CardTitle>
-                                <CrossCircledIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {incompletionPercentage.toFixed(3)} %
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {mapsUnfinished}/{mapsTotal} maps
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Most completed tier
-                                </CardTitle>
-                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        "text-2xl font-bold",
-                                        mostCompletedTier?.data.color,
-                                    )}
-                                >
-                                    {mostCompletedTier?.data.label}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {mostCompletedTier &&
-                                        `${mostCompletedTier.percentage.toFixed(3)} %`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Least completed tier
-                                </CardTitle>
-                                <LapTimerIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        "text-2xl font-bold",
-                                        leastCompletedTier?.data.color,
-                                    )}
-                                >
-                                    {leastCompletedTier?.data.label}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {leastCompletedTier &&
-                                        `${leastCompletedTier.percentage.toFixed(3)} %`}
-                                </p>
-                            </CardContent>
-                        </Card>
+                        <Completion_CardCompletion recordsTopStatistics={recordsTopStatistics} />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        <Card className="col-span-3">
-                            <CardHeader>
-                                <CardTitle>Completion per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Radar
-                                    options={completionRadarOptions}
-                                    data={completionRadarData}
-                                    height={350}
-                                />
-                            </CardContent>
-                        </Card>
-                        <Card className="col-span-4">
-                            <CardHeader>
-                                <CardTitle>Completion per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Bar
-                                    options={completionBarOptions}
-                                    data={completionBarData}
-                                    height={350}
-                                />
-                            </CardContent>
-                        </Card>
+                        <Completion_ChartRadarCompletion
+                            className="col-span-3"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
+                        <Completion_ChartBarCompletion
+                            className="col-span-4"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">Maps finished</CardTitle>
-                                <CheckCircledIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{mapsFinished}</div>
-                                <p className="text-xs text-muted-foreground">
-                                    Out of {mapsTotal} maps
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Maps unfinished
-                                </CardTitle>
-                                <CrossCircledIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{mapsUnfinished}</div>
-                                <p className="text-xs text-muted-foreground">
-                                    Out of {mapsTotal} maps
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Tier with most finishes
-                                </CardTitle>
-                                <StopwatchIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        "text-2xl font-bold",
-                                        tierWithMostFinishes?.data.color,
-                                    )}
-                                >
-                                    {tierWithMostFinishes?.data.label}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {tierWithMostFinishes &&
-                                        `${tierWithMostFinishes.amount} finishes`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Tier with fewer finishes
-                                </CardTitle>
-                                <StopwatchIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div
-                                    className={cn(
-                                        "text-2xl font-bold",
-                                        tierWithFewerFinishes?.data.color,
-                                    )}
-                                >
-                                    {tierWithFewerFinishes?.data.label}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {tierWithFewerFinishes &&
-                                        `${tierWithFewerFinishes.amount} finishes`}
-                                </p>
-                            </CardContent>
-                        </Card>
+                        <Completion_CardFinishes recordsTopStatistics={recordsTopStatistics} />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        <Card className="col-span-4">
-                            <CardHeader>
-                                <CardTitle>Finishes per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Bar
-                                    options={finishesBarOptions}
-                                    data={finishesBarData}
-                                    height={350}
-                                />
-                            </CardContent>
-                        </Card>
-                        <Card className="col-span-3">
-                            <CardHeader>
-                                <CardTitle>Last finish per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Tier</TableHead>
-                                            <TableHead>Map</TableHead>
-                                            <TableHead>Points</TableHead>
-                                            <TableHead>Date</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {lastFinishPerTier.map((finish) => {
-                                            const tierData = getTierData(finish.difficulty)
-                                            const pointsColor = getPointsColor(finish.points)
-                                            const dateString = lightFormat(
-                                                finish.created_on,
-                                                localSettings.dateFormat,
-                                            )
-
-                                            return (
-                                                <TableRow key={finish.id}>
-                                                    <TableCell className={tierData.color}>
-                                                        {tierData.label}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <MapHoverCard
-                                                            mapId={finish.map_id}
-                                                            mapName={finish.map_name}
-                                                            className="h-7"
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className={pointsColor}>
-                                                        {finish.points}
-                                                    </TableCell>
-                                                    <TableCell>{dateString}</TableCell>
-                                                </TableRow>
-                                            )
-                                        })}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
+                        <Completion_ChartBarFinishes
+                            className="col-span-4"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
+                        <Completion_TableLastFinish
+                            className="col-span-3"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Day with most PBs
-                                </CardTitle>
-                                <div className="text-sm text-muted-foreground">1d</div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{dayWithMostPBs?.day}</div>
-                                <p className="text-xs text-muted-foreground">
-                                    {dayWithMostPBs && `${dayWithMostPBs.amount} PBs`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Month with most PBs
-                                </CardTitle>
-                                <div className="text-sm text-muted-foreground">30d</div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{monthWithMostPBs?.month}</div>
-                                <p className="text-xs text-muted-foreground">
-                                    {monthWithMostPBs && `${monthWithMostPBs.amount} PBs`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Quarter with most PBs
-                                </CardTitle>
-                                <div className="text-sm text-muted-foreground">90d</div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">
-                                    {quarterWithMostPBs?.quarter}
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    {quarterWithMostPBs && `${quarterWithMostPBs.amount} PBs`}
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Year with most PBs
-                                </CardTitle>
-                                <div className="text-sm text-muted-foreground">360d</div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">{yearWithMostPBs?.year}</div>
-                                <p className="text-xs text-muted-foreground">
-                                    {yearWithMostPBs && `${yearWithMostPBs.amount} PBs`}
-                                </p>
-                            </CardContent>
-                        </Card>
+                        <Completion_CardDates recordsTopStatistics={recordsTopStatistics} />
                     </div>
 
-                    <Card className="col-span-4">
-                        <CardHeader>
-                            <CardTitle>PBs per day</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <Scatter
-                                options={pbsPerDayScatterOptions}
-                                data={pbsPerDayScatterData}
-                                height={350}
-                            />
-                        </CardContent>
-                    </Card>
+                    <Completion_ChartScatterDays recordsTopStatistics={recordsTopStatistics} />
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Most played mapper
-                                </CardTitle>
-                                <PersonIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">Spider1</div>
-                                <p className="text-xs text-muted-foreground">23 maps</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Most completed mapper
-                                </CardTitle>
-                                <PersonIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">NykaN</div>
-                                <p className="text-xs text-muted-foreground">83%</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Least played mapper
-                                </CardTitle>
-                                <PersonIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">GameChaos</div>
-                                <p className="text-xs text-muted-foreground">0 maps</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Least completed mapper
-                                </CardTitle>
-                                <PersonIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">Spider1</div>
-                                <p className="text-xs text-muted-foreground">1%</p>
-                            </CardContent>
-                        </Card>
+                        <Completion_CardMappers recordsTopStatistics={recordsTopStatistics} />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        <Card className="col-span-3">
-                            <CardHeader>
-                                <CardTitle>Finishes by mapper</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Table className="table-fixed">
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Mapper</TableHead>
-                                            <TableHead>Finishes</TableHead>
-                                            <TableHead>Unfinishes</TableHead>
-                                            <TableHead>Completion</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell>Spider1</TableCell>
-                                            <TableCell>23</TableCell>
-                                            <TableCell>62</TableCell>
-                                            <TableCell>30%</TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
-                        <Card className="col-span-4">
-                            <CardHeader>
-                                <CardTitle>Mapper with most finishes per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Bar
-                                    options={finishesBarOptions}
-                                    data={mapperBarData}
-                                    height={350}
-                                />
-                            </CardContent>
-                        </Card>
+                        <Completion_TableMappers
+                            className="col-span-3"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
+                        <Completion_ChartBarMappers
+                            className="col-span-4"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Server with most PBs
-                                </CardTitle>
-                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">MDQ Servers</div>
-                                <p className="text-xs text-muted-foreground">23 PBs</p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Server with most easy PBs
-                                </CardTitle>
-                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">MDQ Servers</div>
-                                <p className="text-xs text-muted-foreground">
-                                    11 very easy, easy and medium PBs
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Server with most hard PBs
-                                </CardTitle>
-                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">MDQ Servers</div>
-                                <p className="text-xs text-muted-foreground">
-                                    12 hard, very hard, extreme and death PBs
-                                </p>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                <CardTitle className="text-sm font-medium">
-                                    Server with least PBs
-                                </CardTitle>
-                                <DesktopIcon className="h-4 w-4 text-muted-foreground" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="text-2xl font-bold">House of Climb</div>
-                                <p className="text-xs text-muted-foreground">1 PB</p>
-                            </CardContent>
-                        </Card>
+                        <Completion_CardServers recordsTopStatistics={recordsTopStatistics} />
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                        <Card className="col-span-3">
-                            <CardHeader>
-                                <CardTitle>PBs per server</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Server</TableHead>
-                                            <TableHead>PBs</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        <TableRow>
-                                            <TableCell>MDQ Servers</TableCell>
-                                            <TableCell>23</TableCell>
-                                        </TableRow>
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
-                        <Card className="col-span-4">
-                            <CardHeader>
-                                <CardTitle>Server with most PBs per tier</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <Bar
-                                    options={finishesBarOptions}
-                                    data={serverBarData}
-                                    height={350}
-                                />
-                            </CardContent>
-                        </Card>
+                        <Completion_TableServers
+                            className="col-span-3"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
+                        <Completion_ChartBarServers
+                            className="col-span-4"
+                            recordsTopStatistics={recordsTopStatistics}
+                        />
                     </div>
                 </TabsContent>
                 <TabsContent value="playtime"></TabsContent>

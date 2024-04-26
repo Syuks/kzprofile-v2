@@ -6,13 +6,10 @@ import { fetchKZProfileMaps } from "./useKZProfileMaps"
 import { fetchGlobalFilters } from "./useGlobalFilters"
 import { fetchPlayerTimes, RecordsTop } from "./usePlayerTimes"
 
-/*interface Completion {
-    total: [number, number, number, number, number, number, number]
-    done: [number, number, number, number, number, number, number]
-}*/
-
 export interface RecordsTopExtended extends RecordsTop {
     difficulty: TierID
+    mapperNames: string[]
+    mapperIds: string[]
 }
 
 export interface Unfinishes {
@@ -23,6 +20,8 @@ export interface Unfinishes {
     difficulty: TierID
     created_on: string
     server_name: string
+    mapperNames: string[]
+    mapperIds: string[]
 }
 
 export interface PlayerProfileKZData {
@@ -46,11 +45,6 @@ export interface PlayerProfileKZData {
         tp: Unfinishes[]
         nub: Unfinishes[]
     }
-    /*completions: {
-        pro: Completion
-        tp: Completion
-        nub: Completion
-    }*/
 }
 
 const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) => {
@@ -94,20 +88,6 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                     tp: [],
                     nub: [],
                 },
-                /*completions: {
-                    pro: {
-                        total: [0, 0, 0, 0, 0, 0, 0],
-                        done: [0, 0, 0, 0, 0, 0, 0],
-                    },
-                    tp: {
-                        total: [0, 0, 0, 0, 0, 0, 0],
-                        done: [0, 0, 0, 0, 0, 0, 0],
-                    },
-                    nub: {
-                        total: [0, 0, 0, 0, 0, 0, 0],
-                        done: [0, 0, 0, 0, 0, 0, 0],
-                    },
-                },*/
             }
 
             const addMedal = (points: number): void => {
@@ -138,16 +118,15 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                 if (!filterFound) return
 
                 // PRO
-                //playerProfileKZData.completions.pro.total[globalMap.difficulty - 1]++
-
                 const proFinish = playerTimes.pro.find((finish) => globalMap.id === finish.map_id)
 
                 if (proFinish) {
                     playerProfileKZData.finishes.pro.push({
                         ...proFinish,
                         difficulty: globalMap.difficulty,
+                        mapperNames: globalMap.mapperNames,
+                        mapperIds: globalMap.mapperIds,
                     })
-                    //playerProfileKZData.completions.pro.done[globalMap.difficulty - 1]++
                     playerProfileKZData.points.total += proFinish.points
                     addMedal(proFinish.points)
                 } else {
@@ -159,6 +138,8 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                         difficulty: globalMap.difficulty,
                         created_on: globalMap.created_on,
                         server_name: "",
+                        mapperNames: globalMap.mapperNames,
+                        mapperIds: globalMap.mapperIds,
                     })
                 }
 
@@ -166,14 +147,13 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                 const tpFinish = playerTimes.tp.find((finish) => globalMap.id === finish.map_id)
 
                 if (!globalMap.name.startsWith("kzpro")) {
-                    //playerProfileKZData.completions.tp.total[globalMap.difficulty - 1]++
-
                     if (tpFinish) {
                         playerProfileKZData.finishes.tp.push({
                             ...tpFinish,
                             difficulty: globalMap.difficulty,
+                            mapperNames: globalMap.mapperNames,
+                            mapperIds: globalMap.mapperIds,
                         })
-                        //playerProfileKZData.completions.tp.done[globalMap.difficulty - 1]++
                         playerProfileKZData.points.total += tpFinish.points
                         addMedal(tpFinish.points)
                     } else {
@@ -185,21 +165,22 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                             difficulty: globalMap.difficulty,
                             created_on: globalMap.created_on,
                             server_name: "",
+                            mapperNames: globalMap.mapperNames,
+                            mapperIds: globalMap.mapperIds,
                         })
                     }
                 }
 
                 // NUB
-                //playerProfileKZData.completions.nub.total[globalMap.difficulty - 1]++
-
                 const nubFinish = getNubTime(proFinish, tpFinish)
 
                 if (nubFinish) {
                     playerProfileKZData.finishes.nub.push({
                         ...nubFinish,
                         difficulty: globalMap.difficulty,
+                        mapperNames: globalMap.mapperNames,
+                        mapperIds: globalMap.mapperIds,
                     })
-                    //playerProfileKZData.completions.nub.done[globalMap.difficulty - 1]++
                 } else {
                     playerProfileKZData.unfinishes.nub.push({
                         map_id: globalMap.id,
@@ -209,6 +190,8 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                         difficulty: globalMap.difficulty,
                         created_on: globalMap.created_on,
                         server_name: "",
+                        mapperNames: globalMap.mapperNames,
+                        mapperIds: globalMap.mapperIds,
                     })
                 }
             })

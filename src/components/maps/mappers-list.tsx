@@ -105,4 +105,4 @@ function MapperLink({ mapperName, mapperId, className }: MapperLinkProps) {
     )
 }
 
-export { MappersList, MapperListSmall }
+export { MappersList, MapperListSmall, MapperLink }
