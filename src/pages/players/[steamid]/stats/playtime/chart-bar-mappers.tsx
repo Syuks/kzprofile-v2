@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
 import { TierID, tiers } from "@/lib/gokz"
+import { getTimeString } from "@/lib/utils"
 
 import { RecordsTopStatistics } from "../stats"
 
@@ -9,41 +10,52 @@ import type { ChartOptions, ChartData } from "chart.js"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface Completion_ChartBarMappersProps {
+interface Playtime_ChartBarMappersProps {
     recordsTopStatistics: RecordsTopStatistics
     className?: string
 }
 
-function Completion_ChartBarMappers({
+function Playtime_ChartBarMappers({
     recordsTopStatistics,
     className,
-}: Completion_ChartBarMappersProps) {
+}: Playtime_ChartBarMappersProps) {
     const mappersBarData = useMemo<ChartData<"bar">>(() => {
         const mapperArray = Object.entries(recordsTopStatistics.finishesPerMapper).map(
-            ([mapperName, finishes]) => ({
-                mapperName,
-                1: finishes.filter((finish) => finish.difficulty === 1).length,
-                2: finishes.filter((finish) => finish.difficulty === 2).length,
-                3: finishes.filter((finish) => finish.difficulty === 3).length,
-                4: finishes.filter((finish) => finish.difficulty === 4).length,
-                5: finishes.filter((finish) => finish.difficulty === 5).length,
-                6: finishes.filter((finish) => finish.difficulty === 6).length,
-                7: finishes.filter((finish) => finish.difficulty === 7).length,
-            }),
+            ([mapperName, finishes]) => {
+                const getTierPlaytime = (tierId: TierID): number => {
+                    const tierFinishes = finishes.filter((finish) => finish.difficulty === tierId)
+
+                    if (!tierFinishes.length) {
+                        return 0
+                    }
+
+                    return tierFinishes.reduce((acc, finish) => acc + finish.time, 0)
+                }
+
+                return {
+                    mapperName,
+                    1: getTierPlaytime(1),
+                    2: getTierPlaytime(2),
+                    3: getTierPlaytime(3),
+                    4: getTierPlaytime(4),
+                    5: getTierPlaytime(5),
+                    6: getTierPlaytime(6),
+                    7: getTierPlaytime(7),
+                }
+            },
         )
 
-        const getMostFinishesMapper = (tierId: TierID) =>
+        const getMapperWithMostPlaytime = (tierId: TierID) =>
             [...mapperArray].sort((a, b) => b[tierId] - a[tierId])[0]
 
-        const mapperLabels = tiers.map((tierId) => getMostFinishesMapper(tierId).mapperName)
+        const mapperLabels = tiers.map((tierId) => getMapperWithMostPlaytime(tierId).mapperName)
 
-        const mapperData = tiers.map((tierId) => getMostFinishesMapper(tierId)[tierId])
+        const mapperData = tiers.map((tierId) => getMapperWithMostPlaytime(tierId)[tierId])
 
         return {
             labels: mapperLabels,
             datasets: [
                 {
-                    label: "Finishes",
                     data: mapperData,
                     borderRadius: 8,
                     backgroundColor: [
@@ -64,6 +76,13 @@ function Completion_ChartBarMappers({
         () => ({
             responsive: true,
             maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: (value) => getTimeString(value as number),
+                    },
+                },
+            },
             plugins: {
                 legend: {
                     display: false,
@@ -77,6 +96,11 @@ function Completion_ChartBarMappers({
                     bodyFont: { size: 14 },
                     caretSize: 0,
                     displayColors: false,
+                    callbacks: {
+                        label: (context) => {
+                            return `Playtime: ${getTimeString(context.parsed.y)}`
+                        },
+                    },
                 },
             },
         }),
@@ -86,7 +110,7 @@ function Completion_ChartBarMappers({
     return (
         <Card className={className}>
             <CardHeader>
-                <CardTitle>Mapper with most finishes per tier</CardTitle>
+                <CardTitle>Mapper with most playtime per tier</CardTitle>
             </CardHeader>
             <CardContent>
                 <Bar options={mappersBarOptions} data={mappersBarData} height={350} />
@@ -95,4 +119,4 @@ function Completion_ChartBarMappers({
     )
 }
 
-export default Completion_ChartBarMappers
+export default Playtime_ChartBarMappers

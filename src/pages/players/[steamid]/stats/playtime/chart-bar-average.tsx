@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
-import { TierID, tiers } from "@/lib/gokz"
+import { getTimeString } from "@/lib/utils"
+import { tierLabels, tiers } from "@/lib/gokz"
 
 import { RecordsTopStatistics } from "../stats"
 
@@ -9,42 +10,31 @@ import type { ChartOptions, ChartData } from "chart.js"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface Completion_ChartBarServersProps {
+interface Playtime_ChartBarAverageProps {
     recordsTopStatistics: RecordsTopStatistics
     className?: string
 }
 
-function Completion_ChartBarServers({
+function Playtime_ChartBarAverage({
     recordsTopStatistics,
     className,
-}: Completion_ChartBarServersProps) {
-    const serversBarData = useMemo<ChartData<"bar">>(() => {
-        const serverArray = Object.entries(recordsTopStatistics.finishesPerServer).map(
-            ([serverName, finishes]) => ({
-                serverName: serverName.substring(0, 15),
-                1: finishes.filter((finish) => finish.difficulty === 1).length,
-                2: finishes.filter((finish) => finish.difficulty === 2).length,
-                3: finishes.filter((finish) => finish.difficulty === 3).length,
-                4: finishes.filter((finish) => finish.difficulty === 4).length,
-                5: finishes.filter((finish) => finish.difficulty === 5).length,
-                6: finishes.filter((finish) => finish.difficulty === 6).length,
-                7: finishes.filter((finish) => finish.difficulty === 7).length,
-            }),
-        )
+}: Playtime_ChartBarAverageProps) {
+    const averageTimeByTierBarData = useMemo<ChartData<"bar">>(() => {
+        const averageTimePerTier: number[] = tiers.map((tier) => {
+            const tierTotalTime = recordsTopStatistics.finishesPerTier[tier].reduce(
+                (acc, finish) => acc + finish.time,
+                0,
+            )
 
-        const getMostFinishesServer = (tierId: TierID) =>
-            [...serverArray].sort((a, b) => b[tierId] - a[tierId])[0]
-
-        const serverLabels = tiers.map((tierId) => getMostFinishesServer(tierId).serverName)
-
-        const serverData = tiers.map((tierId) => getMostFinishesServer(tierId)[tierId])
+            return tierTotalTime / (recordsTopStatistics.finishesPerTier[tier].length || 1)
+        })
 
         return {
-            labels: serverLabels,
+            labels: tierLabels,
             datasets: [
                 {
-                    label: "PBs",
-                    data: serverData,
+                    label: "Average time",
+                    data: averageTimePerTier,
                     borderRadius: 8,
                     backgroundColor: [
                         "hsl(120, 99%, 62%)",
@@ -60,10 +50,17 @@ function Completion_ChartBarServers({
         }
     }, [recordsTopStatistics])
 
-    const serversBarOptions = useMemo<ChartOptions<"bar">>(
+    const averageTimeByTierBarOptions = useMemo<ChartOptions<"bar">>(
         () => ({
             responsive: true,
             maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: (value) => getTimeString(value as number),
+                    },
+                },
+            },
             plugins: {
                 legend: {
                     display: false,
@@ -77,6 +74,11 @@ function Completion_ChartBarServers({
                     bodyFont: { size: 14 },
                     caretSize: 0,
                     displayColors: false,
+                    callbacks: {
+                        label: (context) => {
+                            return `Average time: ${getTimeString(context.parsed.y)}`
+                        },
+                    },
                 },
             },
         }),
@@ -86,13 +88,17 @@ function Completion_ChartBarServers({
     return (
         <Card className={className}>
             <CardHeader>
-                <CardTitle>Server with most PBs per tier</CardTitle>
+                <CardTitle>Average time by tier</CardTitle>
             </CardHeader>
             <CardContent>
-                <Bar options={serversBarOptions} data={serversBarData} height={350} />
+                <Bar
+                    options={averageTimeByTierBarOptions}
+                    data={averageTimeByTierBarData}
+                    height={350}
+                />
             </CardContent>
         </Card>
     )
 }
 
-export default Completion_ChartBarServers
+export default Playtime_ChartBarAverage

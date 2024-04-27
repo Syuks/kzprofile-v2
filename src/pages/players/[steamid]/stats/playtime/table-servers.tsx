@@ -11,39 +11,48 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { getTimeString } from "@/lib/utils"
 
-interface Completion_TableServersProps {
+interface Playtime_TableServersProps {
     recordsTopStatistics: RecordsTopStatistics
     className?: string
 }
 
-function Completion_TableServers({
-    recordsTopStatistics,
-    className,
-}: Completion_TableServersProps) {
-    const serversData = useMemo(() => {
+export interface ServerData {
+    serverName: string
+    serverPlaytime: number
+}
+
+function Playtime_TableServers({ recordsTopStatistics, className }: Playtime_TableServersProps) {
+    const serversData = useMemo<ServerData[]>(() => {
         return Object.entries(recordsTopStatistics.finishesPerServer)
             .map(([serverName, finishes]) => {
+                const serverPlaytime = finishes
+                    ? finishes.reduce((acc, finish) => {
+                          return acc + finish.time
+                      }, 0)
+                    : 0
+
                 return {
                     serverName,
-                    serverFinishesCount: finishes.length,
+                    serverPlaytime,
                 }
             })
-            .sort((serverA, serverB) => serverB.serverFinishesCount - serverA.serverFinishesCount)
+            .sort((serverA, serverB) => serverB.serverPlaytime - serverA.serverPlaytime)
             .slice(0, 7)
     }, [recordsTopStatistics])
 
     return (
         <Card className={className}>
             <CardHeader>
-                <CardTitle>PBs per server</CardTitle>
+                <CardTitle>Playtime by server</CardTitle>
             </CardHeader>
             <CardContent>
                 <Table className="table-fixed">
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-3/4">Server</TableHead>
-                            <TableHead className="text-right">PBs</TableHead>
+                            <TableHead className="text-right">Playtime</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -54,7 +63,7 @@ function Completion_TableServers({
                                         {serverData.serverName}
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {serverData.serverFinishesCount}
+                                        {getTimeString(serverData.serverPlaytime)}
                                     </TableCell>
                                 </TableRow>
                             )
@@ -66,4 +75,4 @@ function Completion_TableServers({
     )
 }
 
-export default Completion_TableServers
+export default Playtime_TableServers

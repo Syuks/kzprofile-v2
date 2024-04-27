@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
 import { TierID, tiers } from "@/lib/gokz"
+import { getTimeString } from "@/lib/utils"
 
 import { RecordsTopStatistics } from "../stats"
 
@@ -9,41 +10,52 @@ import type { ChartOptions, ChartData } from "chart.js"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface Completion_ChartBarServersProps {
+interface Playtime_ChartBarServersProps {
     recordsTopStatistics: RecordsTopStatistics
     className?: string
 }
 
-function Completion_ChartBarServers({
+function Playtime_ChartBarServers({
     recordsTopStatistics,
     className,
-}: Completion_ChartBarServersProps) {
+}: Playtime_ChartBarServersProps) {
     const serversBarData = useMemo<ChartData<"bar">>(() => {
         const serverArray = Object.entries(recordsTopStatistics.finishesPerServer).map(
-            ([serverName, finishes]) => ({
-                serverName: serverName.substring(0, 15),
-                1: finishes.filter((finish) => finish.difficulty === 1).length,
-                2: finishes.filter((finish) => finish.difficulty === 2).length,
-                3: finishes.filter((finish) => finish.difficulty === 3).length,
-                4: finishes.filter((finish) => finish.difficulty === 4).length,
-                5: finishes.filter((finish) => finish.difficulty === 5).length,
-                6: finishes.filter((finish) => finish.difficulty === 6).length,
-                7: finishes.filter((finish) => finish.difficulty === 7).length,
-            }),
+            ([serverName, finishes]) => {
+                const getTierPlaytime = (tierId: TierID): number => {
+                    const tierFinishes = finishes.filter((finish) => finish.difficulty === tierId)
+
+                    if (!tierFinishes.length) {
+                        return 0
+                    }
+
+                    return tierFinishes.reduce((acc, finish) => acc + finish.time, 0)
+                }
+
+                return {
+                    serverName: serverName.substring(0, 15),
+                    1: getTierPlaytime(1),
+                    2: getTierPlaytime(2),
+                    3: getTierPlaytime(3),
+                    4: getTierPlaytime(4),
+                    5: getTierPlaytime(5),
+                    6: getTierPlaytime(6),
+                    7: getTierPlaytime(7),
+                }
+            },
         )
 
-        const getMostFinishesServer = (tierId: TierID) =>
+        const getserverWithMostPlaytime = (tierId: TierID) =>
             [...serverArray].sort((a, b) => b[tierId] - a[tierId])[0]
 
-        const serverLabels = tiers.map((tierId) => getMostFinishesServer(tierId).serverName)
+        const serverLabels = tiers.map((tierId) => getserverWithMostPlaytime(tierId).serverName)
 
-        const serverData = tiers.map((tierId) => getMostFinishesServer(tierId)[tierId])
+        const serverData = tiers.map((tierId) => getserverWithMostPlaytime(tierId)[tierId])
 
         return {
             labels: serverLabels,
             datasets: [
                 {
-                    label: "PBs",
                     data: serverData,
                     borderRadius: 8,
                     backgroundColor: [
@@ -64,6 +76,13 @@ function Completion_ChartBarServers({
         () => ({
             responsive: true,
             maintainAspectRatio: false,
+            scales: {
+                y: {
+                    ticks: {
+                        callback: (value) => getTimeString(value as number),
+                    },
+                },
+            },
             plugins: {
                 legend: {
                     display: false,
@@ -77,6 +96,11 @@ function Completion_ChartBarServers({
                     bodyFont: { size: 14 },
                     caretSize: 0,
                     displayColors: false,
+                    callbacks: {
+                        label: (context) => {
+                            return `Playtime: ${getTimeString(context.parsed.y)}`
+                        },
+                    },
                 },
             },
         }),
@@ -86,7 +110,7 @@ function Completion_ChartBarServers({
     return (
         <Card className={className}>
             <CardHeader>
-                <CardTitle>Server with most PBs per tier</CardTitle>
+                <CardTitle>Server with most playtime per tier</CardTitle>
             </CardHeader>
             <CardContent>
                 <Bar options={serversBarOptions} data={serversBarData} height={350} />
@@ -95,4 +119,4 @@ function Completion_ChartBarServers({
     )
 }
 
-export default Completion_ChartBarServers
+export default Playtime_ChartBarServers

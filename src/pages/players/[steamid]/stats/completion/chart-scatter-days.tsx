@@ -1,5 +1,7 @@
 import { useMemo } from "react"
 
+import { format } from "date-fns"
+
 import { RecordsTopStatistics } from "../stats"
 
 import { Scatter } from "react-chartjs-2"
@@ -61,6 +63,10 @@ function Completion_ChartScatterDays({
                     bodyFont: { size: 14 },
                     caretSize: 0,
                     displayColors: false,
+                    callbacks: {
+                        title: (context) => format(context[0].parsed.x, "MMM do, yyyy"),
+                        label: (context) => `Finishes: ${context.parsed.y}`,
+                    },
                 },
             },
         }),

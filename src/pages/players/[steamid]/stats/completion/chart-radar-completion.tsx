@@ -71,6 +71,9 @@ function Completion_ChartRadarCompletion({
                     bodyFont: { size: 14 },
                     caretSize: 0,
                     displayColors: false,
+                    callbacks: {
+                        label: (context) => `Completion: ${context.parsed.r.toFixed(3)} %`,
+                    },
                 },
             },
         }),

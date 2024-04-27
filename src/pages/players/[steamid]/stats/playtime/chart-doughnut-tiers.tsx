@@ -1,38 +1,38 @@
 import { useMemo } from "react"
 
+import { getTimeString } from "@/lib/utils"
 import { tierLabels, tiers } from "@/lib/gokz"
 
 import { RecordsTopStatistics } from "../stats"
 
-import { Bar } from "react-chartjs-2"
+import { Doughnut } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
-interface Completion_ChartBarCompletionProps {
+interface Playtime_ChartDoughnutTiersProps {
     recordsTopStatistics: RecordsTopStatistics
     className?: string
 }
 
-function Completion_ChartBarCompletion({
+function Playtime_ChartDoughnutTiers({
     recordsTopStatistics,
     className,
-}: Completion_ChartBarCompletionProps) {
-    const completionBarData = useMemo<ChartData<"bar">>(() => {
-        const completionPercentagePerTier: number[] = tiers.map((tier) => {
-            const finishesCount = recordsTopStatistics.finishesPerTier[tier].length
-            const mapsCount = recordsTopStatistics.mapsPerTier[tier]
-
-            return (finishesCount / mapsCount) * 100
-        })
+}: Playtime_ChartDoughnutTiersProps) {
+    const timeByTierDoughnutData = useMemo<ChartData<"doughnut">>(() => {
+        const timePerTier: number[] = tiers.map((tier) =>
+            recordsTopStatistics.finishesPerTier[tier].reduce(
+                (acc, finish) => acc + finish.time,
+                0,
+            ),
+        )
 
         return {
             labels: tierLabels,
             datasets: [
                 {
-                    label: "Completion",
-                    data: completionPercentagePerTier,
-                    borderRadius: 8,
+                    label: "Playtime",
+                    data: timePerTier,
                     backgroundColor: [
                         "hsl(120, 99%, 62%)",
                         "hsl(90, 99%, 64%)",
@@ -42,21 +42,16 @@ function Completion_ChartBarCompletion({
                         "hsl(0, 100%, 50%)",
                         "hsl(294, 78%, 54%)",
                     ],
+                    borderColor: "hsl(240 10% 3.9%)",
                 },
             ],
         }
     }, [recordsTopStatistics])
 
-    const completionBarOptions = useMemo<ChartOptions<"bar">>(
+    const timeByTierDoughnutOptions = useMemo<ChartOptions<"doughnut">>(
         () => ({
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                y: {
-                    min: 0,
-                    max: 100,
-                },
-            },
             plugins: {
                 legend: {
                     display: false,
@@ -71,7 +66,9 @@ function Completion_ChartBarCompletion({
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        label: (context) => `Completion: ${context.parsed.y.toFixed(3)} %`,
+                        label: (context) => {
+                            return `Playtime: ${getTimeString(context.parsed)}`
+                        },
                     },
                 },
             },
@@ -82,13 +79,17 @@ function Completion_ChartBarCompletion({
     return (
         <Card className={className}>
             <CardHeader>
-                <CardTitle>Completion per tier</CardTitle>
+                <CardTitle>Time by tier</CardTitle>
             </CardHeader>
             <CardContent>
-                <Bar options={completionBarOptions} data={completionBarData} height={350} />
+                <Doughnut
+                    options={timeByTierDoughnutOptions}
+                    data={timeByTierDoughnutData}
+                    height={350}
+                />
             </CardContent>
         </Card>
     )
 }
 
-export default Completion_ChartBarCompletion
+export default Playtime_ChartDoughnutTiers
