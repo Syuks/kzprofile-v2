@@ -1,5 +1,13 @@
 import { RecordsTopStatistics } from "../stats"
 
+import Progression_CardPoints from "./cards-points"
+import Progression_TableMapMostPoints from "./table-maps-most-points"
+import Progression_TableMapFewerPoints from "./table-maps-fewer-points"
+import Progression_CardTiers from "./cards-tiers"
+import Progression_ChartBarTiers from "./chart-bar-tiers"
+import Progression_ChartRadarTiers from "./chart-radar-tiers"
+import Progression_CardRanks from "./cards-rank"
+
 interface Stats_ProgressionProps {
     recordsTopStatistics: RecordsTopStatistics
 }
@@ -7,9 +15,39 @@ interface Stats_ProgressionProps {
 function Stats_Progression({ recordsTopStatistics }: Stats_ProgressionProps) {
     return (
         <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4"></div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Progression_CardPoints recordsTopStatistics={recordsTopStatistics} />
+            </div>
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7"></div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-8">
+                <Progression_TableMapMostPoints
+                    className="col-span-4"
+                    recordsTopStatistics={recordsTopStatistics}
+                />
+                <Progression_TableMapFewerPoints
+                    className="col-span-4"
+                    recordsTopStatistics={recordsTopStatistics}
+                />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Progression_CardTiers recordsTopStatistics={recordsTopStatistics} />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Progression_ChartBarTiers
+                    className="col-span-4"
+                    recordsTopStatistics={recordsTopStatistics}
+                />
+                <Progression_ChartRadarTiers
+                    className="col-span-3"
+                    recordsTopStatistics={recordsTopStatistics}
+                />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Progression_CardRanks recordsTopStatistics={recordsTopStatistics} />
+            </div>
         </>
     )
 }
@@ -26,6 +64,7 @@ export default Stats_Progression
     Card: Map with fewer points
 
     Table: Maps with most points
+    Table: Maps with fewer points
 
     Card: Tier with most points
     Card: Tier with fewer points
@@ -36,9 +75,9 @@ export default Stats_Progression
     Radar: Points per tier normalized (limit is total points gettable per tier)
 
     Card: Rank
+    Card: Rank %
     Card: Next Rank
     Card: Points until next rank
-    Card: Rank %
 
     Stepped Line: Rank progression through time
     

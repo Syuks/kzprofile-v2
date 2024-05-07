@@ -376,8 +376,10 @@ export type KZRank = {
     border: string
 }
 
-export const getKZRank = (gameMode: GameModeID, points: number): KZRank => {
-    const thresholds = rankThresholds[gameMode]
+export const getKZRank = (gameMode: GameMode, points: number): KZRank => {
+    const gameModeID = getGameModeID(gameMode)
+
+    const thresholds = rankThresholds[gameModeID]
 
     for (let i = rankCount - 1; i >= 0; i--) {
         if (points >= thresholds[i]) {

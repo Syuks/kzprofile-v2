@@ -3,6 +3,7 @@ import { useMemo } from "react"
 import { StopwatchIcon } from "@radix-ui/react-icons"
 
 import { getTimeString } from "@/lib/utils"
+import { useRunType } from "@/components/localsettings/localsettings-provider"
 
 import { RecordsTopStatistics, RecordTopStat } from "../stats"
 
@@ -20,20 +21,22 @@ interface RunsData {
 }
 
 function Playtime_CardRuns({ recordsTopStatistics }: Playtime_CardRunsProps) {
+    const [runType] = useRunType()
+
     const runsData = useMemo<RunsData>(() => {
-        const shortestRun = recordsTopStatistics.finishes.reduce((min, run) => {
+        const shortestRun = recordsTopStatistics.finishes[runType].reduce((min, run) => {
             return run.time < min.time ? run : min
         })
 
-        const longestRun = recordsTopStatistics.finishes.reduce((max, run) => {
+        const longestRun = recordsTopStatistics.finishes[runType].reduce((max, run) => {
             return run.time > max.time ? run : max
         })
 
-        const totalTime = recordsTopStatistics.finishes.reduce((acc, finish) => {
+        const totalTime = recordsTopStatistics.finishes[runType].reduce((acc, finish) => {
             return acc + finish.time
         }, 0)
 
-        const averageTime = totalTime / (recordsTopStatistics.finishes.length || 1)
+        const averageTime = totalTime / (recordsTopStatistics.finishes[runType].length || 1)
 
         return {
             shortestRun,
@@ -41,7 +44,7 @@ function Playtime_CardRuns({ recordsTopStatistics }: Playtime_CardRunsProps) {
             totalTime,
             averageTime,
         }
-    }, [recordsTopStatistics])
+    }, [recordsTopStatistics, runType])
 
     return (
         <>

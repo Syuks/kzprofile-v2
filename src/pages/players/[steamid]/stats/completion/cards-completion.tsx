@@ -4,6 +4,7 @@ import { CheckCircledIcon, CrossCircledIcon, LapTimerIcon } from "@radix-ui/reac
 
 import { cn } from "@/lib/utils"
 import { TierID, getTierData, tiers, type TierData } from "@/lib/gokz"
+import { useRunType } from "@/components/localsettings/localsettings-provider"
 
 import { RecordsTopStatistics } from "../stats"
 
@@ -26,10 +27,12 @@ interface CompletionData {
 }
 
 function Completion_CardCompletion({ recordsTopStatistics }: Completion_CardCompletionProps) {
-    const completionData = useMemo<CompletionData>(() => {
-        const mapsFinished = recordsTopStatistics.finishes.length
+    const [runType] = useRunType()
 
-        const mapsUnfinished = recordsTopStatistics.unfinishes.length
+    const completionData = useMemo<CompletionData>(() => {
+        const mapsFinished = recordsTopStatistics.finishes[runType].length
+
+        const mapsUnfinished = recordsTopStatistics.unfinishes[runType].length
 
         const mapsTotal = mapsFinished + mapsUnfinished
 
@@ -74,7 +77,7 @@ function Completion_CardCompletion({ recordsTopStatistics }: Completion_CardComp
             leastCompletedTierData,
             leastCompletedTierPercentage,
         }
-    }, [recordsTopStatistics])
+    }, [recordsTopStatistics, runType])
 
     return (
         <>

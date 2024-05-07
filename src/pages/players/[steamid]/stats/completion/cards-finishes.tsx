@@ -4,6 +4,7 @@ import { CheckCircledIcon, CrossCircledIcon, StopwatchIcon } from "@radix-ui/rea
 
 import { cn } from "@/lib/utils"
 import { TierID, getTierData, tiers, type TierData } from "@/lib/gokz"
+import { useRunType } from "@/components/localsettings/localsettings-provider"
 
 import { RecordsTopStatistics } from "../stats"
 
@@ -24,10 +25,12 @@ interface FinishesData {
 }
 
 function Completion_CardFinishes({ recordsTopStatistics }: Completion_CardFinishesProps) {
-    const finishesData = useMemo<FinishesData>(() => {
-        const mapsFinished = recordsTopStatistics.finishes.length
+    const [runType] = useRunType()
 
-        const mapsUnfinished = recordsTopStatistics.unfinishes.length
+    const finishesData = useMemo<FinishesData>(() => {
+        const mapsFinished = recordsTopStatistics.finishes[runType].length
+
+        const mapsUnfinished = recordsTopStatistics.unfinishes[runType].length
 
         const mapsTotal = mapsFinished + mapsUnfinished
 
@@ -62,7 +65,7 @@ function Completion_CardFinishes({ recordsTopStatistics }: Completion_CardFinish
             tierWithFewerFinishesData,
             tierWithFewerFinishesAmount,
         }
-    }, [recordsTopStatistics])
+    }, [recordsTopStatistics, runType])
 
     return (
         <>

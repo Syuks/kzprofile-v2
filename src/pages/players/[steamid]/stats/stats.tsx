@@ -6,6 +6,7 @@ import { useOutletContext } from "react-router-dom"
 
 import { TierID } from "@/lib/gokz"
 import { useRunType } from "@/components/localsettings/localsettings-provider"
+import { PlayerProfileKZData } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
 import { PlayerProfileOutletContext } from ".."
 
@@ -28,10 +29,7 @@ export interface RecordTopStat {
     created_on: string
 }
 
-export interface RecordsTopStatistics {
-    finishes: RecordTopStat[]
-    unfinishes: RecordTopStat[]
-
+export interface RecordsTopStatistics extends PlayerProfileKZData {
     finishesPerTier: Record<TierID, RecordTopStat[]>
     unfinishesPerTier: Record<TierID, RecordTopStat[]>
     mapsPerTier: Record<TierID, number>
@@ -56,8 +54,7 @@ function Stats() {
 
     const recordsTopStatistics = useMemo<RecordsTopStatistics>(() => {
         let statistics: RecordsTopStatistics = {
-            finishes: playerProfileKZData.finishes[runType],
-            unfinishes: playerProfileKZData.unfinishes[runType],
+            ...playerProfileKZData,
 
             finishesPerTier: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] },
             unfinishesPerTier: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] },
