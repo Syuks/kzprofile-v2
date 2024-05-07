@@ -7,6 +7,9 @@ import Progression_CardTiers from "./cards-tiers"
 import Progression_ChartBarTiers from "./chart-bar-tiers"
 import Progression_ChartRadarTiers from "./chart-radar-tiers"
 import Progression_CardRanks from "./cards-rank"
+import Progression_ChartLineRank from "./chart-line-rank"
+import Progression_CardMedals from "./cards-medals"
+import Progression_ChartBarPoints from "./chart-bar-points"
 
 interface Stats_ProgressionProps {
     recordsTopStatistics: RecordsTopStatistics
@@ -48,6 +51,14 @@ function Stats_Progression({ recordsTopStatistics }: Stats_ProgressionProps) {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Progression_CardRanks recordsTopStatistics={recordsTopStatistics} />
             </div>
+
+            <Progression_ChartLineRank recordsTopStatistics={recordsTopStatistics} />
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Progression_CardMedals recordsTopStatistics={recordsTopStatistics} />
+            </div>
+
+            <Progression_ChartBarPoints recordsTopStatistics={recordsTopStatistics} />
         </>
     )
 }
