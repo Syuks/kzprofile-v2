@@ -41,17 +41,23 @@ import ViggoHolo from "@/assets/stickers/Viggo-Holo.png"
 import Viggo from "@/assets/stickers/Viggo.png"
 import zPrince from "@/assets/stickers/zPrince.png"
 
-export interface AchievementData {
+interface AchievementData {
     id: string
     title: string
     description: string
     sticker: string
     holoSticker?: string
-    tiers?: TierID[]
-    maps?: string[]
 }
 
-export const achievements: AchievementData[] = [
+export interface TierAchievementData extends AchievementData {
+    tiers: TierID[]
+}
+
+export interface MapAchievementData extends AchievementData {
+    maps: string[]
+}
+
+export const tierAchievements: TierAchievementData[] = [
     {
         id: "tier-very-easy",
         title: "Robo",
@@ -108,6 +114,9 @@ export const achievements: AchievementData[] = [
         sticker: TyranidsHiveTyrant,
         tiers: [1, 2, 3, 4, 5, 6, 7],
     },
+]
+
+export const mapAchievements: MapAchievementData[] = [
     {
         id: "map-bkz",
         title: "Move It",

@@ -34,3 +34,14 @@ export function formatDistanceToNowStrictWithOffset<DateType extends Date>(
 export function getWorkshopLink(workshopId: string) {
     return `https://steamcommunity.com/sharedfiles/filedetails/?id=${workshopId}`
 }
+
+export function generateRandomString(minLength: number, maxLength: number) {
+    const characters =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[]{}|;:,.<>?"
+    const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength
+    let result = ""
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length))
+    }
+    return result
+}
