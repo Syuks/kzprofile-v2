@@ -97,10 +97,31 @@ module.exports = {
                     from: { height: "var(--radix-accordion-content-height)" },
                     to: { height: "0" },
                 },
+                holo: {
+                    "0%, 100%": {
+                        backgroundPosition: "0% 0%",
+                    },
+                    "10%": {
+                        backgroundPosition: "0% 0%",
+                    },
+                    "19%": {
+                        backgroundPosition: "70% 70%",
+                    },
+                    "35%": {
+                        backgroundPosition: "100% 100%",
+                    },
+                    "55%": {
+                        backgroundPosition: "30% 30%",
+                    },
+                },
             },
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
+                holo: "holo 15s ease infinite",
+            },
+            backgroundImage: {
+                "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
             },
         },
     },

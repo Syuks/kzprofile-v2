@@ -11,6 +11,7 @@ import Finishes from "./pages/players/[steamid]/finishes"
 import Unfinishes from "./pages/players/[steamid]/unfinishes"
 import Jumpstats from "./pages/players/[steamid]/jumpstats"
 import Stats from "./pages/players/[steamid]/stats/stats"
+import Achievements from "./pages/players/[steamid]/achievements/achievements"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -87,6 +88,10 @@ const router = createBrowserRouter([
                             {
                                 path: "stats",
                                 element: <Stats />,
+                            },
+                            {
+                                path: "achievements",
+                                element: <Achievements />,
                             },
                         ],
                     },
