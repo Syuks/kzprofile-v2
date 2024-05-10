@@ -31,7 +31,7 @@ import { cn } from "@/lib/utils"
 
 export interface PlayerProfileOutletContext {
     steamid: string
-    playerProfileKZData: PlayerProfileKZData
+    playerProfileKZData: PlayerProfileKZData | undefined
     playerProfileKZDataRefetch: () => void
     playerProfileKZDataFetching: boolean
 }
@@ -79,24 +79,12 @@ function PlayerProfile() {
 
     const playerProfileKZData = usePlayerProfileKZData(steamid, gameMode)
 
-    if (playerProfileKZData.isLoading) {
-        return "Loading..."
-    }
-
-    if (playerProfileKZData.isError) {
-        return playerProfileKZData.error.message
-    }
-
-    if (!playerProfileKZData.data || !steamProfile.data) {
-        return "Something weird happened. An error occurred with the global API."
-    }
-
     return (
         <>
             <div className="py-10">
                 <PlayerInfo
                     playerProfileKZData={playerProfileKZData.data}
-                    steamProfile={steamProfile.data[0]}
+                    steamProfile={steamProfile.data?.[0]}
                     steamid={steamid}
                 />
             </div>
@@ -104,32 +92,32 @@ function PlayerProfile() {
                 <PlayerProfileNavLink
                     path=""
                     end={true}
-                    border={playerProfileKZData.data.rank.border}
+                    playerProfileKZData={playerProfileKZData.data}
                 >
                     <TextAlignLeftIcon className="mr-2 h-4 w-4" />
                     Finishes
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink
                     path="unfinishes"
-                    border={playerProfileKZData.data.rank.border}
+                    playerProfileKZData={playerProfileKZData.data}
                 >
                     <StopwatchIcon className="mr-2 h-4 w-4" />
                     Unfinishes
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink
                     path="jumpstats"
-                    border={playerProfileKZData.data.rank.border}
+                    playerProfileKZData={playerProfileKZData.data}
                 >
                     <ShuffleIcon className="mr-2 h-4 w-4" />
                     Jumpstats
                 </PlayerProfileNavLink>
-                <PlayerProfileNavLink path="stats" border={playerProfileKZData.data.rank.border}>
+                <PlayerProfileNavLink path="stats" playerProfileKZData={playerProfileKZData.data}>
                     <BarChartIcon className="mr-2 h-4 w-4" />
                     Statistics
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink
                     path="achievements"
-                    border={playerProfileKZData.data.rank.border}
+                    playerProfileKZData={playerProfileKZData.data}
                 >
                     <LockOpen1Icon className="mr-2 h-4 w-4" />
                     Achievements
@@ -153,7 +141,7 @@ function PlayerProfile() {
 }
 
 interface ExperienceBarProps {
-    playerProfileKZData: PlayerProfileKZData
+    playerProfileKZData: PlayerProfileKZData | undefined
 }
 
 function ExperienceBar({ playerProfileKZData }: ExperienceBarProps) {
@@ -175,49 +163,55 @@ function ExperienceBar({ playerProfileKZData }: ExperienceBarProps) {
                         <div className="h-2 w-1/12 border-r-4 border-r-background group-hover:border-r-2"></div>
                         <div className="h-2 w-1/12 border-r-background"></div>
                     </div>
-                    <div
-                        className={`h-full ${playerProfileKZData.rank.backgroundColor}`}
-                        style={{ width: `${playerProfileKZData.rank.percent * 100}%` }}
-                    ></div>
+                    {!!playerProfileKZData && (
+                        <div
+                            className={cn("h-full", playerProfileKZData.rank.backgroundColor)}
+                            style={{ width: `${playerProfileKZData.rank.percent * 100}%` }}
+                        ></div>
+                    )}
                 </div>
             </TooltipTrigger>
-            <TooltipContent
-                side="bottom"
-                align="start"
-                className="border bg-background text-foreground"
-            >
-                <div>{playerProfileKZData.rank.prevThreshold.toLocaleString()} pts.</div>
-            </TooltipContent>
-            <TooltipContent
-                side="bottom"
-                align="center"
-                className="border bg-background text-foreground"
-            >
-                <div>
-                    {playerProfileKZData.rank.points.toLocaleString()} pts. •{" "}
-                    {(playerProfileKZData.rank.percent * 100).toFixed(2)}%
-                </div>
-            </TooltipContent>
-            <TooltipContent
-                side="bottom"
-                align="end"
-                className="border bg-background text-foreground"
-            >
-                <div>{playerProfileKZData.rank.nextThreshold.toLocaleString()} pts.</div>
-            </TooltipContent>
+            {!!playerProfileKZData && (
+                <>
+                    <TooltipContent
+                        side="bottom"
+                        align="start"
+                        className="border bg-background text-foreground"
+                    >
+                        <div>{playerProfileKZData.rank.prevThreshold.toLocaleString()} pts.</div>
+                    </TooltipContent>
+                    <TooltipContent
+                        side="bottom"
+                        align="center"
+                        className="border bg-background text-foreground"
+                    >
+                        <div>
+                            {playerProfileKZData.rank.points.toLocaleString()} pts. •{" "}
+                            {(playerProfileKZData.rank.percent * 100).toFixed(2)}%
+                        </div>
+                    </TooltipContent>
+                    <TooltipContent
+                        side="bottom"
+                        align="end"
+                        className="border bg-background text-foreground"
+                    >
+                        <div>{playerProfileKZData.rank.nextThreshold.toLocaleString()} pts.</div>
+                    </TooltipContent>
+                </>
+            )}
         </Tooltip>
     )
 }
 
 interface PlayerProfileNavLinkProps {
     path: string
-    border: string
+    playerProfileKZData: PlayerProfileKZData | undefined
     end?: boolean | undefined
 }
 
 function PlayerProfileNavLink({
     path,
-    border,
+    playerProfileKZData,
     end,
     children,
 }: PropsWithChildren<PlayerProfileNavLinkProps>) {
@@ -230,7 +224,7 @@ function PlayerProfileNavLink({
                     isActive
                         ? buttonVariants({ variant: "outline" })
                         : buttonVariants({ variant: "ghost" }),
-                    isActive ? border : "",
+                    isActive && playerProfileKZData ? playerProfileKZData.rank.border : "",
                     "mt-1 justify-start",
                 )
             }

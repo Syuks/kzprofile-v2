@@ -415,7 +415,7 @@ function Finishes() {
     }
 
     const table = useReactTable({
-        data: playerProfileKZData.finishes[runType],
+        data: playerProfileKZData?.finishes[runType] ?? [],
         columns,
         state: {
             sorting,
@@ -448,6 +448,10 @@ function Finishes() {
     }
 
     const serverNameFacetedFilterOptions: DatatableFacetedFilterOption[] = useMemo(() => {
+        if (!playerProfileKZData) {
+            return []
+        }
+
         const serverNames = playerProfileKZData.finishes[runType].map((obj) => obj.server_name)
         const uniqueServerNames = [...new Set(serverNames)]
         return uniqueServerNames.map((name) => {

@@ -15,11 +15,12 @@ import PlayerFlag from "@/components/flag/player-flag"
 //import Role from "../../Roles/Role"
 
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface PlayerInfoProps {
     steamid: string
-    steamProfile: SteamPlayerSummary
-    playerProfileKZData: PlayerProfileKZData
+    steamProfile: SteamPlayerSummary | undefined
+    playerProfileKZData: PlayerProfileKZData | undefined
 }
 
 function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoProps) {
@@ -63,11 +64,15 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                                 className="absolute -left-[20px] -top-[20px] hidden max-w-none"
                             />
                         </div>
-                        <img
-                            className="h-full w-full rounded"
-                            src={steamProfile.avatarfull}
-                            alt="playerAvatar"
-                        />
+                        {!!steamProfile ? (
+                            <img
+                                className="h-full w-full rounded"
+                                src={steamProfile.avatarfull}
+                                alt="playerAvatar"
+                            />
+                        ) : (
+                            <Skeleton className="h-full w-full rounded" />
+                        )}
                     </Link>
                 </div>
                 {/*<div className="socials-row">{PlayerSocials}</div>*/}
@@ -75,12 +80,12 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
 
             <div className="my-4 flex flex-row items-center justify-around md:my-0 md:ml-12 md:flex-col">
                 <div className="md:order-0 relative order-1 mt-2">
-                    {playerProfileKZData.medals.gold > 0 ? (
+                    {!!playerProfileKZData && playerProfileKZData.medals.gold > 0 ? (
                         <>
                             <img src={GoldMedal} alt="1000-medal" />
                             <Badge
                                 variant="secondary"
-                                className="bg-medals-gold pointer-events-none absolute left-[50px] top-[10px] px-2 text-white"
+                                className="pointer-events-none absolute left-[50px] top-[10px] bg-medals-gold px-2 text-white"
                             >
                                 {playerProfileKZData.medals.gold}
                             </Badge>
@@ -90,12 +95,12 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                     )}
                 </div>
                 <div className="order-0 relative mt-[1.15rem] md:order-1">
-                    {playerProfileKZData.medals.red > 0 ? (
+                    {!!playerProfileKZData && playerProfileKZData.medals.red > 0 ? (
                         <>
                             <img src={RedMedal} alt="900-medal" />
                             <Badge
                                 variant="secondary"
-                                className="bg-medals-red pointer-events-none absolute left-[34px] top-0 px-2 text-white"
+                                className="pointer-events-none absolute left-[34px] top-0 bg-medals-red px-2 text-white"
                             >
                                 {playerProfileKZData.medals.red}
                             </Badge>
@@ -105,12 +110,12 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                     )}
                 </div>
                 <div className="relative order-2 mt-[0.35rem]">
-                    {playerProfileKZData.medals.blue > 0 ? (
+                    {!!playerProfileKZData && playerProfileKZData.medals.blue > 0 ? (
                         <>
                             <img src={BlueMedal} alt="800-mdeal" />
                             <Badge
                                 variant="secondary"
-                                className="bg-medals-blue pointer-events-none absolute left-[34px] top-0 px-2 text-white"
+                                className="pointer-events-none absolute left-[34px] top-0 bg-medals-blue px-2 text-white"
                             >
                                 {playerProfileKZData.medals.blue}
                             </Badge>
@@ -123,19 +128,30 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
 
             <div className="ml-0 md:ml-12">
                 <div className="mt-4 text-7xl font-light">
-                    <span className="mr-5 inline-block">{steamProfile.personaname}</span>
-                    <PlayerFlag
-                        className="inline-block"
-                        nationality={steamProfile.loccountrycode}
-                    />
+                    {!!steamProfile ? (
+                        <>
+                            <span className="mr-5 inline-block">{steamProfile.personaname}</span>
+                            <PlayerFlag
+                                className="inline-block"
+                                nationality={steamProfile.loccountrycode}
+                            />
+                        </>
+                    ) : (
+                        <Skeleton className="mt-7 h-14 w-72" />
+                    )}
                 </div>
                 <div className="mt-3 text-5xl">
-                    <span className={playerProfileKZData.rank.color}>
-                        {playerProfileKZData.rank.label}
+                    <span className={playerProfileKZData?.rank.color}>
+                        {playerProfileKZData?.rank.label}
+                        {!playerProfileKZData && <Skeleton className="mt-6 h-10 w-48" />}
                     </span>
                 </div>
                 <div className="mt-3 text-4xl font-light text-foreground/60">
-                    {`${playerProfileKZData.points.total.toLocaleString()} • (${playerProfileKZData.points.average.toFixed(2)})`}
+                    {!!playerProfileKZData ? (
+                        `${playerProfileKZData.points.total.toLocaleString()} • (${playerProfileKZData.points.average.toFixed(2)})`
+                    ) : (
+                        <Skeleton className="mt-2 h-10 w-40" />
+                    )}
                 </div>
                 {/*<div className="inline-flex mb-2 ">{PlayerRoles}</div>*/}
             </div>

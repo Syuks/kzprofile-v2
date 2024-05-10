@@ -266,7 +266,7 @@ function Unfinishes() {
     }
 
     const table = useReactTable({
-        data: playerProfileKZData.unfinishes[runType],
+        data: playerProfileKZData?.unfinishes[runType] ?? [],
         columns,
         state: {
             sorting,

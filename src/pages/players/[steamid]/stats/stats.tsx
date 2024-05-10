@@ -52,7 +52,11 @@ function Stats() {
 
     const [runType] = useRunType()
 
-    const recordsTopStatistics = useMemo<RecordsTopStatistics>(() => {
+    const recordsTopStatistics = useMemo<RecordsTopStatistics | undefined>(() => {
+        if (!playerProfileKZData) {
+            return undefined
+        }
+
         let statistics: RecordsTopStatistics = {
             ...playerProfileKZData,
 
@@ -159,13 +163,19 @@ function Stats() {
                     <TabsTrigger value="playtime">Playtime</TabsTrigger>
                 </TabsList>
                 <TabsContent value="completion" className="space-y-4">
-                    <Stats_Completion recordsTopStatistics={recordsTopStatistics} />
+                    {!!recordsTopStatistics && (
+                        <Stats_Completion recordsTopStatistics={recordsTopStatistics} />
+                    )}
                 </TabsContent>
                 <TabsContent value="playtime" className="space-y-4">
-                    <Stats_Playtime recordsTopStatistics={recordsTopStatistics} />
+                    {!!recordsTopStatistics && (
+                        <Stats_Playtime recordsTopStatistics={recordsTopStatistics} />
+                    )}
                 </TabsContent>
                 <TabsContent value="progression" className="space-y-4">
-                    <Stats_Progression recordsTopStatistics={recordsTopStatistics} />
+                    {!!recordsTopStatistics && (
+                        <Stats_Progression recordsTopStatistics={recordsTopStatistics} />
+                    )}
                 </TabsContent>
             </Tabs>
         </>

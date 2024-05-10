@@ -128,6 +128,10 @@ function TierAchievementCard({ achievement }: TierAchievementCardProps) {
     const { playerProfileKZData } = useOutletContext<PlayerProfileOutletContext>()
 
     const progress = useMemo<AchievementProgress>(() => {
+        if (!playerProfileKZData) {
+            return 0
+        }
+
         const tierFinishes = playerProfileKZData.finishes[runType].filter((run) =>
             achievement.tiers.includes(run.difficulty),
         )
@@ -205,6 +209,13 @@ function MapAchievementCard({ achievement }: MapAchievementCardProps) {
         progress: AchievementProgress
         mapStringsArray: JSX.Element[]
     }>(() => {
+        if (!playerProfileKZData) {
+            return {
+                progress: 0,
+                mapStringsArray: [],
+            }
+        }
+
         let acc = 0
 
         const mapStringsArray = achievement.maps.map((mapName) => {
