@@ -58,16 +58,52 @@ export interface TierData {
     label: TierLabel
     color: string
     backgroundColor: string
+    border: string
 }
 
 const tierData: TierData[] = [
-    { label: "Very Easy", color: "text-csgo-green", backgroundColor: "bg-csgo-green" },
-    { label: "Easy", color: "text-csgo-lime", backgroundColor: "bg-csgo-lime" },
-    { label: "Medium", color: "text-csgo-yellow", backgroundColor: "bg-csgo-yellow" },
-    { label: "Hard", color: "text-csgo-gold", backgroundColor: "bg-csgo-gold" },
-    { label: "Very Hard", color: "text-csgo-red", backgroundColor: "bg-csgo-red" },
-    { label: "Extreme", color: "text-csgo-darkred", backgroundColor: "bg-csgo-darkred" },
-    { label: "Death", color: "text-csgo-orchid", backgroundColor: "bg-csgo-orchid" },
+    {
+        label: "Very Easy",
+        color: "text-csgo-green",
+        backgroundColor: "bg-csgo-green",
+        border: "border-csgo-green",
+    },
+    {
+        label: "Easy",
+        color: "text-csgo-lime",
+        backgroundColor: "bg-csgo-lime",
+        border: "border-csgo-lime",
+    },
+    {
+        label: "Medium",
+        color: "text-csgo-yellow",
+        backgroundColor: "bg-csgo-yellow",
+        border: "border-csgo-yellow",
+    },
+    {
+        label: "Hard",
+        color: "text-csgo-gold",
+        backgroundColor: "bg-csgo-gold",
+        border: "border-csgo-gold",
+    },
+    {
+        label: "Very Hard",
+        color: "text-csgo-red",
+        backgroundColor: "bg-csgo-red",
+        border: "border-csgo-red",
+    },
+    {
+        label: "Extreme",
+        color: "text-csgo-darkred",
+        backgroundColor: "bg-csgo-darkred",
+        border: "border-csgo-darkred",
+    },
+    {
+        label: "Death",
+        color: "text-csgo-orchid",
+        backgroundColor: "bg-csgo-orchid",
+        border: "border-csgo-orchid",
+    },
 ]
 
 export const getTierData = (tier: TierID) => {

@@ -40,4 +40,4 @@ const fetchKZProfileMaps = () => {
 }
 
 export default useKZProfileMaps
-export { fetchKZProfileMaps }
+export { fetchKZProfileMaps, type KZProfileMap }

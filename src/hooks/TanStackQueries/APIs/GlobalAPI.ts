@@ -340,6 +340,7 @@ export interface GetRecordsTopParams {
     stage?: number //Stage to query
     modes_list_string?: string //Mode(s) to query
     has_teleports?: boolean //Whether to query for has_teleports or not
+    overall?: boolean //To get NUB times
     player_name?: string //Player name to query
     offset?: number //Offset of the dataset to query
     limit?: number //Amount of items returned for the query

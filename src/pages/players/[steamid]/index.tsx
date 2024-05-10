@@ -18,11 +18,7 @@ import usePlayerProfileKZData, {
 
 import { useGameMode } from "@/components/localsettings/localsettings-provider"
 
-//import LoadingKZ from "../../components/Loading/LoadingKZ"
-
-//import BannerBackground from "../../components/BannerBackground/BannerBackground"
 import PlayerInfo from "./player-info"
-//import Completions from "../../components/Panels/CompletionsPanel/CompletionsPanel"
 
 import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"

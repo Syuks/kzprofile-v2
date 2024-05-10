@@ -5,13 +5,18 @@ import "./index.css"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
 import Layout from "./pages/layout"
+
 import PlayerSearch from "./pages/players/search"
+
 import PlayerProfile from "./pages/players/[steamid]"
 import Finishes from "./pages/players/[steamid]/finishes"
 import Unfinishes from "./pages/players/[steamid]/unfinishes"
 import Jumpstats from "./pages/players/[steamid]/jumpstats"
 import Stats from "./pages/players/[steamid]/stats/stats"
 import Achievements from "./pages/players/[steamid]/achievements/achievements"
+
+import MapLayout from "./pages/maps/[map-name]"
+import MapLeaderboard from "./pages/maps/[map-name]/leaderboard"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -92,6 +97,21 @@ const router = createBrowserRouter([
                             {
                                 path: "achievements",
                                 element: <Achievements />,
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                path: "maps",
+                children: [
+                    {
+                        path: ":mapName",
+                        element: <MapLayout />,
+                        children: [
+                            {
+                                index: true,
+                                element: <MapLeaderboard />,
                             },
                         ],
                     },
