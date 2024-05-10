@@ -17,6 +17,7 @@ import Achievements from "./pages/players/[steamid]/achievements/achievements"
 
 import MapLayout from "./pages/maps/[map-name]"
 import MapLeaderboard from "./pages/maps/[map-name]/leaderboard"
+import MapMedia from "./pages/maps/[map-name]/media"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
                             {
                                 index: true,
                                 element: <MapLeaderboard />,
+                            },
+                            {
+                                path: "media",
+                                element: <MapMedia />,
                             },
                         ],
                     },

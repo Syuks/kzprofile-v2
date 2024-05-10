@@ -1,4 +1,8 @@
-import { /*useState, */ useMemo } from "react"
+import { useMemo } from "react"
+
+import { GitHubLogoIcon } from "@radix-ui/react-icons"
+
+import { Link } from "react-router-dom"
 
 import ErrorImage from "@/assets/images/error-image.png"
 //import VideoOverlay from "@/assets/VideoOverlay.png"
@@ -13,6 +17,8 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import { Button } from "@/components/ui/button"
 
 interface MapVideoGalleryProps {
     videos: string[]
@@ -106,6 +112,26 @@ function MapVideoGallery({ videos }: MapVideoGalleryProps) {
             )
         })
     }*/
+
+    if (!videosData.length) {
+        return (
+            <AspectRatio
+                ratio={16 / 9}
+                className="flex flex-col items-center justify-center rounded-lg border border-dashed shadow-sm"
+            >
+                <h3 className="text-2xl font-bold tracking-tight">This map has no videos</h3>
+                <p className="text-sm text-muted-foreground">
+                    You can contribute by making an issue or a PR.
+                </p>
+                <Button className="mt-4" asChild>
+                    <Link to="https://github.com/Syuks/KZProfile" target="_blank" rel="noreferrer">
+                        <GitHubLogoIcon className="mr-2 h-4 w-4" />
+                        Github
+                    </Link>
+                </Button>
+            </AspectRatio>
+        )
+    }
 
     return (
         <Carousel>
