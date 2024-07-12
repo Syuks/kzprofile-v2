@@ -67,7 +67,6 @@ function Progression_TableMapMostPoints({
                                 <TableRow key={index}>
                                     <TableCell>
                                         <MapHoverCard
-                                            mapId={finish.map_id}
                                             mapName={finish.map_name}
                                             className="h-7 px-0"
                                         />

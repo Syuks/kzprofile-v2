@@ -73,6 +73,9 @@ function Progression_ChartLinePoints({
                     min: 0,
                 },
             },
+            interaction: {
+                intersect: false,
+            },
             plugins: {
                 legend: {
                     display: false,

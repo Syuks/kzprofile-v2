@@ -44,13 +44,7 @@ function MapperListSmall({ mapperNames, mapperIds }: MappersListProps) {
     }
 
     if (mapperNames.length === 1) {
-        return (
-            <MapperLink
-                mapperName={mapperNames[0]}
-                mapperId={mapperIds[0]}
-                className="h-auto text-inherit"
-            />
-        )
+        return <MapperLink mapperName={mapperNames[0]} mapperId={mapperIds[0]} className="h-auto" />
     }
 
     if (mapperNames.length === 2) {
@@ -59,13 +53,13 @@ function MapperListSmall({ mapperNames, mapperIds }: MappersListProps) {
                 <MapperLink
                     mapperName={mapperNames[0]}
                     mapperId={mapperIds[0]}
-                    className="h-auto text-inherit"
+                    className="h-auto"
                 />
                 {" & "}
                 <MapperLink
                     mapperName={mapperNames[1]}
                     mapperId={mapperIds[1]}
-                    className="h-auto text-inherit"
+                    className="h-auto"
                 />
             </>
         )
@@ -77,7 +71,7 @@ function MapperListSmall({ mapperNames, mapperIds }: MappersListProps) {
                 <MapperLink
                     mapperName={mapperNames[0]}
                     mapperId={mapperIds[0]}
-                    className="h-auto text-inherit"
+                    className="h-auto"
                 />
                 {` & ${mapperNames.length - 1} more`}
             </>

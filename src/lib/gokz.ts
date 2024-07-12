@@ -59,6 +59,7 @@ export interface TierData {
     color: string
     backgroundColor: string
     border: string
+    shadow: string
 }
 
 const tierData: TierData[] = [
@@ -67,42 +68,49 @@ const tierData: TierData[] = [
         color: "text-csgo-green",
         backgroundColor: "bg-csgo-green",
         border: "border-csgo-green",
+        shadow: "shadow-csgo-green",
     },
     {
         label: "Easy",
         color: "text-csgo-lime",
         backgroundColor: "bg-csgo-lime",
         border: "border-csgo-lime",
+        shadow: "shadow-csgo-lime",
     },
     {
         label: "Medium",
         color: "text-csgo-yellow",
         backgroundColor: "bg-csgo-yellow",
         border: "border-csgo-yellow",
+        shadow: "shadow-csgo-yellow",
     },
     {
         label: "Hard",
         color: "text-csgo-gold",
         backgroundColor: "bg-csgo-gold",
         border: "border-csgo-gold",
+        shadow: "shadow-csgo-gold",
     },
     {
         label: "Very Hard",
         color: "text-csgo-red",
         backgroundColor: "bg-csgo-red",
         border: "border-csgo-red",
+        shadow: "shadow-csgo-red",
     },
     {
         label: "Extreme",
         color: "text-csgo-darkred",
         backgroundColor: "bg-csgo-darkred",
         border: "border-csgo-darkred",
+        shadow: "shadow-csgo-darkred",
     },
     {
         label: "Death",
         color: "text-csgo-orchid",
         backgroundColor: "bg-csgo-orchid",
         border: "border-csgo-orchid",
+        shadow: "shadow-csgo-orchid",
     },
 ]
 

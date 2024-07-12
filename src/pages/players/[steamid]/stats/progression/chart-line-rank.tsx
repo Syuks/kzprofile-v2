@@ -84,6 +84,9 @@ function Progression_ChartLineRank({
                     min: 0,
                 },
             },
+            interaction: {
+                intersect: false,
+            },
             plugins: {
                 legend: {
                     display: false,

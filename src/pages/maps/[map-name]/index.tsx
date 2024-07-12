@@ -2,15 +2,18 @@ import { useMemo, useState, type PropsWithChildren } from "react"
 
 import { BarChartIcon, DesktopIcon, TextAlignCenterIcon, VideoIcon } from "@radix-ui/react-icons"
 
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query"
 import { z } from "zod"
 
 import { NavLink, useParams, Outlet, useSearchParams } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
 import { TierData, getTierData } from "@/lib/gokz"
+import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
 
 import useKZProfileMap from "@/hooks/TanStackQueries/useKZProfileMap"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import useMapTimes, { MapRecordsTop } from "@/hooks/TanStackQueries/useMapTimes"
 
 import MapInfo from "./map-info"
 import MapBanner from "./map-banner"
@@ -26,13 +29,16 @@ export interface MapLayoutOutletContext {
     kzProfileMapRefetch: () => void
     kzProfileMapFetching: boolean
     mapTierData: TierData | undefined
+    mapTimesInfiniteQuery: UseInfiniteQueryResult<InfiniteData<MapRecordsTop[], unknown>, Error>
 }
 
 function MapLayout() {
     const { mapName } = useParams() as { mapName: string }
 
-    const [searchParams] = useSearchParams()
+    const [gameMode] = useGameMode()
+    const [runType] = useRunType()
 
+    const [searchParams] = useSearchParams()
     const [stage, setStage] = useState<number>(() => {
         const value = searchParams.get("stage") || searchParams.get("bonus")
 
@@ -53,6 +59,8 @@ function MapLayout() {
 
         return getTierData(kzProfileMap.data.difficulty)
     }, [kzProfileMap.data])
+
+    const mapTimesInfiniteQuery = useMapTimes(mapName, gameMode, runType, stage, 100)
 
     /*useEffect(() => {
         document.title = `${mapName} - KZ Profile`
@@ -94,6 +102,7 @@ function MapLayout() {
                             kzProfileMapRefetch: kzProfileMap.refetch,
                             kzProfileMapFetching: kzProfileMap.isFetching,
                             mapTierData: mapTierData,
+                            mapTimesInfiniteQuery: mapTimesInfiniteQuery,
                         } satisfies MapLayoutOutletContext
                     }
                 />

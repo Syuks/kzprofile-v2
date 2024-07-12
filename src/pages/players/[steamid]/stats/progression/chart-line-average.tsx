@@ -75,6 +75,9 @@ function Progression_ChartLineAverage({
                     min: 0,
                 },
             },
+            interaction: {
+                intersect: false,
+            },
             plugins: {
                 legend: {
                     display: false,

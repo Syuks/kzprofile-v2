@@ -91,4 +91,4 @@ const fetchMapWRs = (mapName: string, gameMode: GameMode, stage: number) => {
 }
 
 export default useMapWRs
-export { fetchMapWRs }
+export { fetchMapWRs, type RecordsTopRecent }

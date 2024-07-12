@@ -15,10 +15,7 @@ import { useOutletContext, Link, useNavigate } from "react-router-dom"
 import { lightFormat } from "date-fns"
 
 import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
-import useMapTimes, {
-    refetchMapTimes,
-    type MapRecordsTop,
-} from "@/hooks/TanStackQueries/useMapTimes"
+import { refetchMapTimes, type MapRecordsTop } from "@/hooks/TanStackQueries/useMapTimes"
 import { fetchRecordReplay } from "@/hooks/TanStackQueries/useRecordReplay"
 
 import { DataTable } from "@/components/datatable/datatable"
@@ -88,7 +85,8 @@ function MapLeaderboard() {
     const [gameMode] = useGameMode()
     const [runType] = useRunType()
 
-    const { mapName, stage, setStage, kzProfileMap } = useOutletContext<MapLayoutOutletContext>()
+    const { mapName, stage, setStage, kzProfileMap, mapTimesInfiniteQuery } =
+        useOutletContext<MapLayoutOutletContext>()
 
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: SelectedFilter }>({
         stage: { label: "Stage", show: true },
@@ -105,14 +103,6 @@ function MapLeaderboard() {
         pageIndex: 0,
         pageSize: 100,
     })
-
-    const mapTimesInfiniteQuery = useMapTimes(
-        mapName,
-        gameMode,
-        runType,
-        stage,
-        pagination.pageSize,
-    )
 
     const mapTimes = useMemo(() => {
         if (!mapTimesInfiniteQuery.data || !mapTimesInfiniteQuery.data.pages.length) {

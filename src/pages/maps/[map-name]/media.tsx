@@ -1,6 +1,6 @@
-import { ReloadIcon } from "@radix-ui/react-icons"
+import { GitHubLogoIcon } from "@radix-ui/react-icons"
 
-import { useOutletContext } from "react-router-dom"
+import { Link, useOutletContext } from "react-router-dom"
 
 import { MapLayoutOutletContext } from "."
 
@@ -18,9 +18,15 @@ function MapMedia() {
                     Media
                 </h2>
                 <div className="flex space-x-2">
-                    <Button variant="outline">
-                        <ReloadIcon className="mr-2 h-4 w-4" />
-                        Reload
+                    <Button variant="outline" asChild>
+                        <Link
+                            to="https://github.com/Syuks/KZProfile"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <GitHubLogoIcon className="mr-2 h-4 w-4" />
+                            Contribute
+                        </Link>
                     </Button>
                 </div>
             </div>

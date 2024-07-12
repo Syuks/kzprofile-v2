@@ -24,10 +24,21 @@ interface ChartData {
     distribution: { x: number; y: number; percentile: number }[]
 }
 
-const mapDistributionsQueryOptions = (mapID: number, gameMode: GameMode, stage: number) => {
+const mapDistributionsQueryOptions = (
+    mapID: number | undefined,
+    gameMode: GameMode,
+    stage: number,
+) => {
     return queryOptions({
         queryKey: ["mapDistributions", mapID, gameMode, stage],
         queryFn: async () => {
+            if (!mapID) {
+                return {
+                    pro: { percentile: [], distribution: [] },
+                    tp: { percentile: [], distribution: [] },
+                }
+            }
+
             // SOURCE: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.burr12.html
             // c: shape of the curve (>0)
             // d: shape of the curve (>0)
@@ -116,14 +127,15 @@ const mapDistributionsQueryOptions = (mapID: number, gameMode: GameMode, stage: 
                 tp: getChartDistributionData(tpJson),
             }
         },
+        enabled: !!mapID,
     })
 }
 
-const useMapDistributions = (mapID: number, gameMode: GameMode, stage: number) => {
+const useMapDistributions = (mapID: number | undefined, gameMode: GameMode, stage: number) => {
     return useQuery(mapDistributionsQueryOptions(mapID, gameMode, stage))
 }
 
-const fetchMapDistributions = (mapID: number, gameMode: GameMode, stage: number) => {
+const fetchMapDistributions = (mapID: number | undefined, gameMode: GameMode, stage: number) => {
     return queryClient.fetchQuery(mapDistributionsQueryOptions(mapID, gameMode, stage))
 }
 

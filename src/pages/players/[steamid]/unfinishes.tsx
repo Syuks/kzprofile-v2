@@ -74,7 +74,7 @@ const columns = [
         header: ({ column }) => <DataTableColumnHeader column={column} title="Map" />,
         cell: (props) => {
             const map_name = props.getValue()
-            return <MapHoverCard mapId={props.row.original.map_id} mapName={map_name} />
+            return <MapHoverCard mapName={map_name} />
         },
     }),
     columnHelper.accessor("points", {
