@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useMemo } from "react"
 
-import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons"
+import { ArrowDownIcon, ArrowUpIcon, CircleIcon, RadiobuttonIcon } from "@radix-ui/react-icons"
 
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
@@ -30,22 +30,63 @@ interface MapsSortingProps {
     setSortField: Dispatch<SetStateAction<MapsSortField>>
 }
 
+const sortOptions: MapsSortOption[] = [
+    { value: "created_on", label: "Release date" },
+    { value: "name", label: "Name" },
+    { value: "difficulty", label: "Tier" },
+    { value: "bonus_count", label: "Bonus count" },
+    { value: "filesize", label: "Filesize" },
+    { value: "id", label: "Id" },
+]
+
+export const sortMaps = (
+    maps: KZProfileMap[],
+    sortField: MapsSortField,
+    sortOrder: MapsSortOrder,
+): KZProfileMap[] => {
+    let preOrderSort = [...maps]
+
+    if (sortField === "created_on") {
+        preOrderSort.sort(
+            (mapA, mapB) =>
+                new Date(mapB.created_on).getTime() - new Date(mapA.created_on).getTime(),
+        )
+    }
+
+    if (sortField === "name") {
+        preOrderSort.sort((mapA, mapB) => {
+            const nameA = mapA.name.toLowerCase()
+            const nameB = mapB.name.toLowerCase()
+            if (nameA < nameB) {
+                return -1
+            }
+
+            if (nameA > nameB) {
+                return 1
+            }
+
+            return 0
+        })
+    }
+
+    if (
+        sortField === "difficulty" ||
+        sortField === "bonus_count" ||
+        sortField === "filesize" ||
+        sortField === "id"
+    ) {
+        preOrderSort.sort((mapA, mapB) => mapB[sortField] - mapA[sortField])
+    }
+
+    return sortOrder === "desc" ? preOrderSort : preOrderSort.reverse()
+}
+
 export function MapsSorting({
     sortOrder,
     setSortOrder,
     sortField,
     setSortField,
 }: MapsSortingProps) {
-    const sortOptions = useMemo<MapsSortOption[]>(() => {
-        return [
-            { value: "created_on", label: "Release date" },
-            { value: "name", label: "Name" },
-            { value: "difficulty", label: "Tier" },
-            { value: "bonus_count", label: "Bonus count" },
-            { value: "filesize", label: "Filesize" },
-        ]
-    }, [])
-
     const sortFieldLabel = useMemo(() => {
         return sortOptions.find((sortOption) => sortOption.value === sortField)?.label
     }, [sortOptions, sortField])
@@ -69,18 +110,36 @@ export function MapsSorting({
                 {sortOptions.map((sortOption) => {
                     return (
                         <DropdownMenuSub key={sortOption.value}>
-                            <DropdownMenuSubTrigger>{sortOption.label}</DropdownMenuSubTrigger>
+                            <DropdownMenuSubTrigger>
+                                {sortOption.value === sortField ? (
+                                    <RadiobuttonIcon className="mr-2 h-4 w-4" />
+                                ) : (
+                                    <CircleIcon className="mr-2 h-4 w-4" />
+                                )}
+                                {sortOption.label}
+                            </DropdownMenuSubTrigger>
+
                             <DropdownMenuPortal>
                                 <DropdownMenuSubContent>
                                     <DropdownMenuItem
-                                        onSelect={() => onSortChange("asc", sortOption.value)}
-                                    >
-                                        Ascending
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
                                         onSelect={() => onSortChange("desc", sortOption.value)}
                                     >
+                                        {sortOption.value === sortField && sortOrder === "desc" ? (
+                                            <RadiobuttonIcon className="mr-2 h-4 w-4" />
+                                        ) : (
+                                            <CircleIcon className="mr-2 h-4 w-4" />
+                                        )}
                                         Descending
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        onSelect={() => onSortChange("asc", sortOption.value)}
+                                    >
+                                        {sortOption.value === sortField && sortOrder === "asc" ? (
+                                            <RadiobuttonIcon className="mr-2 h-4 w-4" />
+                                        ) : (
+                                            <CircleIcon className="mr-2 h-4 w-4" />
+                                        )}
+                                        Ascending
                                     </DropdownMenuItem>
                                 </DropdownMenuSubContent>
                             </DropdownMenuPortal>

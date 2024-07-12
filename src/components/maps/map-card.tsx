@@ -22,7 +22,7 @@ function MapCard({ kzProfileMap }: MapCardProps) {
 
     return (
         <>
-            <Link to={kzProfileMap.name} className="group relative block overflow-hidden rounded">
+            <div className="group relative block overflow-hidden rounded">
                 <img
                     src={mapImageURL}
                     className="aspect-video w-full rounded bg-secondary transition-all duration-300 ease-out group-hover:scale-110 group-hover:blur-sm"
@@ -48,7 +48,7 @@ function MapCard({ kzProfileMap }: MapCardProps) {
                         </div>
                     )}
                 </div>
-            </Link>
+            </div>
 
             <div className={cn(tierData.color, "mt-2 text-xs uppercase")}>{tierData.label}</div>
 

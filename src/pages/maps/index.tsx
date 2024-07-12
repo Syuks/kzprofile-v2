@@ -3,11 +3,14 @@ import { useMemo, useState } from "react"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 
 import useKZProfileMaps, { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
-import { SelectedFilter } from "@/components/datatable/datatable-add-filters-dropdown"
 
 import MapCard from "@/components/maps/map-card"
 import MapsPagination from "@/components/maps/maps-pagination"
-import MapsSorting, { type MapsSortOrder, type MapsSortField } from "@/components/maps/maps-sorting"
+import MapsSorting, {
+    type MapsSortOrder,
+    type MapsSortField,
+    sortMaps,
+} from "@/components/maps/maps-sorting"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,14 +19,14 @@ function Maps() {
     const kzProfileMapsQuery = useKZProfileMaps()
 
     const [globalFilter, setGlobalFilter] = useState<string>("")
-    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: SelectedFilter }>({
+    /*const [selectedFilters, setSelectedFilters] = useState({
         filesize: { label: "File size", show: false },
         difficulty: { label: "Tier", show: false },
         created_on: { label: "Date", show: false },
         filters: { label: "Filter", show: false },
         bonus_count: { label: "Bonus count", show: false },
         videos: { label: "Has Video", show: false },
-    })
+    })*/
     const [sortOrder, setSortOrder] = useState<MapsSortOrder>("desc")
     const [sortField, setSortField] = useState<MapsSortField>("created_on")
 
@@ -38,7 +41,7 @@ function Maps() {
         const cleanGlobalFilter = globalFilter.trim().toLowerCase()
 
         if (cleanGlobalFilter === "") {
-            return kzProfileMapsQuery.data
+            return sortMaps(kzProfileMapsQuery.data, sortField, sortOrder)
         }
 
         const globalFilterFields: (keyof KZProfileMap)[] = [
@@ -62,8 +65,8 @@ function Maps() {
             return globalMatch
         })
 
-        return filteredMaps
-    }, [kzProfileMapsQuery.data, globalFilter])
+        return sortMaps(filteredMaps, sortField, sortOrder)
+    }, [kzProfileMapsQuery.data, globalFilter, sortOrder, sortField])
 
     const pageCount = useMemo<number>(
         () => Math.ceil(filteredData.length / pageSize),
