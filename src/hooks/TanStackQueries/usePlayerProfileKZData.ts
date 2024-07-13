@@ -203,7 +203,7 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
 
             return playerProfileKZData
         },
-        placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
+        placeholderData: keepPreviousData,
     })
 }
 

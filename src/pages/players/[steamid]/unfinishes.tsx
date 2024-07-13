@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
 import {
     DotsHorizontalIcon,
@@ -265,8 +265,16 @@ function Unfinishes() {
         })
     }
 
+    const tableData = useMemo(() => {
+        if (!playerProfileKZData?.unfinishes[runType]) {
+            return []
+        }
+
+        return playerProfileKZData.unfinishes[runType]
+    }, [playerProfileKZData, runType])
+
     const table = useReactTable({
-        data: playerProfileKZData?.unfinishes[runType] ?? [],
+        data: tableData,
         columns,
         state: {
             sorting,

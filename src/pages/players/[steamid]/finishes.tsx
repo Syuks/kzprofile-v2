@@ -414,8 +414,16 @@ function Finishes() {
         })
     }
 
+    const tableData = useMemo(() => {
+        if (!playerProfileKZData?.finishes[runType]) {
+            return []
+        }
+
+        return playerProfileKZData.finishes[runType]
+    }, [playerProfileKZData, runType])
+
     const table = useReactTable({
-        data: playerProfileKZData?.finishes[runType] ?? [],
+        data: tableData,
         columns,
         state: {
             sorting,
