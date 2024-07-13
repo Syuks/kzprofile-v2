@@ -1,13 +1,8 @@
-import { GitHubLogoIcon, VideoIcon } from "@radix-ui/react-icons"
-
-import { Link } from "react-router-dom"
-
 import CommandMenu from "@/components/navbar/command-menu"
 import MainNav from "@/components/navbar/main-nav"
 import MobileNav from "@/components/navbar/mobile-nav"
 import ThemeToggle from "@/components/theme/theme-toggle"
-
-import { Button } from "@/components/ui/button"
+import UserDropdown from "./user-dropdown"
 
 function Header() {
     return (
@@ -19,25 +14,8 @@ function Header() {
                     <div className="w-full flex-1 md:w-auto md:flex-none">
                         <CommandMenu />
                     </div>
-                    <nav className="flex items-center">
-                        <Button asChild variant="ghost" size="icon" className="hidden md:flex">
-                            <Link
-                                to="https://github.com/Syuks/KZProfile"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                <GitHubLogoIcon className="h-4 w-4" />
-                                <span className="sr-only">Github</span>
-                            </Link>
-                        </Button>
-                        <Button asChild variant="ghost" size="icon" className="hidden md:flex">
-                            <Link to="https://youtube.com/c/Syuks" target="_blank" rel="noreferrer">
-                                <VideoIcon className="h-5 w-5" />
-                                <span className="sr-only">YouTube</span>
-                            </Link>
-                        </Button>
-                        <ThemeToggle />
-                    </nav>
+                    <ThemeToggle />
+                    <UserDropdown />
                 </div>
             </div>
         </header>

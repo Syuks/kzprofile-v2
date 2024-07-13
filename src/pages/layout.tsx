@@ -1,7 +1,5 @@
 import { Outlet } from "react-router-dom"
 
-import { LocalSettingsProvider } from "@/components/localsettings/localsettings-provider"
-
 import Header from "@/components/navbar/header"
 import Footer from "@/components/footer"
 import ModeChooser from "@/components/gamemode/game-mode-chooser"
@@ -11,17 +9,15 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 
 function Layout() {
     return (
-        <LocalSettingsProvider>
-            <TooltipProvider>
-                <Header />
-                <ModeChooser />
-                <div className="container">
-                    <Outlet />
-                </div>
-                <Footer />
-                <Toaster />
-            </TooltipProvider>
-        </LocalSettingsProvider>
+        <TooltipProvider>
+            <Header />
+            <ModeChooser />
+            <div className="container">
+                <Outlet />
+            </div>
+            <Footer />
+            <Toaster />
+        </TooltipProvider>
     )
 }
 

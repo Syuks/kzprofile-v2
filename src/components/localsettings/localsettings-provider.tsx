@@ -10,12 +10,14 @@ import {
 import { useSearchParams } from "react-router-dom"
 
 import { GameModeLabel, gameModeLabelSchema, RunType, runTypeSchema } from "@/lib/gokz"
+import { SteamPlayerSummary } from "@/hooks/TanStackQueries/useSteamProfiles"
 
 import useLocalStorage from "@/hooks/useLocalStorage"
 
 export type Theme = "dark" | "light" | "system"
 
 type LocalSettings = {
+    steamPlayerSummary: SteamPlayerSummary | undefined
     theme: Theme
     modeChooserType: "pro-tp" | "pro-nub"
     mode: GameModeLabel
@@ -30,6 +32,7 @@ type LocalSettings = {
 type LocalSettingsContextType = [LocalSettings, Dispatch<SetStateAction<LocalSettings>>]
 
 const defaultLocalSettings: LocalSettings = {
+    steamPlayerSummary: undefined,
     theme: "dark",
     modeChooserType: "pro-tp",
     mode: "kz_timer",

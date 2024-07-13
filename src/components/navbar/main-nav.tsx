@@ -11,17 +11,6 @@ function MainNav() {
             </Link>
             <nav className="flex items-center gap-4 text-sm lg:gap-6">
                 <NavLink
-                    to="/profile"
-                    className={({ isActive }) =>
-                        cn(
-                            isActive ? "text-foreground" : "text-foreground/60",
-                            "transition-colors hover:text-foreground/80",
-                        )
-                    }
-                >
-                    Profile
-                </NavLink>
-                <NavLink
                     to="/maps"
                     className={({ isActive }) =>
                         cn(

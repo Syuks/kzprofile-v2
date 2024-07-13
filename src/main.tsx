@@ -4,6 +4,8 @@ import "./index.css"
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
+import { LocalSettingsProvider } from "@/components/localsettings/localsettings-provider"
+
 import Layout from "./pages/layout"
 
 import PlayerSearch from "./pages/players/search"
@@ -20,6 +22,8 @@ import MapLayout from "./pages/maps/[map-name]"
 import MapLeaderboard from "./pages/maps/[map-name]/leaderboard"
 import MapMedia from "./pages/maps/[map-name]/media"
 import MapStats from "./pages/maps/[map-name]/stats/stats"
+
+import Login from "./pages/login"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -134,13 +138,19 @@ const router = createBrowserRouter([
             },
         ],
     },
+    {
+        path: "login",
+        element: <Login />,
+    },
 ])
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            <ReactQueryDevtools initialIsOpen={false} />
+            <LocalSettingsProvider>
+                <RouterProvider router={router} />
+                <ReactQueryDevtools initialIsOpen={false} />
+            </LocalSettingsProvider>
         </QueryClientProvider>
     </React.StrictMode>,
 )
