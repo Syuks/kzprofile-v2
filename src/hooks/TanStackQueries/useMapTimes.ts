@@ -1,4 +1,4 @@
-import { useInfiniteQuery, infiniteQueryOptions } from "@tanstack/react-query"
+import { useInfiniteQuery, infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordsTop, GetRecordsTopParams } from "./APIs/GlobalAPI"
 
@@ -52,6 +52,7 @@ const mapTimesInfiniteQueryOptions = (
         getNextPageParam: (lastPageData, allPagesData) =>
             lastPageData.length === pageSize ? pageSize * allPagesData.length : undefined,
         gcTime: 0,
+        placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
     })
 }
 

@@ -1,4 +1,4 @@
-import { useQuery, queryOptions } from "@tanstack/react-query"
+import { useQuery, queryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { getGameModeID, GameMode, getKZRank, KZRank, TierID } from "@/lib/gokz"
 
@@ -203,6 +203,7 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
 
             return playerProfileKZData
         },
+        placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
     })
 }
 
