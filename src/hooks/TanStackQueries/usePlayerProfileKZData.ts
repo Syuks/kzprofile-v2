@@ -3,7 +3,6 @@ import { queryClient } from "@/main"
 import { getGameModeID, GameMode, getKZRank, KZRank, TierID } from "@/lib/gokz"
 
 import { fetchKZProfileMaps } from "./useKZProfileMaps"
-import { fetchGlobalFilters } from "./useGlobalFilters"
 import { fetchPlayerTimes, RecordsTop } from "./usePlayerTimes"
 
 export interface RecordsTopExtended extends RecordsTop {
@@ -52,11 +51,12 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
         queryKey: ["playerProfileKZData", steamID, gameMode],
         queryFn: async () => {
             // Global API Queries needed for proper finishes, rank, points, completions, etc
-            const [globalMaps, globalFilters, playerTimes] = await Promise.all([
+            const [globalMaps, playerTimes] = await Promise.all([
                 fetchKZProfileMaps(),
-                fetchGlobalFilters(gameMode),
                 fetchPlayerTimes(steamID, gameMode),
             ])
+
+            const gameModeID = getGameModeID(gameMode)
 
             const playerProfileKZData: PlayerProfileKZData = {
                 rank: {
@@ -111,9 +111,7 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
             }
 
             globalMaps.forEach((globalMap) => {
-                const filterFound = globalFilters.find(
-                    (filter) => globalMap.id === filter.map_id && filter.stage === 0,
-                )
+                const filterFound = globalMap.filters.indexOf(gameModeID) !== -1
 
                 if (!filterFound) return
 
@@ -196,10 +194,7 @@ const playerProfileKZDataQueryOptions = (steamID: string, gameMode: GameMode) =>
                 }
             })
 
-            playerProfileKZData.rank = getKZRank(
-                getGameModeID(gameMode),
-                playerProfileKZData.points.total,
-            )
+            playerProfileKZData.rank = getKZRank(gameModeID, playerProfileKZData.points.total)
 
             const totalCompletedMaps =
                 playerProfileKZData.finishes.pro.length + playerProfileKZData.finishes.tp.length
