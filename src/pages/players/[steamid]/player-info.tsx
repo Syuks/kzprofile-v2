@@ -79,7 +79,7 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
             </div>
 
             <div className="my-4 flex flex-row items-center justify-around md:my-0 md:ml-12 md:flex-col">
-                <div className="md:order-0 relative order-1 mt-2">
+                <div className="md:order-0 relative order-1 mt-2 w-20">
                     {!!playerProfileKZData && playerProfileKZData.medals.gold > 0 ? (
                         <>
                             <img src={GoldMedal} alt="1000-medal" />

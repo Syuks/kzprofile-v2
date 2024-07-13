@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import {
     DotsHorizontalIcon,
@@ -60,6 +60,7 @@ import {
     getFacetedMinMaxValues,
     getPaginationRowModel,
     OnChangeFn,
+    RowSelectionState,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {
@@ -82,6 +83,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 function MapLeaderboard() {
+    const [localSettings] = useLocalSettings()
     const [gameMode] = useGameMode()
     const [runType] = useRunType()
 
@@ -97,6 +99,7 @@ function MapLeaderboard() {
         server_name: { label: "Server", show: false },
     })
 
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [sorting, setSorting] = useState<SortingState>([])
     const [pagination, setPagination] = useState<PaginationState>({
@@ -124,6 +127,24 @@ function MapLeaderboard() {
 
         return mapTimesInfiniteQuery.data.pages.flat()
     }, [mapTimesInfiniteQuery.data])
+
+    useEffect(() => {
+        if (!localSettings.steamPlayerSummary || !mapTimes.length) {
+            setRowSelection({})
+            return
+        }
+
+        const loggedInPlayerTimeRowIndex = mapTimes.findIndex((time) => {
+            return time.steamid64 === localSettings.steamPlayerSummary?.steamid // This shouldn't have a "?" but Typescript is mad
+        })
+
+        if (loggedInPlayerTimeRowIndex === -1) {
+            setRowSelection({})
+            return
+        }
+
+        setRowSelection({ [loggedInPlayerTimeRowIndex]: true })
+    }, [mapTimes, localSettings])
 
     const onPaginationChange: OnChangeFn<PaginationState> = (updaterOrValue) => {
         const updatedPaginationState =
@@ -399,10 +420,12 @@ function MapLeaderboard() {
             sorting,
             columnFilters,
             pagination: pagination,
+            rowSelection: rowSelection,
         },
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
         onPaginationChange: onPaginationChange,
+        onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
