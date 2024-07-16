@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 
 import { ButtonIcon, ImageIcon, PersonIcon } from "@radix-ui/react-icons"
 
@@ -34,9 +34,12 @@ function CommandVirtual() {
 
     const [searchInput, setSearchInput] = useState("")
 
-    // Because the Virtualizer is inside a popup we need to use a callback ref instead of a normal ref
-    const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
-    const setFakeParentRef = useCallback((ref: HTMLDivElement) => setParentRef(ref), [])
+    // Because the Virtualizer is inside a popup we need to call a rerender to update the list once the parentRef is mounted
+    const parentRef = useRef<HTMLDivElement | null>(null)
+    const [_placeholderState, setPlaceholderState] = useState(false)
+    // We can also use a callback ref instead of a normal ref, but this calls too many rerenders
+    //const [parentRef, setParentRef] = useState<HTMLDivElement | null>(null)
+    //const setFakeParentRef = useCallback((ref: HTMLDivElement) => setParentRef(ref), [])
 
     const filteredMaps = useMemo<KZProfileMap[]>(() => {
         if (!kzProfileMapsQuery.data) {
@@ -69,9 +72,8 @@ function CommandVirtual() {
 
     const rowVirtualizer = useVirtualizer({
         count: filteredMaps.length,
-        getScrollElement: () => parentRef,
+        getScrollElement: () => parentRef.current,
         estimateSize: () => 44,
-        overscan: 5,
     })
 
     useEffect(() => {
@@ -118,13 +120,21 @@ function CommandVirtual() {
                 </kbd>
             </Button>
 
-            <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
+            <CommandDialog
+                open={open}
+                onOpenChange={setOpen}
+                shouldFilter={false}
+                onOpenAutoFocus={() => setPlaceholderState((bool) => !bool)}
+            >
                 <CommandInput
                     placeholder="Search a map..."
                     value={searchInput}
                     onValueChange={setSearchInput}
                 />
-                <CommandList ref={setFakeParentRef}>
+                <CommandList
+                    ref={parentRef}
+                    className="h-[min(300px,var(--cmdk-list-height))] transition-all"
+                >
                     {kzProfileMapsQuery.status === "pending" && (
                         <CommandLoading className="py-6 text-center text-sm">
                             Loading maps...
@@ -163,7 +173,7 @@ function CommandVirtual() {
                                             }}
                                         >
                                             <span className="flex">
-                                                <ImageIcon className="mr-2 h-4 w-4" />
+                                                <ImageIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                                                 {globalMap.name}
                                             </span>
                                             <Badge
@@ -198,7 +208,7 @@ function CommandVirtual() {
                                 })
                             }
                         >
-                            <PersonIcon className="mr-2 h-4 w-4" />
+                            <PersonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                             Search player
                         </CommandItem>
                         <CommandItem
@@ -206,7 +216,7 @@ function CommandVirtual() {
                                 runCommand(() => navigate(`/servers?search=${searchInput}`))
                             }
                         >
-                            <ButtonIcon className="mr-2 h-4 w-4" />
+                            <ButtonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                             Search server
                         </CommandItem>
                     </CommandGroup>
