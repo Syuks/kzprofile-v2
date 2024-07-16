@@ -108,8 +108,8 @@ function CommandVirtual() {
                     "relative h-8 w-full justify-between rounded-lg bg-background pr-[0.3rem] text-sm font-normal text-muted-foreground shadow-none md:w-40 lg:w-64",
                 )}
                 onClick={() => {
-                    setOpen(true)
                     setSearchInput("")
+                    setOpen(true)
                 }}
             >
                 <span className="inline-flex">Search...</span>
@@ -184,7 +184,7 @@ function CommandVirtual() {
                     )}
 
                     <CommandSeparator />
-                    <CommandGroup heading="More actions">
+                    <CommandGroup heading="More actions" forceMount>
                         <CommandItem
                             onSelect={() =>
                                 runCommand(() => {

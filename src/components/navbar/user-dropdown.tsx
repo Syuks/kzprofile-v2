@@ -41,6 +41,15 @@ function UserDropdown() {
                 return
             }
 
+            if (
+                (e.target instanceof HTMLElement && e.target.isContentEditable) ||
+                e.target instanceof HTMLInputElement ||
+                e.target instanceof HTMLTextAreaElement ||
+                e.target instanceof HTMLSelectElement
+            ) {
+                return
+            }
+
             if (e.shiftKey && e.key === "P") {
                 navigate(`/players/${localSettings.steamPlayerSummary.steamid}`)
             }
