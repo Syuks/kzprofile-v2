@@ -3,6 +3,8 @@ import { Link } from "react-router-dom"
 import { ClockIcon, DownloadIcon } from "@radix-ui/react-icons"
 import { SteamIcon } from "@/components/icons"
 
+import { lightFormat } from "date-fns"
+
 import {
     cn,
     formatDistanceToNowStrictWithOffset,
@@ -11,11 +13,14 @@ import {
 } from "@/lib/utils"
 import { TierData, getMapImageURL } from "@/lib/gokz"
 import { KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
 
 import { MappersList } from "@/components/maps/mappers-list"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge, badgeVariants } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Button } from "@/components/ui/button"
 
 interface MapInfoProps {
     stage: number
@@ -24,6 +29,8 @@ interface MapInfoProps {
 }
 
 function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
+    const [localSettings] = useLocalSettings()
+
     if (!kzProfileMap || !mapTierData || stage === undefined) {
         return (
             <div className="flex">
@@ -52,12 +59,24 @@ function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
                     />
                 </Link>
                 <div className="mt-4 flex justify-between">
-                    <Badge variant="outline" className="whitespace-nowrap bg-background">
-                        <ClockIcon className="mr-1 h-4 w-4" />
-                        {formatDistanceToNowStrictWithOffset(kzProfileMap.created_on, {
-                            addSuffix: true,
-                        })}
-                    </Badge>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                className={cn(
+                                    badgeVariants({ variant: "outline" }),
+                                    "h-auto whitespace-nowrap bg-background hover:bg-background",
+                                )}
+                            >
+                                <ClockIcon className="mr-1 h-4 w-4" />
+                                {formatDistanceToNowStrictWithOffset(kzProfileMap.created_on, {
+                                    addSuffix: true,
+                                })}
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                            <p>{lightFormat(kzProfileMap.created_on, localSettings.dateFormat)}</p>
+                        </TooltipContent>
+                    </Tooltip>
                     <Badge variant="outline" className="whitespace-nowrap bg-background">
                         <DownloadIcon className="mr-1 h-4 w-4" />
                         {getFileSizeString(kzProfileMap.filesize)}

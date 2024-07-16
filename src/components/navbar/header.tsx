@@ -1,4 +1,4 @@
-import CommandMenu from "@/components/navbar/command-menu"
+import CommandVirtual from "@/components/navbar/command-virtual"
 import MainNav from "@/components/navbar/main-nav"
 import MobileNav from "@/components/navbar/mobile-nav"
 import ThemeToggle from "@/components/theme/theme-toggle"
@@ -12,7 +12,7 @@ function Header() {
                 <MobileNav />
                 <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
                     <div className="w-full flex-1 md:w-auto md:flex-none">
-                        <CommandMenu />
+                        <CommandVirtual />
                     </div>
                     <ThemeToggle />
                     <UserDropdown />
