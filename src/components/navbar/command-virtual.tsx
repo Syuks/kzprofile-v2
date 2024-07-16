@@ -22,6 +22,7 @@ import {
     CommandSeparator,
 } from "@/components/ui/command"
 import { Badge } from "@/components/ui/badge"
+import { getSteam64 } from "@/lib/steamid"
 
 /* TODO: Add virtualization */
 function CommandVirtual() {
@@ -186,7 +187,15 @@ function CommandVirtual() {
                     <CommandGroup heading="More actions">
                         <CommandItem
                             onSelect={() =>
-                                runCommand(() => navigate(`/players?search=${searchInput}`))
+                                runCommand(() => {
+                                    const steamid = getSteam64(searchInput)
+                                    if (steamid) {
+                                        navigate(`/players/${steamid}`)
+                                        return
+                                    }
+
+                                    navigate(`/players?search=${searchInput}`)
+                                })
                             }
                         >
                             <PersonIcon className="mr-2 h-4 w-4" />
