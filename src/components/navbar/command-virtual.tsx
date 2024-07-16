@@ -34,7 +34,10 @@ function CommandVirtual() {
 
     const [searchInput, setSearchInput] = useState("")
 
+    const [selectedValue, setSelectedValue] = useState<string | undefined>(undefined)
+
     // Because the Virtualizer is inside a popup we need to call a rerender to update the list once the parentRef is mounted
+    // This also helps us to reset the scroll to 0 when the dialog opens
     const parentRef = useRef<HTMLDivElement | null>(null)
     const [_placeholderState, setPlaceholderState] = useState(false)
     // We can also use a callback ref instead of a normal ref, but this calls too many rerenders
@@ -74,6 +77,7 @@ function CommandVirtual() {
         count: filteredMaps.length,
         getScrollElement: () => parentRef.current,
         estimateSize: () => 44,
+        overscan: 5,
     })
 
     useEffect(() => {
@@ -102,10 +106,17 @@ function CommandVirtual() {
         command()
     }, [])
 
-    const onOpenChange = (open: boolean) => {
-        parentRef.current?.scrollTo({ top: 0 })
-        setOpen(open)
-    }
+    useEffect(() => {
+        // We must use a timeout in combination with setPlaceholderState to reset the selection and scroll
+        const resetScrollTimeout = setTimeout(() => {
+            if (open) {
+                rowVirtualizer.scrollToIndex(0)
+                setSelectedValue(filteredMaps[0].name)
+            }
+        }, 0)
+
+        return () => clearTimeout(resetScrollTimeout)
+    }, [filteredMaps, open])
 
     return (
         <>
@@ -127,9 +138,11 @@ function CommandVirtual() {
 
             <CommandDialog
                 open={open}
-                onOpenChange={onOpenChange}
+                onOpenChange={setOpen}
                 shouldFilter={false}
                 onOpenAutoFocus={() => setPlaceholderState((bool) => !bool)}
+                value={selectedValue}
+                onValueChange={setSelectedValue}
             >
                 <CommandInput
                     placeholder="Search a map..."
