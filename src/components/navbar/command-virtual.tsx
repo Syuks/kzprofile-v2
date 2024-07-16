@@ -102,6 +102,11 @@ function CommandVirtual() {
         command()
     }, [])
 
+    const onOpenChange = (open: boolean) => {
+        parentRef.current?.scrollTo({ top: 0 })
+        setOpen(open)
+    }
+
     return (
         <>
             <Button
@@ -122,7 +127,7 @@ function CommandVirtual() {
 
             <CommandDialog
                 open={open}
-                onOpenChange={setOpen}
+                onOpenChange={onOpenChange}
                 shouldFilter={false}
                 onOpenAutoFocus={() => setPlaceholderState((bool) => !bool)}
             >
