@@ -400,7 +400,7 @@ function MapLeaderboard() {
                                 <DropdownMenuItem asChild>
                                     <Link to={`/players/${record.steamid64}`}>
                                         <PersonIcon className="mr-2 h-4 w-4" />
-                                        <span>Go to player</span>
+                                        <span>Go to profile</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>

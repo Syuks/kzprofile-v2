@@ -2,7 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 
-export interface SteamPlayerSummary {
+interface SteamPlayerSummary {
     steamid: string
     personaname: string
     profileurl: string
@@ -40,4 +40,4 @@ const fetchSteamProfiles = (steamIds: string[]) => {
 }
 
 export default useSteamProfiles
-export { fetchSteamProfiles }
+export { fetchSteamProfiles, type SteamPlayerSummary }

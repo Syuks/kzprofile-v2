@@ -50,12 +50,12 @@ function PlayerProfile() {
             return
         }
 
-        if (!kzPlayer.data[0].name) {
+        if (!kzPlayer.data.name) {
             toast("smh. 😒", { description: "This player has never played kz." })
             return
         }
 
-        if (kzPlayer.data[0].is_banned) {
+        if (kzPlayer.data.is_banned) {
             toast("smh. 😒", { description: "This player has been banned from the global API." })
         }
     }, [kzPlayer.data])

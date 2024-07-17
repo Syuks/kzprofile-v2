@@ -9,10 +9,17 @@ import {
     OpenInNewWindowIcon,
     PersonIcon,
 } from "@radix-ui/react-icons"
+import { SteamIcon } from "@/components/icons"
 
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
+import { lightFormat } from "date-fns"
 
+import { formatDistanceToNowStrictWithOffset } from "@/lib/utils"
+import { getSteam64 } from "@/lib/steamid"
+
+import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
 import useGlobalBans, { type Ban } from "@/hooks/TanStackQueries/useGlobalBans"
+import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
 
 import {
     createColumnHelper,
@@ -24,16 +31,13 @@ import {
     useReactTable,
     type PaginationState,
 } from "@tanstack/react-table"
+import { DataTable } from "@/components/datatable/datatable"
+import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
+import { DataTablePagination } from "@/components/datatable/datatable-pagination"
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { getSteam64 } from "@/lib/steamid"
 import { toast } from "sonner"
-import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
-import { lightFormat } from "date-fns"
-import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
-import { formatDistanceToNowStrictWithOffset } from "@/lib/utils"
-import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -42,9 +46,6 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { SteamIcon } from "@/components/icons"
-import { DataTable } from "@/components/datatable/datatable"
-import { DataTablePagination } from "@/components/datatable/datatable-pagination"
 
 function BansForm() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -319,7 +320,7 @@ function BansForm() {
                                 <DropdownMenuItem asChild>
                                     <Link to={`/players/${ban.steamid64}`}>
                                         <PersonIcon className="mr-2 h-4 w-4" />
-                                        <span>Go to player</span>
+                                        <span>Go to profile</span>
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>

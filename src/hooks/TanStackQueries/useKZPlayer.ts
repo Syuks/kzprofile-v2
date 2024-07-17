@@ -1,6 +1,7 @@
 import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetPlayers } from "./APIs/GlobalAPI"
+import { getSteam64 } from "@/lib/steamid"
 
 interface Player {
     steamid64: string
@@ -10,26 +11,36 @@ interface Player {
     name: string
 }
 
-const KZPlayerQueryOptions = (steamID: string) => {
+const KZPlayerQueryOptions = (steamidOrName: string) => {
     return queryOptions({
-        queryKey: ["kz_player", steamID],
+        queryKey: ["kz_player", steamidOrName],
         queryFn: async () => {
-            const response = await GlobalAPI_GetPlayers({ steamid64_list: [steamID] })
+            const steamid64 = getSteam64(steamidOrName)
+            if (!!steamid64) {
+                const response = await GlobalAPI_GetPlayers({
+                    steamid64_list: [steamid64],
+                    limit: 1,
+                })
+                const json: Player[] = await response.json()
+                return json[0]
+            }
+
+            const response = await GlobalAPI_GetPlayers({ name: steamidOrName, limit: 1 })
             const json: Player[] = await response.json()
-            return json
+            return json[0]
         },
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
     })
 }
 
-const useKZPlayer = (steamID: string) => {
-    return useQuery(KZPlayerQueryOptions(steamID))
+const useKZPlayer = (steamidOrName: string) => {
+    return useQuery(KZPlayerQueryOptions(steamidOrName))
 }
 
-const fetchKZPlayer = (steamID: string) => {
-    return queryClient.fetchQuery(KZPlayerQueryOptions(steamID))
+const fetchKZPlayer = (steamidOrName: string) => {
+    return queryClient.fetchQuery(KZPlayerQueryOptions(steamidOrName))
 }
 
 export default useKZPlayer
-export { fetchKZPlayer }
+export { fetchKZPlayer, type Player }
