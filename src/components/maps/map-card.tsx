@@ -2,8 +2,10 @@ import { useCallback, useMemo } from "react"
 
 import {
     BarChartIcon,
+    CalendarIcon,
     DesktopIcon,
     DotsVerticalIcon,
+    DownloadIcon,
     ImageIcon,
     InfoCircledIcon,
     StopwatchIcon,
@@ -12,8 +14,9 @@ import {
 import { SteamIcon } from "../icons"
 
 import { Link } from "react-router-dom"
+import { format } from "date-fns"
 
-import { cn, getWorkshopLink } from "@/lib/utils"
+import { cn, getFileSizeString, getWorkshopLink } from "@/lib/utils"
 import { getGameModeID, getGameModeName, getMapImageURL, getTierData, TierData } from "@/lib/gokz"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 import { useGameMode } from "../localsettings/localsettings-provider"
@@ -55,6 +58,18 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
             description: kzProfileMap.filters
                 .map((gameModeID) => getGameModeName(gameModeID))
                 .join(", "),
+        })
+    }, [kzProfileMap])
+
+    const getFilesize = useCallback(() => {
+        toast(`${kzProfileMap.name} has a size of:`, {
+            description: getFileSizeString(kzProfileMap.filesize),
+        })
+    }, [kzProfileMap])
+
+    const getReleaseDate = useCallback(() => {
+        toast(`${kzProfileMap.name} was released on:`, {
+            description: format(kzProfileMap.created_on, "MMM d, y"),
         })
     }, [kzProfileMap])
 
@@ -168,6 +183,14 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
                                 <DropdownMenuItem onSelect={getFilters}>
                                     <StopwatchIcon className="mr-2 h-4 w-4" />
                                     Filters
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={getFilesize}>
+                                    <DownloadIcon className="mr-2 h-4 w-4" />
+                                    Filesize
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onSelect={getReleaseDate}>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    Release date
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                             <DropdownMenuSeparator />
