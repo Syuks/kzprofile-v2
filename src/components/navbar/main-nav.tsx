@@ -22,7 +22,7 @@ function MainNav() {
                     Maps
                 </NavLink>
                 <NavLink
-                    to="/test"
+                    to="/bans"
                     className={({ isActive }) =>
                         cn(
                             isActive ? "text-foreground" : "text-foreground/60",
@@ -30,7 +30,7 @@ function MainNav() {
                         )
                     }
                 >
-                    Test
+                    Bans
                 </NavLink>
             </nav>
         </div>

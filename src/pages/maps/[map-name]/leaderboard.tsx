@@ -9,6 +9,7 @@ import {
     PersonIcon,
     ReloadIcon,
 } from "@radix-ui/react-icons"
+import { SteamIcon } from "@/components/icons"
 
 import { useOutletContext, Link, useNavigate } from "react-router-dom"
 
@@ -400,6 +401,16 @@ function MapLeaderboard() {
                                     <Link to={`/players/${record.steamid64}`}>
                                         <PersonIcon className="mr-2 h-4 w-4" />
                                         <span>Go to player</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        to={`https://steamcommunity.com/profiles/${record.steamid64}/`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        <SteamIcon className="mr-2 h-4 w-4" />
+                                        <span>Steam profile</span>
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

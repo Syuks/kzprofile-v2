@@ -25,6 +25,8 @@ import MapStats from "./pages/maps/[map-name]/stats/stats"
 
 import Login from "./pages/login"
 
+import Bans from "./pages/bans"
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
@@ -135,6 +137,10 @@ const router = createBrowserRouter([
                         ],
                     },
                 ],
+            },
+            {
+                path: "bans",
+                element: <Bans />,
             },
         ],
     },
