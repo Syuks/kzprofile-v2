@@ -260,14 +260,14 @@ function PlayersSearchForm() {
                 onSubmit={handleSubmit}
             >
                 <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
-                    Players search
+                    Player search
                 </h2>
                 <div className="relative w-full max-w-xl">
                     <MagnifyingGlassIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
-                        placeholder="Steam ID"
+                        placeholder="Name, Steam ID, Steam profile"
                         className="border-foreground pl-8"
                         autoFocus
                     />

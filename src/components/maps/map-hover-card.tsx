@@ -29,7 +29,7 @@ function MapHoverCard({ mapName, className }: MapHoverCardProps) {
                 </Button>
             </HoverCardTrigger>
             <HoverCardContent className="w-72">
-                {mapData && <MapCard kzProfileMap={mapData} />}
+                {mapData && <MapCard kzProfileMap={mapData} withDropdown={false} />}
             </HoverCardContent>
         </HoverCard>
     )

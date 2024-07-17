@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react"
 
-import { ButtonIcon, ImageIcon, PersonIcon } from "@radix-ui/react-icons"
+import { DesktopIcon, ImageIcon, PersonIcon } from "@radix-ui/react-icons"
 
 import { useNavigate } from "react-router-dom"
 
@@ -234,7 +234,7 @@ function CommandVirtual() {
                                 runCommand(() => navigate(`/servers?search=${searchInput}`))
                             }
                         >
-                            <ButtonIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+                            <DesktopIcon className="mr-2 h-4 w-4 text-muted-foreground" />
                             Search server
                         </CommandItem>
                     </CommandGroup>
