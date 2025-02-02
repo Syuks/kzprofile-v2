@@ -25,6 +25,8 @@ import MapStats from "./pages/maps/[map-name]/stats/stats"
 
 import Login from "./pages/login"
 
+import Servers from "./pages/servers"
+
 import Bans from "./pages/bans"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -137,6 +139,10 @@ const router = createBrowserRouter([
                         ],
                     },
                 ],
+            },
+            {
+                path: "servers",
+                element: <Servers />,
             },
             {
                 path: "bans",

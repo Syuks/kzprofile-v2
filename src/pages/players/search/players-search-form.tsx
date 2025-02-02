@@ -13,6 +13,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { getSteam64 } from "@/lib/steamid"
 
 import useKZPlayers, { type KZPlayerExtended } from "@/hooks/TanStackQueries/useKZPlayers"
+import { fetchKZPlayer } from "@/hooks/TanStackQueries/useKZPlayer"
 
 import PlayerFlag from "@/components/flag/player-flag"
 import {
@@ -39,7 +40,6 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { fetchKZPlayer } from "@/hooks/TanStackQueries/useKZPlayer"
 
 function PlayersSearchForm() {
     const navigate = useNavigate()

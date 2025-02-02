@@ -33,6 +33,17 @@ function MainNav() {
                     Players
                 </NavLink>
                 <NavLink
+                    to="/servers"
+                    className={({ isActive }) =>
+                        cn(
+                            isActive ? "text-foreground" : "text-foreground/60",
+                            "transition-colors hover:text-foreground/80",
+                        )
+                    }
+                >
+                    Servers
+                </NavLink>
+                <NavLink
                     to="/bans"
                     className={({ isActive }) =>
                         cn(
