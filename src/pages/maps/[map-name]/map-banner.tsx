@@ -4,11 +4,13 @@ import { getMapImageURL } from "@/lib/gokz"
 
 interface MapBannerProps {
     mapName: string
+    imageFormat?: "jpg" | "webp"
+    imageSize?: "full" | "medium" | "small"
 }
 
-function MapBanner({ mapName }: MapBannerProps) {
+function MapBanner({ mapName, imageFormat = "webp", imageSize = "full" }: MapBannerProps) {
     const imageUrl = useMemo(() => {
-        return getMapImageURL(mapName, "webp", "full")
+        return getMapImageURL(mapName, imageFormat, imageSize)
     }, [mapName])
 
     return (

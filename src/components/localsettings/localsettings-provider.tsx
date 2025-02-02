@@ -16,7 +16,7 @@ import useLocalStorage from "@/hooks/useLocalStorage"
 
 export type Theme = "dark" | "light" | "system"
 
-type LocalSettings = {
+export type LocalSettings = {
     steamPlayerSummary: SteamPlayerSummary | undefined
     theme: Theme
     modeChooserType: "pro-tp" | "pro-nub"
@@ -27,6 +27,7 @@ type LocalSettings = {
     defaultProfilePage: boolean
     dateFormat: "yyyy-MM-dd" | "MM-dd-yyyy" | "dd-MM-yyyy"
     tablePageSize: number
+    favoriteServers: string[]
 }
 
 type LocalSettingsContextType = [LocalSettings, Dispatch<SetStateAction<LocalSettings>>]
@@ -42,13 +43,16 @@ const defaultLocalSettings: LocalSettings = {
     defaultProfilePage: false,
     dateFormat: "yyyy-MM-dd",
     tablePageSize: 20,
+    favoriteServers: [],
 }
+
+const LOCAL_SETTINGS_KEY = "localSettings-v1"
 
 const LocalSettingsContext = createContext<LocalSettingsContextType | undefined>(undefined)
 
 export const LocalSettingsProvider = ({ children }: PropsWithChildren) => {
     const [localSettings, setLocalSettings] = useLocalStorage<LocalSettings>(
-        "localSettings-v1",
+        LOCAL_SETTINGS_KEY,
         defaultLocalSettings,
     )
 
@@ -149,3 +153,5 @@ export const useRunType = (): [RunType, (val: RunType) => void] => {
 
     return [localSettings.type, updateRunType]
 }
+
+export const fetchLocalSettings = () => {}
