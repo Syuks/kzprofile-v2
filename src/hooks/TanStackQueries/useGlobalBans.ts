@@ -41,7 +41,7 @@ const useGlobalBans = (steamid64: string, pageSize: number) => {
 }
 
 const fetchGlobalBans = (steamid64: string, pageSize: number) => {
-    return queryClient.fetchQuery(GlobalBansInfiniteQueryOptions(steamid64, pageSize))
+    return queryClient.fetchInfiniteQuery(GlobalBansInfiniteQueryOptions(steamid64, pageSize))
 }
 
 export default useGlobalBans
