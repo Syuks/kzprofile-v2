@@ -54,7 +54,7 @@ const useKZPlayers = (name: string, pageSize: number, enabled: boolean) => {
 }
 
 const fetchKZPlayers = (name: string, pageSize: number, enabled: boolean) => {
-    return queryClient.fetchQuery(KZPlayersInfiniteQueryOptions(name, pageSize, enabled))
+    return queryClient.fetchInfiniteQuery(KZPlayersInfiniteQueryOptions(name, pageSize, enabled))
 }
 
 export default useKZPlayers

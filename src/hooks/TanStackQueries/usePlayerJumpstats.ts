@@ -79,7 +79,7 @@ const fetchPlayerJumpstats = (
     crouchbind: CrouchbindMode,
     pageSize: number,
 ) => {
-    return queryClient.fetchQuery(
+    return queryClient.fetchInfiniteQuery(
         playerJumpstatsInfiniteQueryOptions(steamid, jumpType, crouchbind, pageSize),
     )
 }

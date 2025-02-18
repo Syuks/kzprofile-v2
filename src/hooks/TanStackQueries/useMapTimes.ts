@@ -75,7 +75,7 @@ const fetchMapTimes = (
     stage: number,
     pageSize: number,
 ) => {
-    return queryClient.fetchQuery(
+    return queryClient.fetchInfiniteQuery(
         mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize),
     )
 }
