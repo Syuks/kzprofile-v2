@@ -1,3 +1,6 @@
+//Endpoint: https://api.steampowered.com/IGameServersService/GetServerList/v1/?key={key}&format=json&filter=appid\730\map\{map}
+//Filters: https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter
+
 interface Env {
     STEAM_API_KEY: string
 }

@@ -40,6 +40,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Separator } from "@/components/ui/separator"
 
 function PlayersSearchForm() {
     const navigate = useNavigate()
@@ -277,12 +278,18 @@ function PlayersSearchForm() {
                         <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
                         Search
                     </Button>
-                    <Button variant="secondary" type="button" onClick={handleLucky}>
+                    <Button
+                        variant="secondary"
+                        type="button"
+                        onClick={handleLucky}
+                        disabled={!searchValue}
+                    >
                         <ClockIcon className="mr-2 h-4 w-4" />
                         Feel lucky?
                     </Button>
                 </div>
             </form>
+            <Separator className="bg-foreground" />
             <div className="mb-52 py-10">
                 <h2 className="scroll-m-20 py-4 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Search results

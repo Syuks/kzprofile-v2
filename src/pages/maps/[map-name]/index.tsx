@@ -138,3 +138,4 @@ function MapNavLink({ path, border, end, children }: PropsWithChildren<MapNavLin
 }
 
 export default MapLayout
+export { MapNavLink }

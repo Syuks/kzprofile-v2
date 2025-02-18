@@ -26,6 +26,9 @@ import MapStats from "./pages/maps/[map-name]/stats/stats"
 import Login from "./pages/login"
 
 import Servers from "./pages/servers"
+import ServersSearch from "./pages/servers/servers-search"
+import ServersFavorites from "./pages/servers/servers-favorites"
+import ServersGlobal from "./pages/servers/servers-global"
 
 import Bans from "./pages/bans"
 
@@ -143,6 +146,20 @@ const router = createBrowserRouter([
             {
                 path: "servers",
                 element: <Servers />,
+                children: [
+                    {
+                        index: true,
+                        element: <ServersSearch />,
+                    },
+                    {
+                        path: "favorites",
+                        element: <ServersFavorites />,
+                    },
+                    {
+                        path: "global",
+                        element: <ServersGlobal />,
+                    },
+                ],
             },
             {
                 path: "bans",
