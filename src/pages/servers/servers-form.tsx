@@ -3,14 +3,17 @@ import { useMemo, useState } from "react"
 import {
     ClockIcon,
     DotsHorizontalIcon,
+    ImageIcon,
+    InfoCircledIcon,
     MagnifyingGlassIcon,
+    OpenInNewWindowIcon,
     PersonIcon,
 } from "@radix-ui/react-icons"
-import { SteamIcon } from "@/components/icons"
 
 import { Link, useSearchParams } from "react-router-dom"
 
 import useSteamServers, { type KzProfileServer } from "@/hooks/TanStackQueries/useSteamServers"
+import { getMapImageURL } from "@/lib/gokz"
 
 import {
     createColumnHelper,
@@ -36,7 +39,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import FavoriteStar from "@/components/servers/favorite-star"
 import { Badge } from "@/components/ui/badge"
-import { getMapImageURL } from "@/lib/gokz"
 
 function ServersForm() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -171,7 +173,9 @@ function ServersForm() {
                         <Button
                             variant="link"
                             className="relative flex justify-center bg-cover bg-center px-0"
-                            style={{ backgroundImage: `url("${imageUrl}")` }}
+                            style={{
+                                backgroundImage: `linear-gradient(to left, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("${imageUrl}")`,
+                            }}
                             asChild
                         >
                             <Link to={`/maps/${server.map}`}>{server.map}</Link>
@@ -184,7 +188,25 @@ function ServersForm() {
             }),
             columnHelper.display({
                 id: "actions",
-                cell: () => {
+                cell: (props) => {
+                    const server = props.row.original
+
+                    const getServerInfo = () => {
+                        toast(server.name, {
+                            description: (
+                                <>
+                                    <div>IP: {server.addr}</div>
+                                    <div>Owner: {server.owner_steamid64}</div>
+                                </>
+                            ),
+                            action: {
+                                label: "Connect",
+                                onClick: () =>
+                                    window.location.replace(`steam://connect/${server.addr}`),
+                            },
+                        })
+                    }
+
                     return (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -195,18 +217,30 @@ function ServersForm() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-56" align="end">
                                 <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                                    PLAYER
+                                    SERVER
                                 </DropdownMenuLabel>
-                                <DropdownMenuItem asChild>
-                                    <Link to={`/servers`}>
-                                        <PersonIcon className="mr-2 h-4 w-4" />
-                                        <span>Go to profile</span>
-                                    </Link>
+                                <DropdownMenuItem onSelect={getServerInfo}>
+                                    <InfoCircledIcon className="mr-2 h-4 w-4" />
+                                    <span>Get server info</span>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link to="/servers" target="_blank" rel="noreferrer">
-                                        <SteamIcon className="mr-2 h-4 w-4" />
-                                        <span>Steam profile</span>
+                                    <Link to={`steam://connect/${server.addr}`}>
+                                        <OpenInNewWindowIcon className="mr-2 h-4 w-4" />
+                                        <span>Connect to server</span>
+                                    </Link>
+                                </DropdownMenuItem>
+                                {server.owner_steamid64 && (
+                                    <DropdownMenuItem asChild>
+                                        <Link to={`/players/${server.owner_steamid64}`}>
+                                            <PersonIcon className="mr-2 h-4 w-4" />
+                                            <span>Go to owner</span>
+                                        </Link>
+                                    </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem asChild>
+                                    <Link to={`/maps/${server.map}`}>
+                                        <ImageIcon className="mr-2 h-4 w-4" />
+                                        <span>Go to map</span>
                                     </Link>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -257,7 +291,7 @@ function ServersForm() {
                     <Input
                         value={searchValue}
                         onChange={(e) => setSearchValue(e.target.value)}
-                        placeholder="Name, Steam ID, Steam profile"
+                        placeholder="IP, IP:port, map"
                         className="border-foreground pl-8"
                         autoFocus
                     />

@@ -231,10 +231,14 @@ const columns = [
                 }
 
                 toast(record.server_name, {
-                    description: `
-                        <div>IP: ${globalServer.ip}:${globalServer.port}</div>
-                        <div>Owner: ${globalServer.owner_steamid64}</div>
-                    `,
+                    description: (
+                        <>
+                            <div>
+                                IP: {globalServer.ip}:{globalServer.port}
+                            </div>
+                            <div>Owner: {globalServer.owner_steamid64}</div>
+                        </>
+                    ),
                     action: {
                         label: "Connect",
                         onClick: () =>

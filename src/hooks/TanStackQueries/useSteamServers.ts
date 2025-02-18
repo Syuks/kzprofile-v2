@@ -34,6 +34,7 @@ interface KzProfileServer extends SteamServer {
     difficulty: TierID | undefined
     plugin: Plugin
     ping: number
+    owner_steamid64: string | undefined
 }
 
 const steamServersQueryOptions = (query: string, enabled: boolean) => {
@@ -74,7 +75,7 @@ const steamServersQueryOptions = (query: string, enabled: boolean) => {
             }
 
             const kzProfileServers: KzProfileServer[] = steamServers.map((steamServer) => {
-                const isGlobal = !!globalServers.find((globalServer) => {
+                const globalServer = globalServers.find((globalServer) => {
                     return steamServer.addr === `${globalServer.ip}:${globalServer.port}`
                 })
 
@@ -94,11 +95,12 @@ const steamServersQueryOptions = (query: string, enabled: boolean) => {
                 return {
                     ...steamServer,
                     map: mapName,
-                    global: isGlobal,
+                    global: !!globalServer,
                     keywords: steamServer.gametype,
                     difficulty: difficulty,
                     plugin: plugin,
                     ping: 20,
+                    owner_steamid64: globalServer?.owner_steamid64,
                 }
             })
 

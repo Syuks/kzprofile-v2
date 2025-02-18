@@ -24,52 +24,51 @@ interface SteamServer {
 
 export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
     if (!env.STEAM_API_KEY) {
-        throw new Error("STEAM API KEY not set as evironment variable.")
+        throw new Error("STEAM API KEY not set as environment variable.")
     }
 
-    const mapName = new URL(request.url).searchParams.get("mapName")
+    const url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
+    const params = new URL(request.url).searchParams
 
+    const mapName = params.get("mapName")
     if (!mapName) {
         throw new Error("Please provide a map name in the query parameter 'mapName'")
     }
 
-    const url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
+    const workshopId = params.get("workshopId")
 
-    const mapNameQueryParams = {
-        key: env.STEAM_API_KEY,
-        format: "json",
-        filter: `appid\\730\\map\\${mapName}`,
-    }
-    const mapNameQueryString = new URLSearchParams(mapNameQueryParams).toString()
-
-    const promises = [fetch(`${url}?${mapNameQueryString}`)]
-
-    // In some servers the maps are named "/{id}/{name}" for example "/1464119184/kz_continuum"
-    // Some other servers use this format "workshop/{id}/{name}" but for some reason, the master server also returns these servers with only "/{id}/{name}"
-    const workshopId = new URL(request.url).searchParams.get("workshopId")
+    const queries = [`key=${env.STEAM_API_KEY}&format=json&filter=appid\\730\\map\\${mapName}`]
 
     if (workshopId) {
-        const workshopIdQueryParams = {
-            key: env.STEAM_API_KEY,
-            format: "json",
-            filter: `appid\\730\\map\\/${workshopId}/${mapName}`,
-        }
-
-        promises.push(fetch(`${url}?${workshopIdQueryParams}`))
+        queries.push(
+            `key=${env.STEAM_API_KEY}&format=json&filter=appid\\730\\map\\/${workshopId}/${mapName}`,
+        )
     }
 
-    const responses = await Promise.all(promises)
+    try {
+        const responses = await Promise.all(queries.map((query) => fetch(`${url}?${query}`)))
 
-    const servers: SteamServer[] = []
+        const servers: SteamServer[] = []
 
-    for (const response of responses) {
-        if (!response.ok) {
-            throw new Error("Network response was not ok.")
+        for (const response of responses) {
+            if (!response.ok) {
+                console.error(`Error fetching data: ${response.statusText}`)
+                continue // Skip failed requests instead of throwing an error
+            }
+
+            const data: { response?: { servers?: SteamServer[] } } = await response.json()
+
+            // Ensure servers exist in the response before pushing
+            if (data.response?.servers) {
+                servers.push(...data.response.servers)
+            }
         }
 
-        const data: { response: { servers: SteamServer[] } } = await response.json()
-        servers.push(...data.response.servers)
+        return new Response(JSON.stringify(servers), {
+            headers: { "Content-Type": "application/json" },
+        })
+    } catch (error) {
+        console.error("Unexpected error:", error)
+        return new Response("An error occurred while fetching server data.", { status: 500 })
     }
-
-    return new Response(JSON.stringify(servers))
 }
