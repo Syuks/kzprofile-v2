@@ -5,13 +5,34 @@ import { PlusCircledIcon } from "@radix-ui/react-icons"
 import useKZProfileMaps, { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 import { type SelectedFilter } from "@/components/datatable/datatable-add-filters-dropdown"
 
+import {
+    createColumnHelper,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+    getFacetedUniqueValues,
+    getFacetedRowModel,
+    getFacetedMinMaxValues,
+    Column,
+} from "@tanstack/react-table"
+
+import { GameModeID, type TierID } from "@/lib/gokz"
+import { getFileSizeString } from "@/lib/utils"
+
 import MapCard from "@/components/maps/map-card"
-import MapsPagination from "@/components/maps/maps-pagination"
-import MapsSorting, {
-    type MapsSortOrder,
-    type MapsSortField,
-    sortMaps,
-} from "@/components/maps/maps-sorting"
+import MapsSorting from "@/components/maps/maps-sorting"
+import { DataTablePagination } from "@/components/datatable/datatable-pagination"
+import { DataTableFacetedFilter } from "@/components/datatable/datatable-faceted-filter"
+import {
+    DataTableDateFilter,
+    dateFilterFunction,
+} from "@/components/datatable/datatable-date-filter"
+import {
+    DatatableFacetedMinMaxFilter,
+    arrayLengthFilterFn,
+} from "@/components/datatable/datatable-faceted-min-max-filter"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,55 +46,94 @@ import {
 function Maps() {
     const kzProfileMapsQuery = useKZProfileMaps()
 
-    const [globalFilter, setGlobalFilter] = useState<string>("")
+    const [globalFilter, setGlobalFilter] = useState("")
     const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: SelectedFilter }>({
         difficulty: { label: "Tier", show: false },
         created_on: { label: "Date", show: false },
-        filters: { label: "Filter", show: false },
+        filters: { label: "Filters", show: false },
         bonus_count: { label: "Bonus count", show: false },
-        videos: { label: "Has Video", show: false },
-        filesize: { label: "File size", show: false },
+        videos: { label: "Videos", show: false },
+        filesize: { label: "Filesize", show: false },
     })
-    const [sortOrder, setSortOrder] = useState<MapsSortOrder>("desc")
-    const [sortField, setSortField] = useState<MapsSortField>("created_on")
 
-    const [pageSize, setPageSize] = useState<number>(20)
-    const [pageIndex, setPageIndex] = useState<number>(1)
-
-    const filteredData = useMemo<KZProfileMap[]>(() => {
+    const tableData = useMemo(() => {
         if (!kzProfileMapsQuery.data) {
             return []
         }
 
-        const cleanGlobalFilter = globalFilter.trim().toLowerCase()
+        return kzProfileMapsQuery.data
+    }, [kzProfileMapsQuery.data])
 
-        if (cleanGlobalFilter === "") {
-            return sortMaps(kzProfileMapsQuery.data, sortField, sortOrder)
-        }
+    const columns = useMemo(() => {
+        const columnHelper = createColumnHelper<KZProfileMap>()
 
-        const globalFilterFields: (keyof KZProfileMap)[] = [
-            "name",
-            "mapperNames",
-            "workshop_id",
-            "mapperIds",
-            "id",
+        return [
+            columnHelper.accessor("id", {}),
+            columnHelper.accessor("name", {}),
+            columnHelper.accessor("filesize", {
+                filterFn: "inNumberRange",
+            }),
+            columnHelper.accessor("difficulty", {
+                filterFn: (row, id, value) => {
+                    return value.includes(row.getValue<TierID>(id))
+                },
+            }),
+            columnHelper.accessor("created_on", {
+                filterFn: dateFilterFunction,
+            }),
+            columnHelper.accessor("workshop_id", {}),
+            columnHelper.accessor("filters", {
+                filterFn: (row, id, value: GameModeID[]) => {
+                    const rowValues = row.getValue<GameModeID[]>(id)
+                    return value.some((v) => rowValues.includes(v))
+                },
+            }),
+            columnHelper.accessor("bonus_count", {
+                filterFn: "inNumberRange",
+            }),
+            columnHelper.accessor("mapperNames", {}),
+            columnHelper.accessor("mapperIds", {}),
+            columnHelper.accessor("videos", {
+                filterFn: arrayLengthFilterFn,
+            }),
         ]
+    }, [])
 
-        const filteredMaps = kzProfileMapsQuery.data.filter((map) => {
-            let globalMatch = false
+    // Only strings and numbers are passed to a custom FilterFn because of the original getColumnCanGlobalFilter function.
+    // I want to be able to search mapper names and ids which are string arrays so I must replace the original function
+    // See getColumnCanGlobalFilter at table/packages/table-core/src/features/GlobalFiltering.ts.
+    const getColumnCanGlobalFilter = (column: Column<KZProfileMap>) => {
+        if (
+            column.id === "name" ||
+            column.id === "workshop_id" ||
+            column.id === "mapperNames" ||
+            column.id === "mapperIds"
+        ) {
+            return true
+        }
+        return false
+    }
 
-            for (let field of globalFilterFields) {
-                if (map[field].toString().toLowerCase().indexOf(cleanGlobalFilter) !== -1) {
-                    globalMatch = true
-                    break
-                }
-            }
-
-            return globalMatch
-        })
-
-        return sortMaps(filteredMaps, sortField, sortOrder)
-    }, [kzProfileMapsQuery.data, globalFilter, sortOrder, sortField])
+    const table = useReactTable({
+        data: tableData,
+        columns,
+        state: {
+            globalFilter,
+        },
+        initialState: {
+            sorting: [{ id: "created_on", desc: true }],
+            pagination: { pageIndex: 0, pageSize: 20 },
+        },
+        onGlobalFilterChange: setGlobalFilter,
+        getColumnCanGlobalFilter: getColumnCanGlobalFilter,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFacetedRowModel: getFacetedRowModel(),
+        getFacetedUniqueValues: getFacetedUniqueValues(),
+        getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    })
 
     const onSelectedFiltersChange = (filter: string, isChecked: boolean) => {
         setSelectedFilters((oldSelectedFilter) => {
@@ -85,18 +145,8 @@ function Maps() {
                 },
             }
         })
+        table.getColumn(filter)?.setFilterValue(undefined)
     }
-
-    const pageCount = useMemo<number>(
-        () => Math.ceil(filteredData.length / pageSize),
-        [pageSize, filteredData],
-    )
-
-    const paginatedData = useMemo<KZProfileMap[]>(() => {
-        const startIndex = (pageIndex - 1) * pageSize
-
-        return filteredData.slice(startIndex, startIndex + pageSize)
-    }, [filteredData, pageIndex, pageSize])
 
     return (
         <div className="py-10">
@@ -117,7 +167,6 @@ function Maps() {
                                 return (
                                     <DropdownMenuCheckboxItem
                                         key={key}
-                                        className="capitalize"
                                         checked={selectedFilters[key].show}
                                         onCheckedChange={(checked) =>
                                             onSelectedFiltersChange(key, checked)
@@ -130,12 +179,7 @@ function Maps() {
                             })}
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <MapsSorting
-                        sortOrder={sortOrder}
-                        setSortOrder={setSortOrder}
-                        sortField={sortField}
-                        setSortField={setSortField}
-                    />
+                    <MapsSorting table={table} />
                 </div>
             </div>
 
@@ -144,71 +188,98 @@ function Maps() {
                     <div className="flex flex-wrap">
                         <div className="mr-4 mt-4 max-w-sm">
                             <Input
-                                placeholder="Search map..."
+                                placeholder="Search..."
                                 value={globalFilter}
+                                type="search"
                                 onChange={(event) => setGlobalFilter(event.target.value)}
                             />
                         </div>
                         {selectedFilters.difficulty.show && (
-                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                {selectedFilters.difficulty.label}
-                            </Button>
+                            <div className="mr-4 mt-4">
+                                <DataTableFacetedFilter
+                                    options={[
+                                        { label: "Very Easy", value: 1 },
+                                        { label: "Easy", value: 2 },
+                                        { label: "Medium", value: 3 },
+                                        { label: "Hard", value: 4 },
+                                        { label: "Very Hard", value: 5 },
+                                        { label: "Extreme", value: 6 },
+                                        { label: "Death", value: 7 },
+                                    ]}
+                                    title="Tier"
+                                    column={table.getColumn("difficulty")}
+                                />
+                            </div>
                         )}
                         {selectedFilters.created_on.show && (
-                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                {selectedFilters.created_on.label}
-                            </Button>
+                            <div className="mr-4 mt-4">
+                                <DataTableDateFilter
+                                    column={table.getColumn("created_on")}
+                                    title="Date"
+                                />
+                            </div>
                         )}
                         {selectedFilters.filters.show && (
-                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                {selectedFilters.filters.label}
-                            </Button>
+                            <div className="mr-4 mt-4">
+                                <DataTableFacetedFilter
+                                    options={[
+                                        { label: "KZ Timer", value: 200 },
+                                        { label: "KZ Simple", value: 201 },
+                                        { label: "KZ Vanilla", value: 202 },
+                                    ]}
+                                    title="Filters"
+                                    column={table.getColumn("filters")}
+                                />
+                            </div>
                         )}
                         {selectedFilters.bonus_count.show && (
-                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                {selectedFilters.bonus_count.label}
-                            </Button>
+                            <div className="mr-4 mt-4">
+                                <DatatableFacetedMinMaxFilter
+                                    column={table.getColumn("bonus_count")}
+                                    title="Bonus count"
+                                />
+                            </div>
                         )}
                         {selectedFilters.videos.show && (
-                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                {selectedFilters.videos.label}
-                            </Button>
+                            <div className="mr-4 mt-4">
+                                <DatatableFacetedMinMaxFilter
+                                    column={table.getColumn("videos")}
+                                    title="Videos"
+                                    min={0}
+                                    max={Infinity}
+                                />
+                            </div>
                         )}
                         {selectedFilters.filesize.show && (
-                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                {selectedFilters.filesize.label}
-                            </Button>
+                            <div className="mr-4 mt-4">
+                                <DatatableFacetedMinMaxFilter
+                                    column={table.getColumn("filesize")}
+                                    title="Filesize"
+                                    numberFormater={(value) =>
+                                        value ? getFileSizeString(value) : "0.00 Bytes"
+                                    }
+                                />
+                            </div>
                         )}
                     </div>
                 </div>
 
                 <div className="flex flex-wrap">
-                    {paginatedData.map((map) => {
-                        return (
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map((row) => (
                             <div
-                                key={map.id}
+                                key={row.id}
                                 className="min-w-[250px] max-w-[300px] flex-1 px-1 pb-16"
                             >
-                                <MapCard kzProfileMap={map} />
+                                <MapCard kzProfileMap={row.original} />
                             </div>
-                        )
-                    })}
+                        ))
+                    ) : (
+                        <div className="flex justify-center">No results.</div>
+                    )}
                 </div>
 
-                <MapsPagination
-                    pageSize={pageSize}
-                    setPageSize={setPageSize}
-                    pageIndex={pageIndex}
-                    setPageIndex={setPageIndex}
-                    pageCount={pageCount}
-                    tablePageSizes={[20, 30, 40, 50]}
-                />
+                <DataTablePagination table={table} />
             </div>
         </div>
     )

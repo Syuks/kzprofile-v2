@@ -56,7 +56,6 @@ import { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
-    ColumnFiltersState,
     SortingState,
     getCoreRowModel,
     getFilteredRowModel,
@@ -400,7 +399,6 @@ function Finishes() {
         server_name: { label: "Server", show: false },
     })
 
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
     const [sorting, setSorting] = useState<SortingState>([{ id: "points", desc: true }])
     // For pageSize of pagination:
     const [localSettings, setLocalSettings] = useLocalSettings()
@@ -431,11 +429,9 @@ function Finishes() {
         columns,
         state: {
             sorting,
-            columnFilters,
             pagination: { pageSize: localSettings.tablePageSize, pageIndex: pageIndex },
         },
         onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),

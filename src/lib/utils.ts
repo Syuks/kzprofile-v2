@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+
 import { FormatDistanceToNowStrictOptions, formatDistanceToNowStrict } from "date-fns"
 
 export function cn(...inputs: ClassValue[]) {
@@ -17,8 +18,17 @@ export function getTimeString(time: number): string {
     return `${hours.padStart(2)}${dateString.substring(13, 23)}`
 }
 
-export function getFileSizeString(fileSize: number): string {
-    return `${(fileSize / Math.pow(1024, 2)).toFixed(0)} MB`
+export function getFileSizeString(bytes: number): string {
+    if (bytes < 0) {
+        throw new Error("Bytes cannot be negative")
+    }
+
+    const units = ["Bytes", "KB", "MB", "GB", "TB"]
+    const index = Math.floor(Math.log(bytes) / Math.log(1024)) || 0
+
+    const size = bytes / Math.pow(1024, index)
+
+    return `${size.toFixed(2)} ${units[index]}`
 }
 
 export function formatDistanceToNowStrictWithOffset<DateType extends Date>(

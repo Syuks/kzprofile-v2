@@ -1,6 +1,8 @@
-import { Dispatch, SetStateAction, useMemo } from "react"
+import { useMemo } from "react"
 
 import { ArrowDownIcon, ArrowUpIcon, CircleIcon, RadiobuttonIcon } from "@radix-ui/react-icons"
+
+import { type Table } from "@tanstack/react-table"
 
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
@@ -16,20 +18,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export type MapsSortOrder = "asc" | "desc"
-export type MapsSortField = keyof KZProfileMap
-export interface MapsSortOption {
-    value: MapsSortField
+interface MapsSortOption {
+    value: keyof KZProfileMap
     label: string
 }
-
-interface MapsSortingProps {
-    sortOrder: MapsSortOrder
-    setSortOrder: Dispatch<SetStateAction<MapsSortOrder>>
-    sortField: MapsSortField
-    setSortField: Dispatch<SetStateAction<MapsSortField>>
-}
-
 const sortOptions: MapsSortOption[] = [
     { value: "created_on", label: "Release date" },
     { value: "name", label: "Name" },
@@ -39,70 +31,28 @@ const sortOptions: MapsSortOption[] = [
     { value: "id", label: "Id" },
 ]
 
-export const sortMaps = (
-    maps: KZProfileMap[],
-    sortField: MapsSortField,
-    sortOrder: MapsSortOrder,
-): KZProfileMap[] => {
-    let preOrderSort = [...maps]
-
-    if (sortField === "created_on") {
-        preOrderSort.sort(
-            (mapA, mapB) =>
-                new Date(mapB.created_on).getTime() - new Date(mapA.created_on).getTime(),
-        )
-    }
-
-    if (sortField === "name") {
-        preOrderSort.sort((mapA, mapB) => {
-            const nameA = mapA.name.toLowerCase()
-            const nameB = mapB.name.toLowerCase()
-            if (nameA < nameB) {
-                return -1
-            }
-
-            if (nameA > nameB) {
-                return 1
-            }
-
-            return 0
-        })
-    }
-
-    if (
-        sortField === "difficulty" ||
-        sortField === "bonus_count" ||
-        sortField === "filesize" ||
-        sortField === "id"
-    ) {
-        preOrderSort.sort((mapA, mapB) => mapB[sortField] - mapA[sortField])
-    }
-
-    return sortOrder === "desc" ? preOrderSort : preOrderSort.reverse()
+interface MapsSortingProps<KZProfileMap> {
+    table: Table<KZProfileMap>
 }
 
-export function MapsSorting({
-    sortOrder,
-    setSortOrder,
-    sortField,
-    setSortField,
-}: MapsSortingProps) {
-    const sortFieldLabel = useMemo(() => {
-        return sortOptions.find((sortOption) => sortOption.value === sortField)?.label
-    }, [sortOptions, sortField])
+export function MapsSorting<KZProfileMap>({ table }: MapsSortingProps<KZProfileMap>) {
+    const tableSortingState = table.getState().sorting[0]
 
-    const onSortChange = (order: MapsSortOrder, field: MapsSortField) => {
-        setSortOrder(order)
-        setSortField(field)
-    }
+    const tableLastSortingLabel = useMemo(
+        () => sortOptions.find((option) => option.value === tableSortingState.id)?.label,
+        [tableSortingState.id],
+    )
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="border-dashed">
-                    {sortOrder === "asc" && <ArrowUpIcon className="mr-2 h-4 w-4" />}
-                    {sortOrder === "desc" && <ArrowDownIcon className="mr-2 h-4 w-4" />}
-                    {sortFieldLabel}
+                    {tableSortingState.desc ? (
+                        <ArrowDownIcon className="mr-2 h-4 w-4" />
+                    ) : (
+                        <ArrowUpIcon className="mr-2 h-4 w-4" />
+                    )}
+                    {tableLastSortingLabel}
                 </Button>
             </DropdownMenuTrigger>
 
@@ -111,7 +61,7 @@ export function MapsSorting({
                     return (
                         <DropdownMenuSub key={sortOption.value}>
                             <DropdownMenuSubTrigger>
-                                {sortOption.value === sortField ? (
+                                {sortOption.value === tableSortingState.id ? (
                                     <RadiobuttonIcon className="mr-2 h-4 w-4" />
                                 ) : (
                                     <CircleIcon className="mr-2 h-4 w-4" />
@@ -122,9 +72,12 @@ export function MapsSorting({
                             <DropdownMenuPortal>
                                 <DropdownMenuSubContent>
                                     <DropdownMenuItem
-                                        onSelect={() => onSortChange("desc", sortOption.value)}
+                                        onSelect={() =>
+                                            table.setSorting([{ id: sortOption.value, desc: true }])
+                                        }
                                     >
-                                        {sortOption.value === sortField && sortOrder === "desc" ? (
+                                        {sortOption.value === tableSortingState.id &&
+                                        tableSortingState.desc ? (
                                             <RadiobuttonIcon className="mr-2 h-4 w-4" />
                                         ) : (
                                             <CircleIcon className="mr-2 h-4 w-4" />
@@ -132,9 +85,14 @@ export function MapsSorting({
                                         Descending
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onSelect={() => onSortChange("asc", sortOption.value)}
+                                        onSelect={() =>
+                                            table.setSorting([
+                                                { id: sortOption.value, desc: false },
+                                            ])
+                                        }
                                     >
-                                        {sortOption.value === sortField && sortOrder === "asc" ? (
+                                        {sortOption.value === tableSortingState.id &&
+                                        !tableSortingState.desc ? (
                                             <RadiobuttonIcon className="mr-2 h-4 w-4" />
                                         ) : (
                                             <CircleIcon className="mr-2 h-4 w-4" />

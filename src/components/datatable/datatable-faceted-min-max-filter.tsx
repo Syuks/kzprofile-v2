@@ -1,6 +1,6 @@
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 
-import { Column } from "@tanstack/react-table"
+import { Column, FilterFn, filterFns } from "@tanstack/react-table"
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
@@ -152,3 +152,17 @@ export function DatatableFacetedMinMaxFilter<TData, TValue>({
         </Popover>
     )
 }
+
+export const arrayLengthFilterFn: FilterFn<any> = (
+    row,
+    columnId: string,
+    filterValue: [number, number],
+) => {
+    let [min, max] = filterValue
+
+    const rowValue = row.getValue<string[]>(columnId).length
+    return rowValue >= min && rowValue <= max
+}
+
+arrayLengthFilterFn.resolveFilterValue = filterFns.inNumberRange.resolveFilterValue
+arrayLengthFilterFn.autoRemove = filterFns.inNumberRange.autoRemove
