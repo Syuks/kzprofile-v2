@@ -85,7 +85,7 @@ function MapLayout() {
                     <BarChartIcon className="mr-2 h-4 w-4" />
                     Statistics
                 </MapNavLink>
-                <MapNavLink path="servers" border={mapTierData?.border}>
+                <MapNavLink path={`/servers?search=${mapName}`} border={mapTierData?.border}>
                     <DesktopIcon className="mr-2 h-4 w-4" />
                     Servers
                 </MapNavLink>

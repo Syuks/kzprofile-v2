@@ -3,6 +3,7 @@ import { useMemo, useState } from "react"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 
 import useKZProfileMaps, { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import { type SelectedFilter } from "@/components/datatable/datatable-add-filters-dropdown"
 
 import MapCard from "@/components/maps/map-card"
 import MapsPagination from "@/components/maps/maps-pagination"
@@ -14,19 +15,25 @@ import MapsSorting, {
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 function Maps() {
     const kzProfileMapsQuery = useKZProfileMaps()
 
     const [globalFilter, setGlobalFilter] = useState<string>("")
-    /*const [selectedFilters, setSelectedFilters] = useState({
-        filesize: { label: "File size", show: false },
+    const [selectedFilters, setSelectedFilters] = useState<{ [key: string]: SelectedFilter }>({
         difficulty: { label: "Tier", show: false },
         created_on: { label: "Date", show: false },
         filters: { label: "Filter", show: false },
         bonus_count: { label: "Bonus count", show: false },
         videos: { label: "Has Video", show: false },
-    })*/
+        filesize: { label: "File size", show: false },
+    })
     const [sortOrder, setSortOrder] = useState<MapsSortOrder>("desc")
     const [sortField, setSortField] = useState<MapsSortField>("created_on")
 
@@ -68,6 +75,18 @@ function Maps() {
         return sortMaps(filteredMaps, sortField, sortOrder)
     }, [kzProfileMapsQuery.data, globalFilter, sortOrder, sortField])
 
+    const onSelectedFiltersChange = (filter: string, isChecked: boolean) => {
+        setSelectedFilters((oldSelectedFilter) => {
+            return {
+                ...oldSelectedFilter,
+                [filter]: {
+                    ...oldSelectedFilter[filter],
+                    show: isChecked,
+                },
+            }
+        })
+    }
+
     const pageCount = useMemo<number>(
         () => Math.ceil(filteredData.length / pageSize),
         [pageSize, filteredData],
@@ -86,16 +105,37 @@ function Maps() {
                     Global maps
                 </h2>
                 <div className="flex space-x-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                Add filter
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-40">
+                            {Object.keys(selectedFilters).map((key) => {
+                                return (
+                                    <DropdownMenuCheckboxItem
+                                        key={key}
+                                        className="capitalize"
+                                        checked={selectedFilters[key].show}
+                                        onCheckedChange={(checked) =>
+                                            onSelectedFiltersChange(key, checked)
+                                        }
+                                        onSelect={(event) => event.preventDefault()}
+                                    >
+                                        {selectedFilters[key].label}
+                                    </DropdownMenuCheckboxItem>
+                                )
+                            })}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                     <MapsSorting
                         sortOrder={sortOrder}
                         setSortOrder={setSortOrder}
                         sortField={sortField}
                         setSortField={setSortField}
                     />
-                    <Button variant="outline" className="border-dashed">
-                        <PlusCircledIcon className="mr-2 h-4 w-4" />
-                        Add filter
-                    </Button>
                 </div>
             </div>
 
@@ -109,6 +149,42 @@ function Maps() {
                                 onChange={(event) => setGlobalFilter(event.target.value)}
                             />
                         </div>
+                        {selectedFilters.difficulty.show && (
+                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                {selectedFilters.difficulty.label}
+                            </Button>
+                        )}
+                        {selectedFilters.created_on.show && (
+                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                {selectedFilters.created_on.label}
+                            </Button>
+                        )}
+                        {selectedFilters.filters.show && (
+                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                {selectedFilters.filters.label}
+                            </Button>
+                        )}
+                        {selectedFilters.bonus_count.show && (
+                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                {selectedFilters.bonus_count.label}
+                            </Button>
+                        )}
+                        {selectedFilters.videos.show && (
+                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                {selectedFilters.videos.label}
+                            </Button>
+                        )}
+                        {selectedFilters.filesize.show && (
+                            <Button variant="outline" className="mr-4 mt-4 border-dashed">
+                                <PlusCircledIcon className="mr-2 h-4 w-4" />
+                                {selectedFilters.filesize.label}
+                            </Button>
+                        )}
                     </div>
                 </div>
 

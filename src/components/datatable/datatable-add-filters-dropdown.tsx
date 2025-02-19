@@ -38,6 +38,7 @@ export function DatatableAddFiltersDropdown({
                             className="capitalize"
                             checked={selectedFilters[key].show}
                             onCheckedChange={(checked) => onSelectedFiltersChange(key, checked)}
+                            onSelect={(event) => event.preventDefault()}
                         >
                             {selectedFilters[key].label}
                         </DropdownMenuCheckboxItem>

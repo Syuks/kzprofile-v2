@@ -33,6 +33,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface MapCardProps {
     kzProfileMap: KZProfileMap
@@ -73,6 +74,14 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
         })
     }, [kzProfileMap])
 
+    const getPlayerTime = useCallback(() => {
+        toast(`${kzProfileMap.name} has a filter in:`, {
+            description: kzProfileMap.filters
+                .map((gameModeID) => getGameModeName(gameModeID))
+                .join(", "),
+        })
+    }, [kzProfileMap])
+
     return (
         <>
             <div className="group relative block overflow-hidden rounded">
@@ -109,13 +118,51 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
                         {kzProfileMap.filters.includes(getGameModeID(gameMode)) && (
                             <>
                                 <span>•</span>
-                                <StopwatchIcon className="h-3 w-3" />
+                                <Tooltip>
+                                    <TooltipTrigger className="cursor-pointer" asChild>
+                                        <StopwatchIcon
+                                            className="h-3 w-3"
+                                            onClick={getPlayerTime}
+                                        />
+                                    </TooltipTrigger>
+                                    <TooltipContent className="normal-case">
+                                        <p>Has filter</p>
+                                    </TooltipContent>
+                                </Tooltip>
                             </>
                         )}
                         {kzProfileMap.bonus_count > 0 && (
                             <>
                                 <span>•</span>
-                                <span>{`${kzProfileMap.bonus_count}B`}</span>
+                                <Tooltip>
+                                    <TooltipTrigger className="cursor-default" asChild>
+                                        <span>{`${kzProfileMap.bonus_count}B`}</span>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="normal-case">
+                                        <p>
+                                            {kzProfileMap.bonus_count}{" "}
+                                            {kzProfileMap.bonus_count > 1 ? "bonuses" : "bonus"}
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </>
+                        )}
+                        {kzProfileMap.videos.length > 0 && (
+                            <>
+                                <span>•</span>
+                                <Tooltip>
+                                    <TooltipTrigger className="cursor-pointer" asChild>
+                                        <Link to={`/maps/${kzProfileMap.name}/media`}>
+                                            <VideoIcon className="h-3 w-3" />
+                                        </Link>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="normal-case">
+                                        <p>
+                                            {kzProfileMap.videos.length}{" "}
+                                            {kzProfileMap.videos.length > 1 ? "videos" : "video"}
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
                             </>
                         )}
                     </div>
@@ -165,7 +212,7 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link to={`/maps/${kzProfileMap.name}/servers`}>
+                                    <Link to={`/servers?search=${kzProfileMap.name}`}>
                                         <DesktopIcon className="mr-2 h-4 w-4" />
                                         <span>Find server</span>
                                     </Link>
