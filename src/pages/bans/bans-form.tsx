@@ -46,6 +46,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Separator } from "@/components/ui/separator"
 
 function BansForm() {
     const [searchParams, setSearchParams] = useSearchParams()
@@ -409,6 +410,7 @@ function BansForm() {
                     </Button>
                 </div>
             </form>
+            <Separator />
             <div className="mb-52 py-10">
                 <h2 className="scroll-m-20 py-4 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Search results

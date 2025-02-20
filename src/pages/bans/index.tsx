@@ -1,11 +1,12 @@
-import MapBannerRandom from "@/components/maps/map-banner-random"
+//import MapBannerRandom from "@/components/maps/map-banner-random"
+import MapBanner from "@/pages/maps/[map-name]/map-banner"
 
 import BansForm from "./bans-form"
 
 function Bans() {
     return (
         <>
-            <MapBannerRandom />
+            <MapBanner mapName="kz_evilcorp" />
             <BansForm />
         </>
     )

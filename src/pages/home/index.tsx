@@ -6,15 +6,34 @@ import { timeUntilMidnightString, type TimeUntilMidnightString, cn } from "@/lib
 
 import { getTierData } from "@/lib/gokz"
 
+import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
 import useMapOfTheDay from "@/hooks/TanStackQueries/useMapOfTheDay"
+import useMapRecentTimes from "@/hooks/TanStackQueries/useMapRecentTimes"
 
 import { Separator } from "@/components/ui/separator"
 import MapBanner from "@/pages/maps/[map-name]/map-banner"
 
+const createdSiceTodayUTC = (): string => {
+    const now = new Date()
+    return `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()}`
+}
+
 function Home() {
+    const [gameMode] = useGameMode()
+    const [runType] = useRunType()
+
     const [timeLeft, setTimeLeft] = useState<TimeUntilMidnightString>(timeUntilMidnightString())
 
     const { data: mapOfTheDay } = useMapOfTheDay()
+
+    const mapRecentTimesQuery = useMapRecentTimes(
+        gameMode,
+        runType,
+        0,
+        10,
+        createdSiceTodayUTC(),
+        mapOfTheDay?.name,
+    )
 
     const tierData = useMemo(() => {
         if (!mapOfTheDay) {
