@@ -8,6 +8,8 @@ import { LocalSettingsProvider } from "@/components/localsettings/localsettings-
 
 import Layout from "./pages/layout"
 
+import Home from "./pages/home"
+
 import PlayerSearch from "./pages/players/search"
 
 import PlayerProfile from "./pages/players/[steamid]"
@@ -81,6 +83,10 @@ const router = createBrowserRouter([
         path: "/",
         element: <Layout />,
         children: [
+            {
+                index: true,
+                element: <Home />,
+            },
             {
                 path: "players",
                 children: [

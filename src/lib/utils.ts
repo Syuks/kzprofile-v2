@@ -55,3 +55,30 @@ export function generateRandomString(minLength: number, maxLength: number) {
     }
     return result
 }
+
+export interface TimeUntilMidnightString {
+    hours: string
+    minutes: string
+    seconds: string
+}
+
+export function timeUntilMidnightString(): TimeUntilMidnightString {
+    const now = new Date()
+    const midnight = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1, 0, 0, 0),
+    )
+
+    const seconds = Math.floor((midnight.getTime() - now.getTime()) / 1000)
+
+    return {
+        hours: Math.floor(seconds / 3600)
+            .toString()
+            .padStart(2, "0"),
+        minutes: Math.floor((seconds % 3600) / 60)
+            .toString()
+            .padStart(2, "0"),
+        seconds: Math.floor(seconds % 60)
+            .toString()
+            .padStart(2, "0"),
+    }
+}
