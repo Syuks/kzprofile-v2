@@ -58,7 +58,7 @@ function Home() {
                 <div className="relative flex items-end justify-center">
                     <div
                         className={cn(
-                            "text-center font-mono text-xl tracking-[1.5em]",
+                            "text-center font-mono text-xl tracking-[0.5em] sm:tracking-[1em] md:tracking-[1.5em]",
                             tierData?.color,
                         )}
                     >
@@ -66,7 +66,7 @@ function Home() {
                     </div>
                     <div
                         className={cn(
-                            "absolute text-center font-mono text-xl tracking-[1.5em] blur-sm",
+                            "absolute text-center font-mono text-xl tracking-[0.5em] blur-sm sm:tracking-[1em] md:tracking-[1.5em]",
                             tierData?.color,
                         )}
                     >
@@ -74,29 +74,37 @@ function Home() {
                     </div>
                 </div>
                 <div className="relative flex w-full justify-center">
-                    <div className="absolute flex w-1/2 items-center justify-between">
-                        <span className="text-8xl font-bold tabular-nums tracking-widest blur-sm">
+                    <div className="absolute flex w-[350px] items-center justify-between sm:w-[500px] md:w-[670px]">
+                        <span className="text-6xl font-bold tabular-nums tracking-widest blur-sm sm:text-7xl md:text-8xl">
                             {timeLeft.hours}
                         </span>
-                        <span className="mb-2 text-7xl font-light text-transparent">:</span>
-                        <span className="text-8xl font-bold tabular-nums tracking-widest blur-sm">
+                        <span className="mb-2 text-5xl font-light text-transparent sm:text-6xl md:text-7xl">
+                            :
+                        </span>
+                        <span className="text-6xl font-bold tabular-nums tracking-widest blur-sm sm:text-7xl md:text-8xl">
                             {timeLeft.minutes}
                         </span>
-                        <span className="mb-2 text-7xl font-light text-transparent">:</span>
-                        <span className="text-8xl font-bold tabular-nums tracking-widest blur-sm">
+                        <span className="mb-2 text-5xl font-light text-transparent sm:text-6xl md:text-7xl">
+                            :
+                        </span>
+                        <span className="text-6xl font-bold tabular-nums tracking-widest blur-sm sm:text-7xl md:text-8xl">
                             {timeLeft.seconds}
                         </span>
                     </div>
-                    <div className="flex w-1/2 items-center justify-between">
-                        <span className="text-8xl font-bold tabular-nums tracking-widest">
+                    <div className="flex w-[350px] items-center justify-between sm:w-[500px] md:w-[670px]">
+                        <span className="text-6xl font-bold tabular-nums tracking-widest sm:text-7xl md:text-8xl">
                             {timeLeft.hours}
                         </span>
-                        <span className="mb-2 text-7xl font-light text-muted-foreground">:</span>
-                        <span className="text-8xl font-bold tabular-nums tracking-widest">
+                        <span className="mb-2 text-5xl font-light text-muted-foreground sm:text-6xl md:text-7xl">
+                            :
+                        </span>
+                        <span className="text-6xl font-bold tabular-nums tracking-widest sm:text-7xl md:text-8xl">
                             {timeLeft.minutes}
                         </span>
-                        <span className="mb-2 text-7xl font-light text-muted-foreground">:</span>
-                        <span className="text-8xl font-bold tabular-nums tracking-widest">
+                        <span className="mb-2 text-5xl font-light text-muted-foreground sm:text-6xl md:text-7xl">
+                            :
+                        </span>
+                        <span className="text-6xl font-bold tabular-nums tracking-widest sm:text-7xl md:text-8xl">
                             {timeLeft.seconds}
                         </span>
                     </div>
@@ -105,7 +113,7 @@ function Home() {
                     <Link
                         to={`/maps/${mapOfTheDay?.name}`}
                         className={cn(
-                            "flex min-h-11 min-w-64 bg-background py-2 pl-6 pr-2 font-mono text-xl tracking-[1em] transition-transform duration-1000 hover:-translate-x-[2px] hover:-translate-y-[2px] focus:translate-x-2 focus:translate-y-2 focus:duration-75",
+                            "flex min-h-11 bg-background py-2 pl-6 pr-2 font-mono text-xl tracking-widest transition-transform duration-1000 hover:-translate-x-[2px] hover:-translate-y-[2px] focus:translate-x-2 focus:translate-y-2 focus:duration-75 sm:tracking-[1em]",
                             tierData?.color,
                         )}
                     >
@@ -113,7 +121,7 @@ function Home() {
                     </Link>
                     <div
                         className={cn(
-                            "absolute -bottom-2 -right-2 -z-10 min-h-11 min-w-64 border py-2 pl-6 pr-2 font-mono text-xl tracking-[1em] text-transparent",
+                            "absolute -bottom-2 -right-2 -z-10 min-h-11 border py-2 pl-6 pr-2 font-mono text-xl tracking-widest text-transparent sm:tracking-[1em]",
                             tierData?.border,
                         )}
                     >
