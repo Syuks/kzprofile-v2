@@ -34,6 +34,8 @@ import ServersGlobal from "./pages/servers/servers-global"
 
 import Bans from "./pages/bans"
 
+import Leaderboards from "./pages/leaderboards"
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 
@@ -170,6 +172,10 @@ const router = createBrowserRouter([
             {
                 path: "bans",
                 element: <Bans />,
+            },
+            {
+                path: "leaderboards",
+                element: <Leaderboards />,
             },
         ],
     },

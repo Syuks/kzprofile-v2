@@ -36,11 +36,7 @@ function UserDropdown() {
     }
 
     useEffect(() => {
-        const profile = (e: KeyboardEvent) => {
-            if (!localSettings.steamPlayerSummary) {
-                return
-            }
-
+        const shortcuts = (e: KeyboardEvent) => {
             if (
                 (e.target instanceof HTMLElement && e.target.isContentEditable) ||
                 e.target instanceof HTMLInputElement ||
@@ -50,13 +46,33 @@ function UserDropdown() {
                 return
             }
 
-            if (e.shiftKey && e.key === "P") {
+            if (e.shiftKey && e.key.toLowerCase() === "p") {
+                if (!localSettings.steamPlayerSummary) {
+                    return
+                }
+
                 navigate(`/players/${localSettings.steamPlayerSummary.steamid}`)
+                return
+            }
+
+            if (e.shiftKey && e.key.toLowerCase() === "m") {
+                navigate("/maps")
+                return
+            }
+
+            if (e.shiftKey && e.key.toLowerCase() === "s") {
+                navigate("/servers")
+                return
+            }
+
+            if (e.shiftKey && e.key.toLowerCase() === "b") {
+                navigate("/bans")
+                return
             }
         }
 
-        document.addEventListener("keydown", profile)
-        return () => document.removeEventListener("keydown", profile)
+        document.addEventListener("keydown", shortcuts)
+        return () => document.removeEventListener("keydown", shortcuts)
     }, [localSettings])
 
     return (
@@ -95,10 +111,16 @@ function UserDropdown() {
                                     <DropdownMenuShortcut>⇧P</DropdownMenuShortcut>
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                                <Link to="/maps">
+                                    Maps
+                                    <DropdownMenuShortcut>⇧M</DropdownMenuShortcut>
+                                </Link>
+                            </DropdownMenuItem>
+                            {/*<DropdownMenuItem>
                                 Settings
                                 <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem>*/}
                         </DropdownMenuGroup>
                     </>
                 ) : (

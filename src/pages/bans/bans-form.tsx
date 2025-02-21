@@ -8,6 +8,7 @@ import {
     MagnifyingGlassIcon,
     OpenInNewWindowIcon,
     PersonIcon,
+    ReloadIcon,
 } from "@radix-ui/react-icons"
 import { SteamIcon } from "@/components/icons"
 
@@ -118,9 +119,9 @@ function BansForm() {
                 cell: (props) => {
                     const player_name = props.getValue()
                     return (
-                        <Button asChild variant="link" className="px-0">
+                        <Button asChild variant="link" className="max-w-full px-0">
                             <Link to={`/players/${props.row.original.steamid64}`}>
-                                {player_name}
+                                <span className="truncate">{player_name}</span>
                             </Link>
                         </Button>
                     )
@@ -338,9 +339,7 @@ function BansForm() {
                         </DropdownMenu>
                     )
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 48,
             }),
         ]
     }, [])
@@ -397,15 +396,29 @@ function BansForm() {
                         placeholder="Steam ID"
                         className="border-foreground pl-8"
                         autoFocus
+                        type="search"
                     />
                 </div>
                 <div className="flex space-x-12 pb-12">
-                    <Button type="submit">
-                        <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                    <Button type="submit" disabled={globalBansInfiniteQuery.isFetching}>
+                        {globalBansInfiniteQuery.isFetching && searchQuery !== "" ? (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                        )}
                         Search
                     </Button>
-                    <Button variant="secondary" type="button" onClick={handleClear}>
-                        <ClockIcon className="mr-2 h-4 w-4" />
+                    <Button
+                        variant="secondary"
+                        type="button"
+                        onClick={handleClear}
+                        disabled={globalBansInfiniteQuery.isFetching}
+                    >
+                        {globalBansInfiniteQuery.isFetching && searchQuery === "" ? (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <ClockIcon className="mr-2 h-4 w-4" />
+                        )}
                         Most recent
                     </Button>
                 </div>
@@ -415,7 +428,11 @@ function BansForm() {
                 <h2 className="scroll-m-20 py-4 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Search results
                 </h2>
-                <DataTable table={table} columns={columns} />
+                <DataTable
+                    table={table}
+                    columns={columns}
+                    loading={globalBansInfiniteQuery.isFetching}
+                />
                 <DataTablePagination
                     table={table}
                     hasNextPage={globalBansInfiniteQuery.hasNextPage}

@@ -228,9 +228,7 @@ const columns = [
                 </DropdownMenu>
             )
         },
-        meta: {
-            headerClassName: "w-12",
-        },
+        size: 48,
     }),
 ]
 
@@ -395,7 +393,11 @@ function Jumpstats() {
                         </div>
                     </div>
                 </div>
-                <DataTable table={table} columns={columns} />
+                <DataTable
+                    table={table}
+                    columns={columns}
+                    loading={playerJumpstatsInfiniteQuery.isFetching}
+                />
                 <DataTablePagination
                     table={table}
                     hasNextPage={playerJumpstatsInfiniteQuery.hasNextPage}

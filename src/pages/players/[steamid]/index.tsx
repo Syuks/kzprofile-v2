@@ -85,6 +85,7 @@ function PlayerProfile() {
                     playerProfileKZData={playerProfileKZData.data}
                     steamProfile={steamProfile.data?.[0]}
                     steamid={steamid}
+                    apiLoading={playerProfileKZData.isFetching}
                 />
             </div>
             <div className="flex flex-wrap justify-evenly space-x-2 sm:justify-start">

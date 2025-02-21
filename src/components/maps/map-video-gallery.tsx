@@ -134,7 +134,7 @@ function MapVideoGallery({ videos }: MapVideoGalleryProps) {
     }
 
     return (
-        <Carousel>
+        <Carousel className="p-0 md:p-10">
             <CarouselContent>
                 {videosData.map((videoData, index) => (
                     <CarouselItem key={index}>
@@ -151,8 +151,8 @@ function MapVideoGallery({ videos }: MapVideoGalleryProps) {
                     </CarouselItem>
                 ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
         </Carousel>
     )
 }

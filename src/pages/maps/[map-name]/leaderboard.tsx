@@ -173,18 +173,16 @@ function MapLeaderboard() {
                     const place = props.getValue()
                     return place.toLocaleString()
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 36,
             }),
             columnHelper.accessor("player_name", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Player" />,
                 cell: (props) => {
                     const player_name = props.getValue()
                     return (
-                        <Button asChild variant="link" className="px-0">
+                        <Button asChild variant="link" className="max-w-full px-0">
                             <Link to={`/players/${props.row.original.steamid64}`}>
-                                {player_name}
+                                <span className="truncate">{player_name}</span>
                             </Link>
                         </Button>
                     )
@@ -417,9 +415,7 @@ function MapLeaderboard() {
                         </DropdownMenu>
                     )
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 48,
             }),
         ]
     }, [])
@@ -596,7 +592,11 @@ function MapLeaderboard() {
                         )}
                     </div>
                 </div>
-                <DataTable table={table} columns={columns} />
+                <DataTable
+                    table={table}
+                    columns={columns}
+                    loading={mapTimesInfiniteQuery.isFetching}
+                />
                 <DataTablePagination
                     table={table}
                     hasNextPage={mapTimesInfiniteQuery.hasNextPage}

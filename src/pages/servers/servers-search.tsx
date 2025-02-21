@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import {
     DotsHorizontalIcon,
@@ -8,10 +8,11 @@ import {
     PersonIcon,
 } from "@radix-ui/react-icons"
 
-import { Link, useSearchParams } from "react-router-dom"
+import { Link, useOutletContext, useSearchParams } from "react-router-dom"
 
 import useSteamServers, { type KzProfileServer } from "@/hooks/TanStackQueries/useSteamServers"
 import { getMapImageURL } from "@/lib/gokz"
+import { ServersOutletContext } from "."
 
 import {
     createColumnHelper,
@@ -39,6 +40,8 @@ import { Badge } from "@/components/ui/badge"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
 
 function ServersSearch() {
+    const { setIsLoading } = useOutletContext<ServersOutletContext>()
+
     const [searchParams] = useSearchParams()
     const searchQuery = useMemo(() => {
         return (
@@ -59,6 +62,10 @@ function ServersSearch() {
     })
 
     const kzProfileServersQuery = useSteamServers(searchQuery, !!searchQuery)
+
+    useEffect(() => {
+        setIsLoading(kzProfileServersQuery.isFetching)
+    }, [kzProfileServersQuery.isFetching])
 
     const servers = useMemo(() => {
         if (!kzProfileServersQuery.data) {
@@ -83,9 +90,7 @@ function ServersSearch() {
                 cell: (props) => {
                     return <FavoriteStar serverIp={props.row.original.addr} />
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 36,
             }),
             columnHelper.accessor("name", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
@@ -110,9 +115,6 @@ function ServersSearch() {
                         </span>
                     )
                 },
-                meta: {
-                    headerClassName: "w-24",
-                },
             }),
             columnHelper.accessor("addr", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="IP" />,
@@ -124,9 +126,6 @@ function ServersSearch() {
                             <Link to={`steam://connect/${server.addr}`}>{server.addr}</Link>
                         </Button>
                     )
-                },
-                meta: {
-                    headerClassName: "w-40",
                 },
             }),
             columnHelper.accessor("global", {
@@ -143,21 +142,21 @@ function ServersSearch() {
                         </div>
                     )
                 },
-                meta: {
-                    headerClassName: "w-24",
-                },
             }),
             columnHelper.accessor("plugin", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Plugin" />,
                 cell: (props) => {
                     const server = props.row.original
-                    if (!server.plugin) return <Badge variant="secondary">Unknown</Badge>
-                    if (server.plugin === "gokz") return <Badge variant="outline">GOKZ</Badge>
-                    if (server.plugin === "kz timer")
-                        return <Badge variant="default">KZ TIMER</Badge>
-                },
-                meta: {
-                    headerClassName: "w-24",
+
+                    return (
+                        <div className="flex justify-center">
+                            {!server.plugin && <Badge variant="secondary">Unknown</Badge>}
+                            {server.plugin === "gokz" && <Badge variant="outline">GOKZ</Badge>}
+                            {server.plugin === "kz timer" && (
+                                <Badge variant="default">KZ TIMER</Badge>
+                            )}
+                        </div>
+                    )
                 },
             }),
             columnHelper.accessor("map", {
@@ -179,9 +178,7 @@ function ServersSearch() {
                         </Button>
                     )
                 },
-                meta: {
-                    headerClassName: "w-56",
-                },
+                size: 190,
             }),
             columnHelper.display({
                 id: "actions",
@@ -244,9 +241,7 @@ function ServersSearch() {
                         </DropdownMenu>
                     )
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 48,
             }),
         ]
     }, [])
@@ -272,7 +267,11 @@ function ServersSearch() {
                 <h2 className="scroll-m-20 py-4 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Search results
                 </h2>
-                <DataTable table={table} columns={columns} />
+                <DataTable
+                    table={table}
+                    columns={columns}
+                    loading={kzProfileServersQuery.isFetching}
+                />
                 <DataTablePagination table={table} tablePageSizes={[20, 30, 40, 50, 100]} />
             </div>
         </>

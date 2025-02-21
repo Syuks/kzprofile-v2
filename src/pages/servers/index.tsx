@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react"
 
-import { ClockIcon, GlobeIcon, MagnifyingGlassIcon, StarFilledIcon } from "@radix-ui/react-icons"
+import {
+    ClockIcon,
+    GlobeIcon,
+    MagnifyingGlassIcon,
+    StarFilledIcon,
+    ReloadIcon,
+} from "@radix-ui/react-icons"
 
 import { Link, Outlet, useSearchParams, useLocation, useNavigate } from "react-router-dom"
 
@@ -11,10 +17,16 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
+export interface ServersOutletContext {
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 function Servers() {
     useEffect(() => {
         document.title = "Servers - KZ Profile"
     }, [])
+
+    const [isLoading, setIsLoading] = useState(false)
 
     const location = useLocation()
     const navigate = useNavigate()
@@ -72,8 +84,12 @@ function Servers() {
                     />
                 </div>
                 <div className="flex space-x-12 pb-12">
-                    <Button type="submit">
-                        <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                    <Button type="submit" disabled={isLoading}>
+                        {!isLoading ? (
+                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                        ) : (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        )}
                         Search
                     </Button>
                     <Button variant="secondary" type="button" asChild>
@@ -84,26 +100,26 @@ function Servers() {
                     </Button>
                 </div>
             </form>
-            <div className="mb-4 space-x-2">
+            <div className="mb-4 flex flex-wrap justify-evenly space-x-2 sm:justify-start">
                 <MapNavLink
                     path={`/servers${lastSearchValue ? `?search=${lastSearchValue}` : ""}`}
                     end={true}
                     border="border-foreground"
                 >
-                    <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
-                    Server search
+                    <MagnifyingGlassIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Server search</span>
                 </MapNavLink>
                 <MapNavLink path="favorites" border="border-csgo-lime">
-                    <StarFilledIcon className="mr-2 h-4 w-4" />
-                    Favorites
+                    <StarFilledIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Favorites</span>
                 </MapNavLink>
                 <MapNavLink path="global" border="border-csgo-red">
-                    <GlobeIcon className="mr-2 h-4 w-4" />
-                    Global servers
+                    <GlobeIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Global servers</span>
                 </MapNavLink>
             </div>
             <Separator className={routeColor} />
-            <Outlet />
+            <Outlet context={{ setIsLoading } satisfies ServersOutletContext} />
         </>
     )
 }

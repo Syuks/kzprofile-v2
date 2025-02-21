@@ -122,7 +122,13 @@ function Footer() {
                                 </li>
                                 <li>
                                     <Button asChild variant="link" className="m-0 h-auto p-0">
-                                        <Link to="/distbug">Distbug calculator</Link>
+                                        <Link
+                                            to="https://syuks.github.io/DistbugCalculator/"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            Distbug calculator
+                                        </Link>
                                     </Button>
                                 </li>
                             </ul>

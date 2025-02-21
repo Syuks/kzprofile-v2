@@ -105,9 +105,7 @@ function ServersFavorites() {
                     const server = props.row.original
                     return <FavoriteStar serverIp={`${server.ip}:${server.port}`} />
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 36,
             }),
             columnHelper.accessor("name", {
                 header: ({ column }) => <DataTableColumnHeader column={column} title="Name" />,
@@ -135,9 +133,6 @@ function ServersFavorites() {
                         </Button>
                     )
                 },
-                meta: {
-                    headerClassName: "w-40",
-                },
             }),
             columnHelper.display({
                 id: "global",
@@ -148,9 +143,6 @@ function ServersFavorites() {
                             <Badge variant="destructive">GLOBAL</Badge>
                         </div>
                     )
-                },
-                meta: {
-                    headerClassName: "w-24",
                 },
             }),
             columnHelper.display({
@@ -170,12 +162,13 @@ function ServersFavorites() {
                         plugin = "kz timer"
                     }
 
-                    if (!plugin) return <Badge variant="secondary">Unknown</Badge>
-                    if (plugin === "gokz") return <Badge variant="outline">GOKZ</Badge>
-                    if (plugin === "kz timer") return <Badge variant="default">KZ TIMER</Badge>
-                },
-                meta: {
-                    headerClassName: "w-24",
+                    return (
+                        <div className="flex justify-center">
+                            {!plugin && <Badge variant="secondary">Unknown</Badge>}
+                            {plugin === "gokz" && <Badge variant="outline">GOKZ</Badge>}
+                            {plugin === "kz timer" && <Badge variant="default">KZ TIMER</Badge>}
+                        </div>
+                    )
                 },
             }),
             columnHelper.accessor("owner_steamid64", {
@@ -192,9 +185,6 @@ function ServersFavorites() {
                             </Button>
                         )
                     )
-                },
-                meta: {
-                    headerClassName: "w-56",
                 },
             }),
             columnHelper.display({
@@ -256,9 +246,7 @@ function ServersFavorites() {
                         </DropdownMenu>
                     )
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 48,
             }),
         ]
     }, [])

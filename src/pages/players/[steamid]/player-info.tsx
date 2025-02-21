@@ -8,6 +8,7 @@ import AvatarFrame from "@/assets/frames/frame1.png"
 
 import { Link } from "react-router-dom"
 
+import useAutoResizeFont from "@/hooks/useAutoResizeFont"
 import type { SteamPlayerSummary } from "@/hooks/TanStackQueries/useSteamProfiles"
 import type { PlayerProfileKZData } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
@@ -21,9 +22,10 @@ interface PlayerInfoProps {
     steamid: string
     steamProfile: SteamPlayerSummary | undefined
     playerProfileKZData: PlayerProfileKZData | undefined
+    apiLoading?: boolean
 }
 
-function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoProps) {
+function PlayerInfo({ steamid, steamProfile, playerProfileKZData, apiLoading }: PlayerInfoProps) {
     /*const PlayerSocials = (
         <>
             {playerProfile?.socials.t &&
@@ -48,8 +50,21 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
         )
     })*/
 
+    const {
+        containerRef: playerNameContainerRef,
+        textRef: playerNameTextRef,
+        fontSize: playerNameFontSize,
+    } = useAutoResizeFont(72, 16, steamProfile)
+    const { containerRef: playerRankContainerRef, textRef: playerRankTextRef } = useAutoResizeFont(
+        48,
+        16,
+        steamProfile,
+    )
+    const { containerRef: playerPointsContainerRef, textRef: playerPointsTextRef } =
+        useAutoResizeFont(36, 16, steamProfile)
+
     return (
-        <div className="flex-col md:inline-flex md:flex-row">
+        <div className="flex flex-col md:flex-row">
             <div className="flex justify-center md:block">
                 <div className="mt-0 h-[184px] w-[184px] bg-zinc-950 md:mt-4">
                     <Link
@@ -126,32 +141,72 @@ function PlayerInfo({ steamid, steamProfile, playerProfileKZData }: PlayerInfoPr
                 </div>
             </div>
 
-            <div className="ml-0 md:ml-12">
-                <div className="mt-4 text-7xl font-light">
+            <div
+                ref={playerNameContainerRef}
+                className="ml-0 flex flex-1 flex-col overflow-hidden md:ml-12"
+            >
+                <div className="mt-4 flex h-20 items-center">
                     {!!steamProfile ? (
-                        <>
-                            <span className="mr-5 inline-block">{steamProfile.personaname}</span>
-                            <PlayerFlag
+                        <div
+                            ref={playerNameTextRef}
+                            className="flex items-center text-7xl font-light"
+                        >
+                            <span
                                 className="inline-block"
+                                style={{ marginRight: playerNameFontSize / 3.6 }}
+                            >
+                                {steamProfile.personaname}
+                            </span>
+                            <PlayerFlag
+                                style={{
+                                    width: playerNameFontSize * 0.875,
+                                    marginTop: playerNameFontSize / 6,
+                                }}
                                 nationality={steamProfile.loccountrycode}
                             />
-                        </>
+                        </div>
                     ) : (
-                        <Skeleton className="mt-7 h-14 w-72" />
+                        <Skeleton className="h-14 w-72" />
                     )}
                 </div>
-                <div className="mt-3 text-5xl">
-                    <span className={playerProfileKZData?.rank.color}>
-                        {playerProfileKZData?.rank.label}
-                        {!playerProfileKZData && <Skeleton className="mt-6 h-10 w-48" />}
+                <div ref={playerRankContainerRef} className="mt-2 flex h-12 items-center text-5xl">
+                    <span ref={playerRankTextRef} className={playerProfileKZData?.rank.color}>
+                        {!apiLoading ? (
+                            playerProfileKZData ? (
+                                playerProfileKZData.rank.label
+                            ) : (
+                                "UNKNOWN"
+                            )
+                        ) : (
+                            <Skeleton className="h-10 w-48" />
+                        )}
                     </span>
                 </div>
-                <div className="mt-3 text-4xl font-light text-foreground/60">
-                    {!!playerProfileKZData ? (
-                        `${playerProfileKZData.points.total.toLocaleString()} • (${playerProfileKZData.points.average.toFixed(2)})`
-                    ) : (
-                        <Skeleton className="mt-2 h-10 w-40" />
-                    )}
+                <div
+                    ref={playerPointsContainerRef}
+                    className="mt-2 flex h-12 items-center font-light text-foreground/60"
+                >
+                    <div ref={playerPointsTextRef}>
+                        {!apiLoading ? (
+                            <>
+                                <span>
+                                    {playerProfileKZData
+                                        ? playerProfileKZData.points.total.toLocaleString()
+                                        : parseFloat("0").toLocaleString()}
+                                </span>
+                                <span className="mx-2">•</span>
+                                <span>
+                                    (
+                                    {playerProfileKZData
+                                        ? playerProfileKZData.points.average.toFixed(2)
+                                        : parseFloat("0").toFixed(2)}
+                                    )
+                                </span>
+                            </>
+                        ) : (
+                            <Skeleton className="h-10 w-40" />
+                        )}
+                    </div>
                 </div>
                 {/*<div className="inline-flex mb-2 ">{PlayerRoles}</div>*/}
             </div>

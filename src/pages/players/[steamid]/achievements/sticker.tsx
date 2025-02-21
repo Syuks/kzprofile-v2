@@ -46,7 +46,7 @@ function EmptySticker({ image }: StickerProps) {
             style={{ WebkitMaskImage: `url(${image})`, WebkitMaskSize: "cover" }}
         >
             <img src={image} alt="sticker" className="h-auto w-full" />
-            <div className="bg-gradient-radial absolute inset-0 from-zinc-200 from-20% to-zinc-400 to-70% dark:from-zinc-900 dark:to-zinc-950"></div>
+            <div className="absolute inset-0 bg-gradient-radial from-zinc-200 from-20% to-zinc-400 to-70% dark:from-zinc-900 dark:to-zinc-950"></div>
         </div>
     )
 }
@@ -111,7 +111,7 @@ function HoloSticker({ image }: StickerProps) {
                 className="absolute inset-0 mix-blend-color-dodge"
                 style={{ backgroundImage: `url(${Sparks})` }}
             ></div>
-            <div className="animate-holo absolute inset-0 bg-gradient-to-tl from-cyan-400 from-30% to-pink-500 to-70% bg-[length:300%_300%] opacity-20 mix-blend-color-dodge"></div>
+            <div className="absolute inset-0 animate-holo bg-gradient-to-tl from-cyan-400 from-30% to-pink-500 to-70% bg-[length:300%_300%] opacity-20 mix-blend-color-dodge"></div>
         </div>
     )
 }

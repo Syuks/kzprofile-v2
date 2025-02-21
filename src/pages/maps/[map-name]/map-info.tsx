@@ -13,6 +13,7 @@ import {
 } from "@/lib/utils"
 import { TierData, getMapImageURL } from "@/lib/gokz"
 import { KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import useAutoResizeFont from "@/hooks/useAutoResizeFont"
 import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
 
 import { MappersList } from "@/components/maps/mappers-list"
@@ -31,6 +32,8 @@ interface MapInfoProps {
 function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
     const [localSettings] = useLocalSettings()
 
+    const { containerRef, textRef, fontSize } = useAutoResizeFont(72, 16, kzProfileMap)
+
     if (!kzProfileMap || !mapTierData || stage === undefined) {
         return (
             <div className="flex">
@@ -45,8 +48,8 @@ function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
     }
 
     return (
-        <div className="flex space-x-6">
-            <div className="flex shrink-0 flex-col">
+        <div className="flex flex-col space-x-6 py-10 md:flex-row">
+            <div className="mb-10 flex shrink-0 flex-col md:mb-0">
                 <Link
                     to={getWorkshopLink(kzProfileMap.workshop_id)}
                     target="_blank"
@@ -55,10 +58,10 @@ function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
                     <img
                         src={getMapImageURL(kzProfileMap.name, "webp", "full")}
                         alt={kzProfileMap.name}
-                        className="h-44 rounded"
+                        className="h-auto w-full rounded md:h-44 md:w-auto"
                     />
                 </Link>
-                <div className="mt-4 flex justify-between">
+                <div className="mt-4 flex justify-evenly md:justify-between">
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Button
@@ -95,14 +98,17 @@ function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
                     </Link>
                 </div>
             </div>
-            <div>
-                <div className="font-light">{kzProfileMap.name}</div>
+            <div ref={containerRef} className="flex flex-1 flex-col overflow-hidden">
+                <div ref={textRef} className="text-5xl font-light sm:text-6xl lg:text-7xl">
+                    {kzProfileMap.name}
+                </div>
 
                 <div
                     className={cn(
-                        "ml-[2px] mt-3 text-5xl",
+                        "ml-[2px] mt-3 text-3xl sm:text-4xl lg:text-5xl",
                         stage === 0 ? mapTierData.color : "text-muted-foreground",
                     )}
+                    style={{ fontSize: (fontSize / 3) * 2 }}
                 >
                     {stage === 0 ? mapTierData.label : `BONUS ${stage}`}
                 </div>

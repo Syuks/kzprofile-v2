@@ -28,17 +28,6 @@ function MobileNav() {
                 </Link>
                 <div className="mt-6 flex flex-col space-y-3">
                     <NavLink
-                        to="/profile"
-                        className={({ isActive }) =>
-                            cn(
-                                isActive ? "text-foreground" : "text-foreground/60",
-                                "transition-colors hover:text-foreground/80",
-                            )
-                        }
-                    >
-                        Profile
-                    </NavLink>
-                    <NavLink
                         to="/maps"
                         className={({ isActive }) =>
                             cn(
@@ -50,7 +39,7 @@ function MobileNav() {
                         Maps
                     </NavLink>
                     <NavLink
-                        to="/test"
+                        to="/players"
                         className={({ isActive }) =>
                             cn(
                                 isActive ? "text-foreground" : "text-foreground/60",
@@ -58,7 +47,29 @@ function MobileNav() {
                             )
                         }
                     >
-                        Test
+                        Players
+                    </NavLink>
+                    <NavLink
+                        to="/servers"
+                        className={({ isActive }) =>
+                            cn(
+                                isActive ? "text-foreground" : "text-foreground/60",
+                                "transition-colors hover:text-foreground/80",
+                            )
+                        }
+                    >
+                        Servers
+                    </NavLink>
+                    <NavLink
+                        to="/bans"
+                        className={({ isActive }) =>
+                            cn(
+                                isActive ? "text-foreground" : "text-foreground/60",
+                                "transition-colors hover:text-foreground/80",
+                            )
+                        }
+                    >
+                        Bans
                     </NavLink>
                 </div>
                 <div className="mt-6 flex flex-col space-y-3">

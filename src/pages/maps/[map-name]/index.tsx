@@ -68,10 +68,10 @@ function MapLayout() {
 
     return (
         <>
-            <MapBanner mapName={mapName} />
-            <div className="py-10">
-                <MapInfo stage={stage} mapTierData={mapTierData} kzProfileMap={kzProfileMap.data} />
-            </div>
+            <MapBanner mapName={mapName} className="hidden md:block" />
+
+            <MapInfo stage={stage} mapTierData={mapTierData} kzProfileMap={kzProfileMap.data} />
+
             <div className="flex justify-evenly space-x-2 sm:justify-start">
                 <MapNavLink path="" end={true} border={mapTierData?.border}>
                     <TextAlignCenterIcon className="h-4 w-4 sm:mr-2" />
@@ -125,10 +125,10 @@ function MapNavLink({ path, border, end, children }: PropsWithChildren<MapNavLin
             className={({ isActive }) =>
                 cn(
                     isActive
-                        ? buttonVariants({ variant: "outline" })
-                        : buttonVariants({ variant: "ghost" }),
+                        ? buttonVariants({ variant: "outline", size: "icon" })
+                        : buttonVariants({ variant: "ghost", size: "icon" }),
                     isActive && border,
-                    "mt-1 justify-start",
+                    "mt-1 sm:w-auto sm:px-4 sm:py-2",
                 )
             }
         >

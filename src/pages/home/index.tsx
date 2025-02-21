@@ -56,12 +56,17 @@ function Home() {
             {mapOfTheDay && <MapBanner mapName={mapOfTheDay.name} />}
             <div className="flex h-[334px] flex-col items-center justify-evenly">
                 <div className="relative flex items-end justify-center">
-                    <div className={cn("font-mono text-xl tracking-[1.5em]", tierData?.color)}>
+                    <div
+                        className={cn(
+                            "text-center font-mono text-xl tracking-[1.5em]",
+                            tierData?.color,
+                        )}
+                    >
                         MAP OF THE DAY
                     </div>
                     <div
                         className={cn(
-                            "absolute font-mono text-xl tracking-[1.5em] blur-sm",
+                            "absolute text-center font-mono text-xl tracking-[1.5em] blur-sm",
                             tierData?.color,
                         )}
                     >

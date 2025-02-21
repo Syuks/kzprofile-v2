@@ -1,4 +1,6 @@
-import { Table as ITable, ColumnDef, flexRender, RowData } from "@tanstack/react-table"
+import { Table as ITable, ColumnDef, flexRender } from "@tanstack/react-table"
+
+import { cn } from "@/lib/utils"
 
 import {
     Table,
@@ -8,31 +10,30 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+//import { Skeleton } from "@/components/ui/skeleton"
 
 interface DataTableProps<TData> {
     table: ITable<TData>
     columns: ColumnDef<TData, any>[]
+    loading?: boolean
 }
 
-declare module "@tanstack/react-table" {
-    interface ColumnMeta<TData extends RowData, TValue> {
-        headerClassName: string
-    }
-}
-
-export function DataTable<TData>({ table, columns }: DataTableProps<TData>) {
+export function DataTable<TData>({ table, columns, loading }: DataTableProps<TData>) {
     return (
-        <div className="rounded-md border">
+        <div
+            className={cn(
+                "relative rounded-md border",
+                loading && "pointer-events-none opacity-50",
+            )}
+        >
+            {/*loading && <Skeleton className="absolute h-full w-full" />*/}
             <Table className="table-fixed">
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => {
                                 return (
-                                    <TableHead
-                                        key={header.id}
-                                        className={header.column.columnDef.meta?.headerClassName}
-                                    >
+                                    <TableHead key={header.id} style={{ width: header.getSize() }}>
                                         {header.isPlaceholder
                                             ? null
                                             : flexRender(

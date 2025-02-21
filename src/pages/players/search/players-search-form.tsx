@@ -5,6 +5,7 @@ import {
     DotsHorizontalIcon,
     MagnifyingGlassIcon,
     PersonIcon,
+    ReloadIcon,
 } from "@radix-ui/react-icons"
 import { SteamIcon } from "@/components/icons"
 
@@ -111,10 +112,10 @@ function PlayersSearchForm() {
                 cell: (props) => {
                     const player_name = props.getValue()
                     return (
-                        <Button asChild variant="link" className="space-x-2 px-0">
+                        <Button asChild variant="link" className="max-w-full space-x-2 px-0">
                             <Link to={`/players/${props.row.original.steamid}`}>
                                 <img src={props.row.original.avatar} className="rounded-full" />
-                                <span>{player_name}</span>
+                                <span className="truncate">{player_name}</span>
                                 <PlayerFlag
                                     nationality={props.row.original.loccountrycode}
                                     className="h-8"
@@ -206,9 +207,7 @@ function PlayersSearchForm() {
                         </DropdownMenu>
                     )
                 },
-                meta: {
-                    headerClassName: "w-12",
-                },
+                size: 48,
             }),
         ]
     }, [])
@@ -241,8 +240,18 @@ function PlayersSearchForm() {
         setSearchParams({ search: searchValue })
     }
 
+    const [isLuckyLoading, setIsLuckyLoading] = useState(false)
+
     const handleLucky = async () => {
+        if (!searchValue) {
+            return
+        }
+
+        setIsLuckyLoading(true)
+
         const fetchedPlayer = await fetchKZPlayer(searchValue)
+
+        setIsLuckyLoading(false)
 
         if (!fetchedPlayer) {
             toast("No players", {
@@ -271,20 +280,32 @@ function PlayersSearchForm() {
                         placeholder="Name, Steam ID, Steam profile"
                         className="border-foreground pl-8"
                         autoFocus
+                        type="search"
                     />
                 </div>
                 <div className="flex space-x-12 pb-12">
-                    <Button type="submit">
-                        <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                    <Button
+                        type="submit"
+                        disabled={kzPlayersInfiniteQuery.isFetching || isLuckyLoading}
+                    >
+                        {!kzPlayersInfiniteQuery.isFetching ? (
+                            <MagnifyingGlassIcon className="mr-2 h-4 w-4" />
+                        ) : (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        )}
                         Search
                     </Button>
                     <Button
                         variant="secondary"
                         type="button"
                         onClick={handleLucky}
-                        disabled={!searchValue}
+                        disabled={isLuckyLoading || kzPlayersInfiniteQuery.isFetching}
                     >
-                        <ClockIcon className="mr-2 h-4 w-4" />
+                        {!isLuckyLoading ? (
+                            <ClockIcon className="mr-2 h-4 w-4" />
+                        ) : (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                        )}
                         Feel lucky?
                     </Button>
                 </div>
@@ -294,7 +315,11 @@ function PlayersSearchForm() {
                 <h2 className="scroll-m-20 py-4 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Search results
                 </h2>
-                <DataTable table={table} columns={columns} />
+                <DataTable
+                    table={table}
+                    columns={columns}
+                    loading={kzPlayersInfiniteQuery.isFetching}
+                />
                 <DataTablePagination
                     table={table}
                     hasNextPage={kzPlayersInfiniteQuery.hasNextPage}

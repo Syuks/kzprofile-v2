@@ -90,6 +90,7 @@ const columns = [
             const map_name = props.getValue()
             return <MapHoverCard mapName={map_name} />
         },
+        size: 190,
     }),
     columnHelper.accessor("points", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Points" />,
@@ -379,9 +380,7 @@ const columns = [
                 </Dialog>
             )
         },
-        meta: {
-            headerClassName: "w-12",
-        },
+        size: 48,
     }),
 ]
 
@@ -493,6 +492,7 @@ function Finishes() {
                         <div className="mr-4 mt-4 max-w-sm">
                             <Input
                                 placeholder="Search map..."
+                                type="search"
                                 value={
                                     (table.getColumn("map_name")?.getFilterValue() as string) ?? ""
                                 }
@@ -556,7 +556,7 @@ function Finishes() {
                         )}
                     </div>
                 </div>
-                <DataTable table={table} columns={columns} />
+                <DataTable table={table} columns={columns} loading={playerProfileKZDataFetching} />
                 <DataTablePagination table={table} />
             </div>
         </>

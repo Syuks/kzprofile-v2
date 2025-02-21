@@ -3,9 +3,10 @@
 interface PlayerFlagProps {
     nationality: string
     className?: string
+    style?: React.CSSProperties
 }
 
-function PlayerFlag({ nationality, className }: PlayerFlagProps) {
+function PlayerFlag({ nationality, className, style }: PlayerFlagProps) {
     return (
         nationality && (
             <img
@@ -14,6 +15,7 @@ function PlayerFlag({ nationality, className }: PlayerFlagProps) {
                 src={`/flags/${nationality.toUpperCase()}.png`}
                 onError={(e) => (e.currentTarget.src = `/flags/_unknown.png`)}
                 className={className}
+                style={style}
             />
         )
     )

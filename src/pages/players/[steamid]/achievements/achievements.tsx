@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { useOutletContext } from "react-router-dom"
 
-import { generateRandomString } from "@/lib/utils"
+import { cn, generateRandomString } from "@/lib/utils"
 import { useRunType } from "@/components/localsettings/localsettings-provider"
 
 import { PlayerProfileOutletContext } from ".."
@@ -52,7 +52,12 @@ function Achievements() {
                     refetch={playerProfileKZDataRefetch}
                 />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+                className={cn(
+                    "grid gap-4 sm:grid-cols-2 lg:grid-cols-4",
+                    playerProfileKZDataFetching && "pointer-events-none opacity-50",
+                )}
+            >
                 {tierAchievements.map((achievement) => {
                     return <TierAchievementCard key={achievement.id} achievement={achievement} />
                 })}
@@ -252,8 +257,8 @@ function MapAchievementCard({ achievement }: MapAchievementCardProps) {
                     <Sticker image={achievement.sticker} progress={mapAchievementData.progress} />
                 </div>
                 <div className="max-h-[70vh] overflow-auto py-4 text-center text-lg font-semibold">
-                    {mapAchievementData.mapStringsArray.map((map) => {
-                        return <div>{map}</div>
+                    {mapAchievementData.mapStringsArray.map((map, index) => {
+                        return <div key={index}>{map}</div>
                     })}
                 </div>
                 <AchievementProgressBar progress={mapAchievementData.progress} />

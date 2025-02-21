@@ -1,36 +1,47 @@
 import { useEffect, useRef, useState } from "react"
 
-const useAutoResizeFont = (maxFontSize: number, minFontSize: number = 10) => {
+const useAutoResizeFont = (
+    maxFontSize: number,
+    minFontSize: number = 10,
+    redrawDependency?: any,
+) => {
     const containerRef = useRef<HTMLDivElement>(null)
+    const textRef = useRef<HTMLDivElement>(null)
     const [fontSize, setFontSize] = useState(maxFontSize)
 
     useEffect(() => {
         const resizeText = () => {
             const container = containerRef.current
-            if (!container) return
+            const text = textRef.current
+            if (!container || !text) return
 
+            text.style.fontSize = `${maxFontSize}px`
             let newFontSize = maxFontSize
-            const parentWidth = container.parentElement?.clientWidth ?? 0
 
-            while (container.scrollWidth > parentWidth && newFontSize > minFontSize) {
-                newFontSize -= 1 // Decrease font size step-by-step
-                container.style.fontSize = `${newFontSize}px`
+            while (text.scrollWidth > container.clientWidth && newFontSize > minFontSize) {
+                newFontSize -= 1
+                text.style.fontSize = `${newFontSize}px`
             }
 
-            setFontSize(newFontSize)
+            setFontSize((oldFontSize) => {
+                if (oldFontSize === newFontSize) {
+                    return oldFontSize
+                }
+                return newFontSize
+            })
         }
 
-        setTimeout(resizeText, 0)
-
         const observer = new ResizeObserver(resizeText)
-        if (containerRef.current?.parentElement) {
-            observer.observe(containerRef.current.parentElement)
+
+        if (containerRef.current && textRef.current) {
+            observer.observe(containerRef.current)
+            resizeText()
         }
 
         return () => observer.disconnect()
-    }, [maxFontSize, minFontSize])
+    }, [maxFontSize, minFontSize, redrawDependency])
 
-    return { containerRef, fontSize }
+    return { containerRef, textRef, fontSize }
 }
 
 export default useAutoResizeFont

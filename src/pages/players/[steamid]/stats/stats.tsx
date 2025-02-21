@@ -14,6 +14,7 @@ import Stats_Progression from "./progression"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import DataTableReloadButton from "@/components/datatable/datatable-reload-button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export interface RecordTopStat {
     map_id: number
@@ -134,6 +135,31 @@ function Stats() {
         return statistics
     }, [playerProfileKZData, runType])
 
+    const StatsLoadingSkeleton = (
+        <>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Skeleton className="col-span-3 h-96" />
+                <Skeleton className="col-span-4 h-96" />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+                <Skeleton className="h-32" />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <Skeleton className="col-span-4 h-96" />
+                <Skeleton className="col-span-3 h-96" />
+            </div>
+        </>
+    )
+
     return (
         <>
             <div className="mb-4 flex justify-between">
@@ -153,18 +179,36 @@ function Stats() {
                     <TabsTrigger value="playtime">Playtime</TabsTrigger>
                 </TabsList>
                 <TabsContent value="completion" className="space-y-4">
-                    {!!recordsTopStatistics && (
-                        <Stats_Completion recordsTopStatistics={recordsTopStatistics} />
+                    {!playerProfileKZDataFetching ? (
+                        recordsTopStatistics ? (
+                            <Stats_Completion recordsTopStatistics={recordsTopStatistics} />
+                        ) : (
+                            "This player doesn't have any stats."
+                        )
+                    ) : (
+                        StatsLoadingSkeleton
                     )}
                 </TabsContent>
                 <TabsContent value="playtime" className="space-y-4">
-                    {!!recordsTopStatistics && (
-                        <Stats_Playtime recordsTopStatistics={recordsTopStatistics} />
+                    {!playerProfileKZDataFetching ? (
+                        recordsTopStatistics ? (
+                            <Stats_Playtime recordsTopStatistics={recordsTopStatistics} />
+                        ) : (
+                            "This player doesn't have any stats."
+                        )
+                    ) : (
+                        StatsLoadingSkeleton
                     )}
                 </TabsContent>
                 <TabsContent value="progression" className="space-y-4">
-                    {!!recordsTopStatistics && (
-                        <Stats_Progression recordsTopStatistics={recordsTopStatistics} />
+                    {!playerProfileKZDataFetching ? (
+                        recordsTopStatistics ? (
+                            <Stats_Progression recordsTopStatistics={recordsTopStatistics} />
+                        ) : (
+                            "This player doesn't have any stats."
+                        )
+                    ) : (
+                        StatsLoadingSkeleton
                     )}
                 </TabsContent>
             </Tabs>
