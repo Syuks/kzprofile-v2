@@ -25,9 +25,13 @@ export function DatatableAddFiltersDropdown({
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-dashed">
-                    <PlusCircledIcon className="mr-2 h-4 w-4" />
-                    Add filter
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="border-dashed sm:w-auto sm:px-4 sm:py-2"
+                >
+                    <PlusCircledIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Add filter</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-40">
@@ -35,7 +39,6 @@ export function DatatableAddFiltersDropdown({
                     return (
                         <DropdownMenuCheckboxItem
                             key={key}
-                            className="capitalize"
                             checked={selectedFilters[key].show}
                             onCheckedChange={(checked) => onSelectedFiltersChange(key, checked)}
                             onSelect={(event) => event.preventDefault()}

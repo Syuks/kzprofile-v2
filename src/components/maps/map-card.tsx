@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface MapCardProps {
     kzProfileMap: KZProfileMap
@@ -264,4 +265,15 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
     )
 }
 
+function LoadingMapCard() {
+    return (
+        <>
+            <Skeleton className="aspect-video w-full" />
+            <Skeleton className="mt-2 h-6 w-40" />
+            <Skeleton className="mb-4 mt-2 h-4 w-20" />
+        </>
+    )
+}
+
 export default MapCard
+export { LoadingMapCard }

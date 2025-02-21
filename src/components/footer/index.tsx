@@ -25,8 +25,8 @@ function Footer() {
                         </Link>
 
                         <p className="mx-auto mt-6 max-w-md text-center leading-relaxed text-muted-foreground lg:mx-0 lg:max-w-xs lg:text-left">
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Incidunt
-                            consequuntur amet culpa cum itaque neque.
+                            The perfect hub for all your CS:GO KZ stats, tools, and rankings. Track
+                            progress, refine skills, and compete.
                         </p>
 
                         <div className="mt-8 flex justify-center gap-8 lg:justify-start">
@@ -203,9 +203,7 @@ function Footer() {
                                     <Button asChild variant="link" className="m-0 h-auto p-0">
                                         <Link to="mailto:syuks@kzprofile.com">
                                             <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
-                                            <span className="text-muted-foreground">
-                                                syuks@kzprofile.com
-                                            </span>
+                                            <span className="text-muted-foreground">syuks</span>
                                         </Link>
                                     </Button>
                                 </li>
@@ -237,7 +235,7 @@ function Footer() {
                         </p>
 
                         <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 sm:order-first sm:mt-0">
-                            &copy; 2024 KZ Profile
+                            &copy; 2025 KZ Profile
                         </p>
                     </div>
                 </div>

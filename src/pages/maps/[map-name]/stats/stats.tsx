@@ -42,7 +42,7 @@ function MapStats() {
                     Reload
                 </Button>*/}
             </div>
-            <div className="mb-52 mt-8 space-y-4">
+            <div className="mb-24 mt-8 space-y-4">
                 <div className="inline-block">
                     <Select
                         value={String(stage)}

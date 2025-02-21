@@ -1,7 +1,7 @@
 import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 
-import { fetchGlobalMaps } from "./useGlobalMaps"
+import { fetchKZProfileMaps } from "./useKZProfileMaps"
 
 function seededRandom(seed: number, min: number, max: number): number {
     const a = 1664525
@@ -16,7 +16,7 @@ const mapOfTheDayQueryOptions = (utcDateSeed: number) => {
     return queryOptions({
         queryKey: ["mapOfTheDay", utcDateSeed],
         queryFn: async () => {
-            const globalMaps = await fetchGlobalMaps()
+            const globalMaps = await fetchKZProfileMaps()
             return globalMaps[seededRandom(utcDateSeed, 0, globalMaps.length - 1)]
         },
         staleTime: Infinity,

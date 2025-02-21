@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 
 import { Link } from "react-router-dom"
 
@@ -10,6 +10,10 @@ import LoginForm from "./form"
 import { Toaster } from "@/components/ui/sonner"
 
 function Login() {
+    useEffect(() => {
+        document.title = "Login - KZ Profile"
+    }, [])
+
     const kzProfileMapsQuery = useKZProfileMaps()
 
     const mapImageURL = useMemo(() => {

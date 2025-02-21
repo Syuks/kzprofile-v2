@@ -1,4 +1,4 @@
-import { useMemo, useState, type PropsWithChildren } from "react"
+import { useEffect, useMemo, useState, type PropsWithChildren } from "react"
 
 import { BarChartIcon, DesktopIcon, TextAlignCenterIcon, VideoIcon } from "@radix-ui/react-icons"
 
@@ -35,6 +35,10 @@ export interface MapLayoutOutletContext {
 function MapLayout() {
     const { mapName } = useParams() as { mapName: string }
 
+    useEffect(() => {
+        document.title = `${mapName} - KZ Profile`
+    }, [mapName])
+
     const [gameMode] = useGameMode()
     const [runType] = useRunType()
 
@@ -62,32 +66,28 @@ function MapLayout() {
 
     const mapTimesInfiniteQuery = useMapTimes(mapName, gameMode, runType, stage, 100)
 
-    /*useEffect(() => {
-        document.title = `${mapName} - KZ Profile`
-    },[mapName])*/
-
     return (
         <>
             <MapBanner mapName={mapName} />
             <div className="py-10">
                 <MapInfo stage={stage} mapTierData={mapTierData} kzProfileMap={kzProfileMap.data} />
             </div>
-            <div className="space-x-2">
+            <div className="flex justify-evenly space-x-2 sm:justify-start">
                 <MapNavLink path="" end={true} border={mapTierData?.border}>
-                    <TextAlignCenterIcon className="mr-2 h-4 w-4" />
-                    Leaderboard
+                    <TextAlignCenterIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Leaderboard</span>
                 </MapNavLink>
                 <MapNavLink path="media" border={mapTierData?.border}>
-                    <VideoIcon className="mr-2 h-4 w-4" />
-                    Media
+                    <VideoIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Media</span>
                 </MapNavLink>
                 <MapNavLink path="stats" border={mapTierData?.border}>
-                    <BarChartIcon className="mr-2 h-4 w-4" />
-                    Statistics
+                    <BarChartIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Statistics</span>
                 </MapNavLink>
                 <MapNavLink path={`/servers?search=${mapName}`} border={mapTierData?.border}>
-                    <DesktopIcon className="mr-2 h-4 w-4" />
-                    Servers
+                    <DesktopIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Servers</span>
                 </MapNavLink>
             </div>
             <Separator className={cn("my-4", mapTierData?.backgroundColor)} />

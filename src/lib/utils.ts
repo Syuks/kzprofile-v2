@@ -82,3 +82,8 @@ export function timeUntilMidnightString(): TimeUntilMidnightString {
             .padStart(2, "0"),
     }
 }
+
+export const todayUTC = (): string => {
+    const now = new Date()
+    return `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()}`
+}

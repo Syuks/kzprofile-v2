@@ -362,7 +362,7 @@ function Jumpstats() {
                     Reload
                 </Button>
             </div>
-            <div className="mb-52">
+            <div className="mb-24">
                 <div className="flex items-center py-4">
                     <div className="flex flex-wrap">
                         <div className="mr-4 mt-4 max-w-sm">

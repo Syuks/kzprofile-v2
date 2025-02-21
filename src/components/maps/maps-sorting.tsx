@@ -46,13 +46,17 @@ export function MapsSorting<KZProfileMap>({ table }: MapsSortingProps<KZProfileM
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="border-dashed">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="border-dashed sm:w-auto sm:px-4 sm:py-2"
+                >
                     {tableSortingState.desc ? (
-                        <ArrowDownIcon className="mr-2 h-4 w-4" />
+                        <ArrowDownIcon className="h-4 w-4 sm:mr-2" />
                     ) : (
-                        <ArrowUpIcon className="mr-2 h-4 w-4" />
+                        <ArrowUpIcon className="h-4 w-4 sm:mr-2" />
                     )}
-                    {tableLastSortingLabel}
+                    <span className="hidden sm:inline">{tableLastSortingLabel}</span>
                 </Button>
             </DropdownMenuTrigger>
 

@@ -30,7 +30,7 @@ function MapMedia() {
                     </Button>
                 </div>
             </div>
-            <div className="mb-52 mt-8">
+            <div className="mb-24 mt-8">
                 <MapVideoGallery videos={kzProfileMap?.videos ?? []} />
             </div>
         </>

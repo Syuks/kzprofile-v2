@@ -52,8 +52,11 @@ function PlayerProfile() {
 
         if (!kzPlayer.data.name) {
             toast("smh. 😒", { description: "This player has never played kz." })
+            document.title = "KZ Profile"
             return
         }
+
+        document.title = `${kzPlayer.data.name} - KZ Profile`
 
         if (kzPlayer.data.is_banned) {
             toast("smh. 😒", { description: "This player has been banned from the global API." })

@@ -1,24 +1,28 @@
 import { useQuery, queryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
+import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 
 import { getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
 
-import { RecordsTopRecent } from "./useMapWRs"
+import { type RecordsTopRecent } from "./useMapWRs"
+import { type SteamPlayerSummary } from "./useSteamProfiles"
 
-const mapRecentTimesQueryOptions = (
+export interface RecordsTopRecentWithSteamProfile extends RecordsTopRecent {
+    steamProfile: SteamPlayerSummary
+}
+
+const recentTimesQueryOptions = (
     gameMode: GameMode,
     runType: RunType,
     stage: number,
     pageSize: number,
     createdSince: string,
-    mapName?: string,
 ) => {
     return queryOptions({
-        queryKey: ["mapRecentTimes", mapName, gameMode, runType, stage, pageSize, createdSince],
+        queryKey: ["recentTimes", gameMode, runType, stage, pageSize, createdSince],
         queryFn: async () => {
             let params: GetRecordsTopRecentParams = {
-                map_name: mapName,
                 modes_list_string: getGameModeName(gameMode),
                 stage: stage,
                 tickrate: 128,
@@ -38,42 +42,51 @@ const mapRecentTimesQueryOptions = (
                 params.has_teleports = undefined
             }
 
-            const response = await GlobalAPI_GetRecordsTopRecent(params)
-            const json: RecordsTopRecent[] = await response.json()
-            return json
+            const apiResponse = await GlobalAPI_GetRecordsTopRecent(params)
+            const apiJson: RecordsTopRecent[] = await apiResponse.json()
+
+            const steamIds = apiJson.map((record) => record.steamid64)
+            const steamResponse = await SteamAPI_GetProfiles(steamIds)
+            const steamJson: SteamPlayerSummary[] = await steamResponse.json()
+
+            const recentTimesWithSteamProfile: RecordsTopRecentWithSteamProfile[] = apiJson.map(
+                (record, index) => {
+                    return {
+                        ...record,
+                        steamProfile: steamJson[index],
+                    }
+                },
+            )
+
+            return recentTimesWithSteamProfile
         },
-        enabled: !!mapName,
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
         placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
     })
 }
 
-const useMapRecentTimes = (
+const useRecentTimes = (
     gameMode: GameMode,
     runType: RunType,
     stage: number,
     pageSize: number,
     createdSince: string,
-    mapName?: string,
 ) => {
-    return useQuery(
-        mapRecentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince, mapName),
-    )
+    return useQuery(recentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince))
 }
 
-const fetchMapRecentTimes = (
+const fetchRecentTimes = (
     gameMode: GameMode,
     runType: RunType,
     stage: number,
     pageSize: number,
     createdSince: string,
-    mapName?: string,
 ) => {
     return queryClient.fetchQuery(
-        mapRecentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince, mapName),
+        recentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince),
     )
 }
 
-export default useMapRecentTimes
-export { fetchMapRecentTimes }
+export default useRecentTimes
+export { fetchRecentTimes }

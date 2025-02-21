@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { ClockIcon, GlobeIcon, MagnifyingGlassIcon, StarFilledIcon } from "@radix-ui/react-icons"
 
@@ -12,6 +12,10 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
 function Servers() {
+    useEffect(() => {
+        document.title = "Servers - KZ Profile"
+    }, [])
+
     const location = useLocation()
     const navigate = useNavigate()
 

@@ -46,7 +46,7 @@ function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
 
     return (
         <div className="flex space-x-6">
-            <div>
+            <div className="flex shrink-0 flex-col">
                 <Link
                     to={getWorkshopLink(kzProfileMap.workshop_id)}
                     target="_blank"
@@ -96,7 +96,7 @@ function MapInfo({ stage, mapTierData, kzProfileMap }: MapInfoProps) {
                 </div>
             </div>
             <div>
-                <div className="text-7xl font-light">{kzProfileMap.name}</div>
+                <div className="font-light">{kzProfileMap.name}</div>
 
                 <div
                     className={cn(

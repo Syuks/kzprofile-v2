@@ -37,16 +37,16 @@ export function DataTablePagination<TData>({
     const lastRowIndex = Math.min((currentPage + 1) * rowsPerPage, totalRows)
 
     return (
-        <div className="flex items-center justify-between py-4">
-            <div className="flex-1 text-sm">
-                <span className="hidden text-muted-foreground md:block">
+        <div className="flex items-center py-4">
+            <div className="hidden text-sm md:block">
+                <span className=" text-muted-foreground">
                     Showing {firstRowIndex} to {lastRowIndex} of {totalRows}
                 </span>
             </div>
-            <div className="flex items-center space-x-6 lg:space-x-8">
+            <div className="flex flex-1 items-center justify-end space-x-6 lg:space-x-8">
                 {showPageSizeSelect && (
                     <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium">Rows per page</p>
+                        <p className="hidden text-sm font-medium sm:block">Rows per page</p>
                         <Select
                             value={`${table.getState().pagination.pageSize}`}
                             onValueChange={(value) => {

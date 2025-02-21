@@ -488,21 +488,23 @@ function MapLeaderboard() {
                     />
                     <Button
                         variant="outline"
+                        size="icon"
+                        className="sm:w-auto sm:px-4 sm:py-2"
                         onClick={() =>
                             refetchMapTimes(mapName, gameMode, runType, stage, pagination.pageSize)
                         }
                         disabled={mapTimesInfiniteQuery.isRefetching}
                     >
                         {mapTimesInfiniteQuery.isRefetching ? (
-                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                            <ReloadIcon className="h-4 w-4 animate-spin sm:mr-2" />
                         ) : (
-                            <ReloadIcon className="mr-2 h-4 w-4" />
+                            <ReloadIcon className="h-4 w-4 sm:mr-2" />
                         )}
-                        Reload
+                        <span className="hidden sm:inline">Reload</span>
                     </Button>
                 </div>
             </div>
-            <div className="mb-52">
+            <div className="mb-24">
                 <div className="flex items-center py-4">
                     <div className="flex flex-wrap">
                         <div className="mr-4 mt-4 max-w-sm">

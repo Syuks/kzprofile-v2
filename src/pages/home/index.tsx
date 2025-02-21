@@ -2,38 +2,38 @@ import { useEffect, useMemo, useState } from "react"
 
 import { Link } from "react-router-dom"
 
-import { timeUntilMidnightString, type TimeUntilMidnightString, cn } from "@/lib/utils"
+import { timeUntilMidnightString, type TimeUntilMidnightString, cn /*todayUTC*/ } from "@/lib/utils"
 
 import { getTierData } from "@/lib/gokz"
 
-import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
+//import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
 import useMapOfTheDay from "@/hooks/TanStackQueries/useMapOfTheDay"
-import useMapRecentTimes from "@/hooks/TanStackQueries/useMapRecentTimes"
+//import useMapRecentTimes from "@/hooks/TanStackQueries/useMapRecentTimes"
 
 import { Separator } from "@/components/ui/separator"
 import MapBanner from "@/pages/maps/[map-name]/map-banner"
-
-const createdSiceTodayUTC = (): string => {
-    const now = new Date()
-    return `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}-${now.getUTCDate()}`
-}
+//import RecentTimesScroll from "@/components/home/recent-times-scroll"
 
 function Home() {
-    const [gameMode] = useGameMode()
-    const [runType] = useRunType()
+    useEffect(() => {
+        document.title = "KZ Profile"
+    }, [])
+
+    //const [gameMode] = useGameMode()
+    //const [runType] = useRunType()
 
     const [timeLeft, setTimeLeft] = useState<TimeUntilMidnightString>(timeUntilMidnightString())
 
     const { data: mapOfTheDay } = useMapOfTheDay()
 
-    const mapRecentTimesQuery = useMapRecentTimes(
+    /*const mapRecentTimesQuery = useMapRecentTimes(
         gameMode,
         runType,
         0,
         10,
-        createdSiceTodayUTC(),
+        todayUTC(),
         mapOfTheDay?.name,
-    )
+    )*/
 
     const tierData = useMemo(() => {
         if (!mapOfTheDay) {
@@ -117,7 +117,7 @@ function Home() {
                 </div>
             </div>
             <Separator className={cn("my-4", tierData?.backgroundColor)} />
-            <div className="h-[1192px]"></div>
+            <div className="h-[1192px]">{/*<RecentTimesScroll />*/}</div>
         </>
     )
 }

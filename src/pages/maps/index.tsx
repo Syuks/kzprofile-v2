@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react"
-
-import { PlusCircledIcon } from "@radix-ui/react-icons"
+import { useEffect, useMemo, useState } from "react"
 
 import useKZProfileMaps, { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
-import { type SelectedFilter } from "@/components/datatable/datatable-add-filters-dropdown"
+import {
+    DatatableAddFiltersDropdown,
+    type SelectedFilter,
+} from "@/components/datatable/datatable-add-filters-dropdown"
 
 import {
     createColumnHelper,
@@ -21,7 +22,6 @@ import {
 import { GameModeID, type TierID } from "@/lib/gokz"
 import { getFileSizeString } from "@/lib/utils"
 
-import MapCard from "@/components/maps/map-card"
 import MapsSorting from "@/components/maps/maps-sorting"
 import { DataTablePagination } from "@/components/datatable/datatable-pagination"
 import { DataTableFacetedFilter } from "@/components/datatable/datatable-faceted-filter"
@@ -34,16 +34,14 @@ import {
     arrayLengthFilterFn,
 } from "@/components/datatable/datatable-faceted-min-max-filter"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import MapGrid from "./map-grid"
 
 function Maps() {
+    useEffect(() => {
+        document.title = "Maps - KZ Profile"
+    }, [])
+
     const kzProfileMapsQuery = useKZProfileMaps()
 
     const [globalFilter, setGlobalFilter] = useState("")
@@ -135,7 +133,7 @@ function Maps() {
         getFacetedMinMaxValues: getFacetedMinMaxValues(),
     })
 
-    const onSelectedFiltersChange = (filter: string, isChecked: boolean) => {
+    const handleSelectedFiltersChange = (filter: string, isChecked: boolean) => {
         setSelectedFilters((oldSelectedFilter) => {
             return {
                 ...oldSelectedFilter,
@@ -155,35 +153,15 @@ function Maps() {
                     Global maps
                 </h2>
                 <div className="flex space-x-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" className="border-dashed">
-                                <PlusCircledIcon className="mr-2 h-4 w-4" />
-                                Add filter
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-40">
-                            {Object.keys(selectedFilters).map((key) => {
-                                return (
-                                    <DropdownMenuCheckboxItem
-                                        key={key}
-                                        checked={selectedFilters[key].show}
-                                        onCheckedChange={(checked) =>
-                                            onSelectedFiltersChange(key, checked)
-                                        }
-                                        onSelect={(event) => event.preventDefault()}
-                                    >
-                                        {selectedFilters[key].label}
-                                    </DropdownMenuCheckboxItem>
-                                )
-                            })}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <DatatableAddFiltersDropdown
+                        selectedFilters={selectedFilters}
+                        onSelectedFiltersChange={handleSelectedFiltersChange}
+                    />
                     <MapsSorting table={table} />
                 </div>
             </div>
 
-            <div className="mb-52">
+            <div className="mb-24">
                 <div className="flex items-center py-4">
                     <div className="flex flex-wrap">
                         <div className="mr-4 mt-4 max-w-sm">
@@ -264,19 +242,8 @@ function Maps() {
                     </div>
                 </div>
 
-                <div className="flex flex-wrap">
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => (
-                            <div
-                                key={row.id}
-                                className="min-w-[250px] max-w-[300px] flex-1 px-1 pb-16"
-                            >
-                                <MapCard kzProfileMap={row.original} />
-                            </div>
-                        ))
-                    ) : (
-                        <div className="flex justify-center">No results.</div>
-                    )}
+                <div className="flex flex-wrap justify-center">
+                    <MapGrid table={table} isLoading={kzProfileMapsQuery.isLoading} />
                 </div>
 
                 <DataTablePagination table={table} />
