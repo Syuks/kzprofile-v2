@@ -10,7 +10,6 @@ import {
     ImageIcon,
     PlayIcon,
     PersonIcon,
-    ReloadIcon,
 } from "@radix-ui/react-icons"
 
 import { Link, useNavigate, useOutletContext } from "react-router-dom"
@@ -80,6 +79,7 @@ import {
 import { toast } from "sonner"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
+import DataTableReloadButton from "@/components/datatable/datatable-reload-button"
 
 const columnHelper = createColumnHelper<RecordsTopExtended>()
 
@@ -481,18 +481,10 @@ function Finishes() {
                         selectedFilters={selectedFilters}
                         onSelectedFiltersChange={handleSelectedFiltersChange}
                     />
-                    <Button
-                        variant="outline"
-                        onClick={() => playerProfileKZDataRefetch()}
-                        disabled={playerProfileKZDataFetching}
-                    >
-                        {playerProfileKZDataFetching ? (
-                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <ReloadIcon className="mr-2 h-4 w-4" />
-                        )}
-                        Reload
-                    </Button>
+                    <DataTableReloadButton
+                        isFetching={playerProfileKZDataFetching}
+                        refetch={playerProfileKZDataRefetch}
+                    />
                 </div>
             </div>
             <div className="mb-24">

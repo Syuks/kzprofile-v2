@@ -87,39 +87,39 @@ function PlayerProfile() {
                     steamid={steamid}
                 />
             </div>
-            <div className="space-x-2">
+            <div className="flex flex-wrap justify-evenly space-x-2 sm:justify-start">
                 <PlayerProfileNavLink
                     path=""
                     end={true}
                     playerProfileKZData={playerProfileKZData.data}
                 >
-                    <TextAlignLeftIcon className="mr-2 h-4 w-4" />
-                    Finishes
+                    <TextAlignLeftIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Finishes</span>
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink
                     path="unfinishes"
                     playerProfileKZData={playerProfileKZData.data}
                 >
-                    <StopwatchIcon className="mr-2 h-4 w-4" />
-                    Unfinishes
+                    <StopwatchIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Unfinishes</span>
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink
                     path="jumpstats"
                     playerProfileKZData={playerProfileKZData.data}
                 >
-                    <ShuffleIcon className="mr-2 h-4 w-4" />
-                    Jumpstats
+                    <ShuffleIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Jumpstats</span>
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink path="stats" playerProfileKZData={playerProfileKZData.data}>
-                    <BarChartIcon className="mr-2 h-4 w-4" />
-                    Statistics
+                    <BarChartIcon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Statistics</span>
                 </PlayerProfileNavLink>
                 <PlayerProfileNavLink
                     path="achievements"
                     playerProfileKZData={playerProfileKZData.data}
                 >
-                    <LockOpen1Icon className="mr-2 h-4 w-4" />
-                    Achievements
+                    <LockOpen1Icon className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Achievements</span>
                 </PlayerProfileNavLink>
             </div>
             <ExperienceBar playerProfileKZData={playerProfileKZData.data} />
@@ -221,10 +221,10 @@ function PlayerProfileNavLink({
             className={({ isActive }) =>
                 cn(
                     isActive
-                        ? buttonVariants({ variant: "outline" })
-                        : buttonVariants({ variant: "ghost" }),
+                        ? buttonVariants({ variant: "outline", size: "icon" })
+                        : buttonVariants({ variant: "ghost", size: "icon" }),
                     isActive && playerProfileKZData ? playerProfileKZData.rank.border : "",
-                    "mt-1 justify-start",
+                    "mt-1 sm:w-auto sm:px-4 sm:py-2",
                 )
             }
         >

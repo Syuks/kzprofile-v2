@@ -1,7 +1,5 @@
 import { useMemo } from "react"
 
-import { ReloadIcon } from "@radix-ui/react-icons"
-
 import { useOutletContext } from "react-router-dom"
 
 import { generateRandomString } from "@/lib/utils"
@@ -18,7 +16,6 @@ import {
 
 import Sticker from "./sticker"
 
-import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -35,6 +32,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import DataTableReloadButton from "@/components/datatable/datatable-reload-button"
 
 export type AchievementProgress = 0 | 1 | 2 | 3 | 4 | 5
 
@@ -49,18 +47,10 @@ function Achievements() {
                     Achievements
                 </h2>
 
-                <Button
-                    variant="outline"
-                    onClick={() => playerProfileKZDataRefetch()}
-                    disabled={playerProfileKZDataFetching}
-                >
-                    {playerProfileKZDataFetching ? (
-                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                        <ReloadIcon className="mr-2 h-4 w-4" />
-                    )}
-                    Reload
-                </Button>
+                <DataTableReloadButton
+                    isFetching={playerProfileKZDataFetching}
+                    refetch={playerProfileKZDataRefetch}
+                />
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {tierAchievements.map((achievement) => {

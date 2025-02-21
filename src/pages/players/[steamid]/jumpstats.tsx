@@ -1,11 +1,6 @@
 import { useMemo, useState } from "react"
 
-import {
-    DotsHorizontalIcon,
-    FrameIcon,
-    ReloadIcon,
-    StretchHorizontallyIcon,
-} from "@radix-ui/react-icons"
+import { DotsHorizontalIcon, FrameIcon, StretchHorizontallyIcon } from "@radix-ui/react-icons"
 
 import { useOutletContext, useSearchParams } from "react-router-dom"
 
@@ -59,6 +54,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import DataTableReloadButton from "@/components/datatable/datatable-reload-button"
 
 const columnHelper = createColumnHelper<Jumpstat>()
 
@@ -342,25 +338,17 @@ function Jumpstats() {
                 <h2 className="scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                     Jumpstats
                 </h2>
-                <Button
-                    variant="outline"
-                    onClick={() => {
+                <DataTableReloadButton
+                    isFetching={playerJumpstatsInfiniteQuery.isRefetching}
+                    refetch={() =>
                         refetchPlayerJumpstats(
                             steamid,
                             currentJumpType,
                             crouchbind,
                             pagination.pageSize,
                         )
-                    }}
-                    disabled={playerJumpstatsInfiniteQuery.isRefetching}
-                >
-                    {playerJumpstatsInfiniteQuery.isRefetching ? (
-                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                        <ReloadIcon className="mr-2 h-4 w-4" />
-                    )}
-                    Reload
-                </Button>
+                    }
+                />
             </div>
             <div className="mb-24">
                 <div className="flex items-center py-4">

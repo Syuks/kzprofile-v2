@@ -1,7 +1,5 @@
 import { useMemo } from "react"
 
-import { ReloadIcon } from "@radix-ui/react-icons"
-
 import { useOutletContext } from "react-router-dom"
 
 import { TierID } from "@/lib/gokz"
@@ -14,8 +12,8 @@ import Stats_Completion from "./completion"
 import Stats_Playtime from "./playtime"
 import Stats_Progression from "./progression"
 
-import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import DataTableReloadButton from "@/components/datatable/datatable-reload-button"
 
 export interface RecordTopStat {
     map_id: number
@@ -143,18 +141,10 @@ function Stats() {
                     Statistics
                 </h2>
 
-                <Button
-                    variant="outline"
-                    onClick={() => playerProfileKZDataRefetch()}
-                    disabled={playerProfileKZDataFetching}
-                >
-                    {playerProfileKZDataFetching ? (
-                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                    ) : (
-                        <ReloadIcon className="mr-2 h-4 w-4" />
-                    )}
-                    Reload
-                </Button>
+                <DataTableReloadButton
+                    isFetching={playerProfileKZDataFetching}
+                    refetch={playerProfileKZDataRefetch}
+                />
             </div>
             <Tabs defaultValue="completion" className="space-y-4 py-4">
                 <TabsList>
