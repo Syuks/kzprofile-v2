@@ -38,7 +38,7 @@ function MapOfTheDayBanner({ mapOfTheDay, mapRecentTimes, isLoading }: MapOfTheD
     }, [mapOfTheDay])
 
     return (
-        <div className="flex h-[calc(100vh-7.5rem)] flex-col justify-between pt-20">
+        <div className="flex min-h-[calc(100vh-7.5rem)] flex-col justify-between pt-20">
             {mapOfTheDay && (
                 <MapBanner mapName={mapOfTheDay.name} className="h-[calc(100vh+3.5rem)]" />
             )}
