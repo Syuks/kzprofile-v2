@@ -5,6 +5,9 @@ import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs
 import { getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
 
 import { RecordsTopRecent } from "./useMapWRs"
+import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
+import { SteamPlayerSummary } from "./useSteamProfiles"
+import { RecordsTopRecentWithSteamProfile } from "./useRecentTimes"
 
 const mapRecentTimesQueryOptions = (
     gameMode: GameMode,
@@ -38,9 +41,23 @@ const mapRecentTimesQueryOptions = (
                 params.has_teleports = undefined
             }
 
-            const response = await GlobalAPI_GetRecordsTopRecent(params)
-            const json: RecordsTopRecent[] = await response.json()
-            return json
+            const apiResponse = await GlobalAPI_GetRecordsTopRecent(params)
+            const apiJson: RecordsTopRecent[] = await apiResponse.json()
+
+            const steamIds = apiJson.map((record) => record.steamid64)
+            const steamResponse = await SteamAPI_GetProfiles(steamIds)
+            const steamJson: SteamPlayerSummary[] = await steamResponse.json()
+
+            const recentTimesWithSteamProfile: RecordsTopRecentWithSteamProfile[] = apiJson.map(
+                (record, index) => {
+                    return {
+                        ...record,
+                        steamProfile: steamJson[index],
+                    }
+                },
+            )
+
+            return recentTimesWithSteamProfile
         },
         enabled: !!mapName,
         staleTime: Infinity, // never refetch
