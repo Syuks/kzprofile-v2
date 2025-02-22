@@ -53,8 +53,13 @@ function WRCard({ record }: WRCardProps) {
                         "absolute left-0 top-1 flex h-full w-full flex-col items-center justify-center transition-all duration-300 ease-out [text-shadow:_4px_4px_4px_black] hover:shadow-[0_-4px_0_0_inset] group-hover:top-0",
                     )}
                 >
-                    <div className="flex items-center">
-                        <Button asChild variant="ghost" size="icon" className="rounded-full">
+                    <div className="flex max-w-full items-center p-2">
+                        <Button
+                            asChild
+                            variant="ghost"
+                            size="icon"
+                            className="mr-3 min-h-9 min-w-9 rounded-full"
+                        >
                             <Link to={`/players/${record.steamid64}`}>
                                 <img
                                     src={record.steamProfile.avatar}
@@ -62,9 +67,9 @@ function WRCard({ record }: WRCardProps) {
                                 />
                             </Link>
                         </Button>
-                        <Button asChild variant="link" className="text-base">
-                            <Link to={`/players/${record.steamid64}`} className="truncate p-1">
-                                {record.player_name}
+                        <Button asChild variant="link" className="overflow-hidden p-0 text-base">
+                            <Link to={`/players/${record.steamid64}`}>
+                                <span className="truncate">{record.player_name}</span>
                             </Link>
                         </Button>
                     </div>
