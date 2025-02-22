@@ -301,9 +301,9 @@ const columns = [
                     toast("No videos found", {
                         description: "We don't have any videos for this map. Help us find one!",
                         action: {
-                            label: "Github",
+                            label: "Google Form",
                             onClick: () =>
-                                window.open("https://github.com/Syuks/KZProfile", "_blank"),
+                                window.open("https://forms.gle/ZHkcrYPF5amHwwLV9", "_blank"),
                         },
                     })
                     return

@@ -32,7 +32,7 @@ function Footer() {
                         <div className="mt-8 flex justify-center gap-8 lg:justify-start">
                             <Button asChild variant="ghost" size="icon">
                                 <Link
-                                    to="https://github.com/Syuks/KZProfile"
+                                    to="https://github.com/Syuks/kzprofile-v2"
                                     target="_blank"
                                     rel="noreferrer"
                                 >

@@ -135,7 +135,11 @@ function UserDropdown() {
                 )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                    <Link to="https://github.com/Syuks/KZProfile" target="_blank" rel="noreferrer">
+                    <Link
+                        to="https://github.com/Syuks/kzprofile-v2"
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         Github
                         <DropdownMenuShortcut>
                             <GitHubLogoIcon />

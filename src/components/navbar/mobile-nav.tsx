@@ -75,7 +75,7 @@ function MobileNav() {
                 <div className="mt-6 flex flex-col space-y-3">
                     <h4 className="font-medium">Socials</h4>
                     <Button asChild variant="link" className="justify-start">
-                        <Link to="https://github.com/Syuks/KZProfile">
+                        <Link to="https://github.com/Syuks/kzprofile-v2">
                             <GitHubLogoIcon className="mr-2 h-4 w-4" />
                             Github
                         </Link>
