@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-//import { todayUTC } from "@/lib/utils"
+import { todayUTC } from "@/lib/utils"
 
 import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
 
@@ -20,23 +20,20 @@ function MapOfTheDay() {
         runType,
         0,
         5,
-        "2020-12-31",
+        todayUTC(),
         mapOfTheDay?.name,
     )
 
-    const sortedMapRecentTimes = useMemo(() => {
-        if (!mapRecentTimesQuery.data) {
-            return []
-        }
-
-        return mapRecentTimesQuery.data.sort((a, b) => a.time - b.time)
-    }, [mapRecentTimesQuery.data])
+    // The idea is to sort by time, but records/top/recent API retrieves in order,
+    // and records/top doesn't have a created_since parameter.
+    // So I just show the last 5 top 100 PBs.
+    const mapRecentTimes = useMemo(() => mapRecentTimesQuery.data ?? [], [mapRecentTimesQuery.data])
 
     return (
         <>
             <MapOfTheDayBanner
                 mapOfTheDay={mapOfTheDay}
-                mapRecentTimes={sortedMapRecentTimes}
+                mapRecentTimes={mapRecentTimes}
                 isLoading={mapRecentTimesQuery.isFetching}
             />
         </>
