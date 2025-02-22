@@ -411,7 +411,7 @@ export const mapAchievements: MapAchievementData[] = [
     {
         id: "map-v2",
         title: "Remake Expert",
-        description: "Finish 70 maps with the version number as a suffix",
+        description: "Finish 71 maps with the version number as a suffix",
         sticker: RemakeExpert,
         maps: [
             "bkz_goldbhop_v2go",
@@ -484,6 +484,7 @@ export const mapAchievements: MapAchievementData[] = [
             "kz_cascade_v4",
             "kz_mike_v4",
             "kz_mushrruption_v8",
+            "kz_beyond_v3",
         ],
     },
     {
@@ -499,7 +500,7 @@ export const mapAchievements: MapAchievementData[] = [
             "kz_alouette_fix",
             "kz_autumn_valley_fix",
             "kz_babycat_fix",
-            "kz_beyond_fix",
+            "kz_ambition_fix",
             "kz_birrita_fix",
             "kz_bir_dont_fix",
             "kz_blindcity_easy_fix",
@@ -639,7 +640,7 @@ export const mapAchievements: MapAchievementData[] = [
         description: "Complete 5 specific difficult maps",
         sticker: Viggo,
         holoSticker: ViggoHolo,
-        maps: ["kz_ambition", "kz_slide_arid", "kz_unmake", "kz_neoncity_z", "kz_zaloopazxc"],
+        maps: ["kz_ambition_fix", "kz_slide_arid", "kz_unmake", "kz_neoncity_z", "kz_zaloopazxc"],
     },
     {
         id: "jack",
