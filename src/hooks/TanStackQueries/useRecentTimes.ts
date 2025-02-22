@@ -16,18 +16,34 @@ const recentTimesQueryOptions = (
     gameMode: GameMode,
     runType: RunType,
     stage: number,
-    pageSize: number,
-    createdSince: string,
+    limit: number,
+    createdSince?: string,
+    place_top_at_least?: number,
 ) => {
     return queryOptions({
-        queryKey: ["recentTimes", gameMode, runType, stage, pageSize, createdSince],
+        queryKey: [
+            "recentTimes",
+            gameMode,
+            runType,
+            stage,
+            limit,
+            createdSince,
+            place_top_at_least,
+        ],
         queryFn: async () => {
             let params: GetRecordsTopRecentParams = {
                 modes_list_string: getGameModeName(gameMode),
                 stage: stage,
                 tickrate: 128,
-                limit: pageSize,
-                created_since: createdSince,
+                limit: limit,
+            }
+
+            if (!!createdSince) {
+                params.created_since = createdSince
+            }
+
+            if (!!place_top_at_least) {
+                params.place_top_at_least = place_top_at_least
             }
 
             if (runType === "pro") {
@@ -50,10 +66,14 @@ const recentTimesQueryOptions = (
             const steamJson: SteamPlayerSummary[] = await steamResponse.json()
 
             const recentTimesWithSteamProfile: RecordsTopRecentWithSteamProfile[] = apiJson.map(
-                (record, index) => {
+                (record) => {
+                    const steamProfile = steamJson.find(
+                        (steamProfile) => steamProfile.steamid === record.steamid64,
+                    ) as SteamPlayerSummary
+
                     return {
                         ...record,
-                        steamProfile: steamJson[index],
+                        steamProfile,
                     }
                 },
             )
@@ -70,21 +90,25 @@ const useRecentTimes = (
     gameMode: GameMode,
     runType: RunType,
     stage: number,
-    pageSize: number,
-    createdSince: string,
+    limit: number,
+    createdSince?: string,
+    place_top_at_least?: number,
 ) => {
-    return useQuery(recentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince))
+    return useQuery(
+        recentTimesQueryOptions(gameMode, runType, stage, limit, createdSince, place_top_at_least),
+    )
 }
 
 const fetchRecentTimes = (
     gameMode: GameMode,
     runType: RunType,
     stage: number,
-    pageSize: number,
-    createdSince: string,
+    limit: number,
+    createdSince?: string,
+    place_top_at_least?: number,
 ) => {
     return queryClient.fetchQuery(
-        recentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince),
+        recentTimesQueryOptions(gameMode, runType, stage, limit, createdSince, place_top_at_least),
     )
 }
 

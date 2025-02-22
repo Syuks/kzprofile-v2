@@ -49,10 +49,14 @@ const mapRecentTimesQueryOptions = (
             const steamJson: SteamPlayerSummary[] = await steamResponse.json()
 
             const recentTimesWithSteamProfile: RecordsTopRecentWithSteamProfile[] = apiJson.map(
-                (record, index) => {
+                (record) => {
+                    const steamProfile = steamJson.find(
+                        (steamProfile) => steamProfile.steamid === record.steamid64,
+                    ) as SteamPlayerSummary
+
                     return {
                         ...record,
-                        steamProfile: steamJson[index],
+                        steamProfile,
                     }
                 },
             )

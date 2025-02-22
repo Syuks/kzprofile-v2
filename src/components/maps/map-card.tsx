@@ -93,7 +93,7 @@ function MapCard({ kzProfileMap, withDropdown = true }: MapCardProps) {
                 <div
                     className={cn(
                         tierData.shadow,
-                        "absolute left-0 top-1 flex h-full w-full flex-col items-center justify-center opacity-0 shadow-[0_-4px_0_0_inset] transition-all duration-300 ease-out [text-shadow:_4px_4px_4px_black] group-hover:top-0 group-hover:opacity-100",
+                        "absolute left-0 top-1 flex h-full w-full flex-col items-center justify-center opacity-0 transition-all duration-300 ease-out [text-shadow:_4px_4px_4px_black] hover:shadow-[0_-4px_0_0_inset] group-hover:top-0 group-hover:opacity-100",
                     )}
                 >
                     <Button asChild variant="link" className="text-base">
