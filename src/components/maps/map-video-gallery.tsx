@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { GitHubLogoIcon } from "@radix-ui/react-icons"
+import { EnvelopeClosedIcon } from "@radix-ui/react-icons"
 
 import { Link } from "react-router-dom"
 
@@ -121,12 +121,12 @@ function MapVideoGallery({ videos }: MapVideoGalleryProps) {
             >
                 <h3 className="text-2xl font-bold tracking-tight">This map has no videos</h3>
                 <p className="text-sm text-muted-foreground">
-                    You can contribute by making an issue or a PR.
+                    You can contribute by filling this Google Form.
                 </p>
                 <Button className="mt-4" asChild>
-                    <Link to="https://github.com/Syuks/KZProfile" target="_blank" rel="noreferrer">
-                        <GitHubLogoIcon className="mr-2 h-4 w-4" />
-                        Github
+                    <Link to="https://forms.gle/ZHkcrYPF5amHwwLV9" target="_blank" rel="noreferrer">
+                        <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
+                        Google Form
                     </Link>
                 </Button>
             </AspectRatio>

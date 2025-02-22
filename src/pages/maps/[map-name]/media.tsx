@@ -1,4 +1,4 @@
-import { GitHubLogoIcon } from "@radix-ui/react-icons"
+import { EnvelopeClosedIcon } from "@radix-ui/react-icons"
 
 import { Link, useOutletContext } from "react-router-dom"
 
@@ -20,11 +20,11 @@ function MapMedia() {
                 <div className="flex space-x-2">
                     <Button variant="outline" asChild>
                         <Link
-                            to="https://github.com/Syuks/KZProfile"
+                            to="https://forms.gle/ZHkcrYPF5amHwwLV9"
                             target="_blank"
                             rel="noreferrer"
                         >
-                            <GitHubLogoIcon className="mr-2 h-4 w-4" />
+                            <EnvelopeClosedIcon className="mr-2 h-4 w-4" />
                             Contribute
                         </Link>
                     </Button>

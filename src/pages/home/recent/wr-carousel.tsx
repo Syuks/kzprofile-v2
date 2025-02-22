@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
 
@@ -6,13 +6,15 @@ import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRec
 
 import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import WRCard from "./wr-card"
 
 interface WRCarouselProps {
     records: RecordsTopRecentWithSteamProfile[]
+    isLoading?: boolean
 }
 
-function WrCarousel({ records }: WRCarouselProps) {
+function WrCarousel({ records, isLoading }: WRCarouselProps) {
     const [api, setApi] = useState<CarouselApi>()
     const [canScrollPrev, setCanScrollPrev] = useState(false)
     const [canScrollNext, setCanScrollNext] = useState(false)
@@ -48,21 +50,38 @@ function WrCarousel({ records }: WRCarouselProps) {
         }
     }, [api, onSelect])
 
+    const loadingArray = useMemo(() => Array(5).fill({}), [records])
+
     return (
         <Carousel className="w-full" setApi={setApi}>
             <CarouselContent>
-                {records.map((record, index) => (
-                    <CarouselItem
-                        key={index}
-                        className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
-                    >
-                        <div className="flex-1">
-                            <WRCard record={record} />
-                        </div>
-                    </CarouselItem>
-                ))}
+                {!isLoading
+                    ? records.map((record, index) => (
+                          <CarouselItem
+                              key={index}
+                              className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                          >
+                              <div className="flex-1">
+                                  <WRCard record={record} />
+                              </div>
+                          </CarouselItem>
+                      ))
+                    : loadingArray.map((_, index) => (
+                          <CarouselItem
+                              key={index}
+                              className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5"
+                          >
+                              <div className="flex-1">
+                                  <Skeleton className="aspect-video h-full w-full" />
+                                  <div className="mt-3 space-y-2">
+                                      <Skeleton className="h-7 w-32" />
+                                      <Skeleton className="h-7 w-24" />
+                                  </div>
+                              </div>
+                          </CarouselItem>
+                      ))}
             </CarouselContent>
-            {canScrollPrev && (
+            {canScrollPrev && !isLoading && (
                 <>
                     <div className="absolute left-0 top-0 h-full w-10 bg-gradient-to-r from-background/90"></div>
                     <Button
@@ -75,7 +94,7 @@ function WrCarousel({ records }: WRCarouselProps) {
                     </Button>
                 </>
             )}
-            {canScrollNext && (
+            {canScrollNext && !isLoading && (
                 <>
                     <div className="absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background/90"></div>
                     <Button

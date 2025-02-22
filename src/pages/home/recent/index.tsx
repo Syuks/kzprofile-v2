@@ -32,11 +32,11 @@ function Recent() {
             <h2 className="mb-4 scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                 Recent WRs
             </h2>
-            <WrCarousel records={recentWrs} />
+            <WrCarousel records={recentWrs} isLoading={recentWrsQuery.isFetching} />
             <h2 className="mb-4 mt-20 scroll-m-20 text-3xl font-bold tracking-tight transition-colors first:mt-0">
                 Recent top 100
             </h2>
-            <WrCarousel records={recentTop100} />
+            <WrCarousel records={recentTop100} isLoading={recentTop100Query.isFetching} />
         </div>
     )
 }
