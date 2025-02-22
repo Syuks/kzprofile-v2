@@ -47,8 +47,15 @@ const playerJumpstatsInfiniteQueryOptions = (
             }
 
             if (crouchbind !== "both") {
-                params.is_crouch_bind = Boolean(crouchbind)
-                params.is_crouch_boost = Boolean(crouchbind)
+                if (crouchbind === "true") {
+                    params.is_crouch_bind = true
+                    params.is_crouch_boost = true
+                }
+
+                if (crouchbind === "false") {
+                    params.is_crouch_bind = false
+                    params.is_crouch_boost = false
+                }
             }
 
             const response = await GlobalAPI_GetJumpstats(params)
