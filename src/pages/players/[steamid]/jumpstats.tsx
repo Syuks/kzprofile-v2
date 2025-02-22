@@ -361,7 +361,6 @@ function Jumpstats() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectLabel>Jumptypes</SelectLabel>
                                         <SelectItem value="longjump">Longjump</SelectItem>
                                         <SelectItem value="bhop">Bhop</SelectItem>
                                         <SelectItem value="multibhop">Multibhop</SelectItem>
@@ -383,7 +382,6 @@ function Jumpstats() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectGroup>
-                                        <SelectLabel>Bind</SelectLabel>
                                         <SelectItem value="false">Unbind</SelectItem>
                                         <SelectItem value="true">Crouchbind</SelectItem>
                                         <SelectItem value="both">Both</SelectItem>
