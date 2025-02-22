@@ -616,7 +616,7 @@ export const mapAchievements: MapAchievementData[] = [
     {
         id: "crown",
         title: "Crown",
-        description: "kz_erratum_v2 PRO Runner",
+        description: "Complete 5 specific difficult maps",
         sticker: Crown,
         maps: ["kz_kiwiterror", "kz_kiwipsychosis", "kz_kiwislide", "kz_tense", "kz_kiwideath"],
     },
