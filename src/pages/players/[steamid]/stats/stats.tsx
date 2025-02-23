@@ -83,7 +83,7 @@ function Stats() {
             // Per Date
             const date = new Date(finish.created_on)
             const dayKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-            const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}-0`
+            const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}-1`
             const quarterKey = `Q${Math.floor((date.getMonth() + 3) / 3)} ${date.getFullYear()}`
             const yearKey = `${date.getFullYear()}`
 
