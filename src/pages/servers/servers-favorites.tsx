@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 
 import {
     DotsHorizontalIcon,
@@ -18,9 +18,7 @@ import {
     getCoreRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    SortingState,
     useReactTable,
-    type PaginationState,
 } from "@tanstack/react-table"
 import { DataTable } from "@/components/datatable/datatable"
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
@@ -48,12 +46,6 @@ function ServersFavorites() {
     // 2. Make multiple fetches to IGameServersService/GetServerList/v1/
 
     // For now, don't show players and map in favorites.
-
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 30,
-    })
 
     const [localSettings] = useLocalSettings()
 
@@ -254,12 +246,11 @@ function ServersFavorites() {
     const table = useReactTable({
         data: globalServers,
         columns,
-        state: {
-            sorting,
-            pagination: pagination,
+        initialState: {
+            sorting: [{ id: "name", desc: true }],
+            pagination: { pageSize: 20, pageIndex: 0 },
         },
-        onSortingChange: setSorting,
-        onPaginationChange: setPagination,
+        enableSortingRemoval: false,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),

@@ -50,8 +50,6 @@ import { MapLayoutOutletContext } from "."
 import {
     createColumnHelper,
     useReactTable,
-    ColumnFiltersState,
-    SortingState,
     PaginationState,
     getCoreRowModel,
     getSortedRowModel,
@@ -101,8 +99,6 @@ function MapLeaderboard() {
     })
 
     const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [sorting, setSorting] = useState<SortingState>([])
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 100,
@@ -173,6 +169,7 @@ function MapLeaderboard() {
                     const place = props.getValue()
                     return place.toLocaleString()
                 },
+                sortDescFirst: false,
                 size: 36,
             }),
             columnHelper.accessor("player_name", {
@@ -195,6 +192,7 @@ function MapLeaderboard() {
 
                     return <span className="flex justify-center">{getTimeString(time)}</span>
                 },
+                sortDescFirst: false,
                 filterFn: "inNumberRange",
             }),
             columnHelper.accessor("points", {
@@ -214,6 +212,7 @@ function MapLeaderboard() {
 
                     return <span className="flex justify-center">{teleports.toLocaleString()}</span>
                 },
+                sortDescFirst: false,
                 filterFn: "inNumberRange",
             }),
             columnHelper.accessor("created_on", {
@@ -229,6 +228,7 @@ function MapLeaderboard() {
                         </span>
                     )
                 },
+                sortDescFirst: true,
                 filterFn: dateFilterFunction,
             }),
             columnHelper.accessor("server_name", {
@@ -424,13 +424,13 @@ function MapLeaderboard() {
         data: mapTimes,
         columns,
         state: {
-            sorting,
-            columnFilters,
             pagination: pagination,
             rowSelection: rowSelection,
         },
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
+        initialState: {
+            sorting: [{ id: "place", desc: false }],
+        },
+        enableSortingRemoval: false,
         onPaginationChange: onPaginationChange,
         onRowSelectionChange: setRowSelection,
         getCoreRowModel: getCoreRowModel(),

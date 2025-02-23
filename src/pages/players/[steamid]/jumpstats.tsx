@@ -27,8 +27,6 @@ import { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
-    ColumnFiltersState,
-    SortingState,
     getCoreRowModel,
     getPaginationRowModel,
     getSortedRowModel,
@@ -140,6 +138,7 @@ const columns = [
                 </span>
             )
         },
+        sortDescFirst: true,
     }),
     columnHelper.accessor("server_id", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Server" />,
@@ -261,8 +260,6 @@ function Jumpstats() {
         return "false"
     })
 
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [sorting, setSorting] = useState<SortingState>([{ id: "distance", desc: true }])
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 30,
@@ -316,12 +313,12 @@ function Jumpstats() {
         data: playerJumpstats,
         columns,
         state: {
-            sorting,
-            columnFilters,
             pagination: pagination,
         },
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
+        initialState: {
+            sorting: [{ id: "distance", desc: true }],
+        },
+        enableSortingRemoval: false,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

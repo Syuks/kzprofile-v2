@@ -28,7 +28,6 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     OnChangeFn,
-    SortingState,
     useReactTable,
     type PaginationState,
 } from "@tanstack/react-table"
@@ -65,7 +64,6 @@ function BansForm() {
     }, [searchParams])
     const [searchValue, setSearchValue] = useState(searchQuery)
 
-    const [sorting, setSorting] = useState<SortingState>([])
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 30,
@@ -348,10 +346,12 @@ function BansForm() {
         data: bans,
         columns,
         state: {
-            sorting,
             pagination: pagination,
         },
-        onSortingChange: setSorting,
+        initialState: {
+            sorting: [{ id: "created_on", desc: true }],
+        },
+        enableSortingRemoval: false,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

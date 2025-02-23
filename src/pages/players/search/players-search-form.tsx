@@ -23,7 +23,6 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     OnChangeFn,
-    SortingState,
     useReactTable,
     type PaginationState,
 } from "@tanstack/react-table"
@@ -58,7 +57,6 @@ function PlayersSearchForm() {
     }, [searchParams])
     const [searchValue, setSearchValue] = useState(searchQuery)
 
-    const [sorting, setSorting] = useState<SortingState>([])
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 30,
@@ -216,10 +214,12 @@ function PlayersSearchForm() {
         data: kzPlayersExtended,
         columns,
         state: {
-            sorting,
             pagination: pagination,
         },
-        onSortingChange: setSorting,
+        initialState: {
+            sorting: [{ id: "total_records", desc: true }],
+        },
+        enableSortingRemoval: false,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

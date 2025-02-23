@@ -40,8 +40,6 @@ import { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
-    ColumnFiltersState,
-    SortingState,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
@@ -93,6 +91,7 @@ const columns = [
 
             return <span className="flex justify-center">{getTimeString(time)}</span>
         },
+        sortDescFirst: false,
     }),
     columnHelper.accessor("difficulty", {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Tier" />,
@@ -120,6 +119,7 @@ const columns = [
                 </span>
             )
         },
+        sortDescFirst: true,
         filterFn: dateFilterFunction,
     }),
     columnHelper.accessor("server_name", {
@@ -246,8 +246,6 @@ function Unfinishes() {
         created_on: { label: "Date", show: false },
     })
 
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [sorting, setSorting] = useState<SortingState>([{ id: "created_on", desc: true }])
     // For pageSize of pagination:
     const [localSettings, setLocalSettings] = useLocalSettings()
     const [pageIndex, setPageIndex] = useState<number>(0)
@@ -276,12 +274,12 @@ function Unfinishes() {
         data: tableData,
         columns,
         state: {
-            sorting,
-            columnFilters,
             pagination: { pageSize: localSettings.tablePageSize, pageIndex: pageIndex },
         },
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
+        initialState: {
+            sorting: [{ id: "created_on", desc: true }],
+        },
+        enableSortingRemoval: false,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),

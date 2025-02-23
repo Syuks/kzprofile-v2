@@ -55,7 +55,6 @@ import { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
-    SortingState,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
@@ -109,6 +108,7 @@ const columns = [
 
             return <span className="flex justify-center">{getTimeString(time)}</span>
         },
+        sortDescFirst: false,
         filterFn: "inNumberRange",
     }),
     columnHelper.accessor("difficulty", {
@@ -137,6 +137,7 @@ const columns = [
                 </span>
             )
         },
+        sortDescFirst: true,
         filterFn: dateFilterFunction,
     }),
     columnHelper.accessor("server_name", {
@@ -398,7 +399,6 @@ function Finishes() {
         server_name: { label: "Server", show: false },
     })
 
-    const [sorting, setSorting] = useState<SortingState>([{ id: "points", desc: true }])
     // For pageSize of pagination:
     const [localSettings, setLocalSettings] = useLocalSettings()
     const [pageIndex, setPageIndex] = useState<number>(0)
@@ -427,10 +427,12 @@ function Finishes() {
         data: tableData,
         columns,
         state: {
-            sorting,
             pagination: { pageSize: localSettings.tablePageSize, pageIndex: pageIndex },
         },
-        onSortingChange: setSorting,
+        initialState: {
+            sorting: [{ id: "points", desc: true }],
+        },
+        enableSortingRemoval: false,
         onPaginationChange: onPaginationChange,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
