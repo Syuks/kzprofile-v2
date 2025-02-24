@@ -132,7 +132,7 @@ function AdminDialog({ open, onOpenChange, dialogMap }: AdminDialogProps) {
                             bonus_count,
                             mapperNames: mappers.map((mapper) => mapper.name),
                             mapperIds: mappers.map((mapper) => mapper.steamId),
-                            videos,
+                            videos: videos.map((video) => video.link),
                         }
                     }
                     return map
@@ -155,7 +155,7 @@ function AdminDialog({ open, onOpenChange, dialogMap }: AdminDialogProps) {
                         bonus_count,
                         mapperNames: mappers.map((mapper) => mapper.name),
                         mapperIds: mappers.map((mapper) => mapper.steamId),
-                        videos,
+                        videos: videos.map((video) => video.link),
                     },
                 ]
                 return newData

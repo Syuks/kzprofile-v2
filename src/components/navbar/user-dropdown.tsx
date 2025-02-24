@@ -69,6 +69,15 @@ function UserDropdown() {
                 navigate("/bans")
                 return
             }
+
+            if (
+                e.shiftKey &&
+                e.key.toLowerCase() === "a" &&
+                localSettings.steamPlayerSummary?.steamid === "76561198267993933"
+            ) {
+                navigate("/admin")
+                return
+            }
         }
 
         document.addEventListener("keydown", shortcuts)
@@ -117,6 +126,14 @@ function UserDropdown() {
                                     <DropdownMenuShortcut>⇧M</DropdownMenuShortcut>
                                 </Link>
                             </DropdownMenuItem>
+                            {localSettings.steamPlayerSummary.steamid === "76561198267993933" && (
+                                <DropdownMenuItem asChild>
+                                    <Link to="/admin">
+                                        Admin
+                                        <DropdownMenuShortcut>⇧A</DropdownMenuShortcut>
+                                    </Link>
+                                </DropdownMenuItem>
+                            )}
                             {/*<DropdownMenuItem>
                                 Settings
                                 <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
