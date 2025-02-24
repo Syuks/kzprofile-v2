@@ -20,6 +20,11 @@ const mapRecentTimesQueryOptions = (
     return queryOptions({
         queryKey: ["mapRecentTimes", mapName, gameMode, runType, stage, pageSize, createdSince],
         queryFn: async () => {
+            if (!!mapName && getGameModeName(gameMode) === "kz_vanilla") {
+                // There's a bug in the API where modes_list_string=kz_vanilla with map_name doesn't work.
+                return []
+            }
+
             let params: GetRecordsTopRecentParams = {
                 map_name: mapName,
                 modes_list_string: getGameModeName(gameMode),

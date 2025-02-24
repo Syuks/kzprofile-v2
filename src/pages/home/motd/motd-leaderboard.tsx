@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 
+import { useGameMode } from "@/components/localsettings/localsettings-provider"
 import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
 import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
 
@@ -24,6 +25,8 @@ interface MapOfTheDayLeaderboardProps {
 }
 
 function MapOfTheDayLeaderboard({ mapRecentTimes, isLoading }: MapOfTheDayLeaderboardProps) {
+    const [gameMode] = useGameMode()
+
     const connectToServer = async (server_id: number) => {
         const globalServer = await fetchGlobalServerById(server_id)
 
@@ -48,6 +51,17 @@ function MapOfTheDayLeaderboard({ mapRecentTimes, isLoading }: MapOfTheDayLeader
                     </TableRow>
                 </TableHeader>
                 <TableBody>
+                    {gameMode === "kz_vanilla" && (
+                        <TableRow className="hover:bg-transparent">
+                            <TableCell
+                                colSpan={5}
+                                className="text-center font-mono text-muted-foreground"
+                            >
+                                Unfortunately, Map of the Day is not available in KZ Vanilla due to
+                                a bug in the API.
+                            </TableCell>
+                        </TableRow>
+                    )}
                     {isLoading
                         ? Array(5)
                               .fill({})
