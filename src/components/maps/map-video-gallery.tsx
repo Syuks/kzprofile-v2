@@ -20,6 +20,60 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio"
 import { Button } from "@/components/ui/button"
 
+interface VideoInfo {
+    url: string
+    thumbnail: string
+}
+
+export function getVideoInfo(videoCode: string): VideoInfo {
+    const [siteId, videoId] = videoCode.split("/")
+
+    // YouTube Playlist
+    if (siteId === "yt" && videoId.includes("videoseries")) {
+        return {
+            url: `https://www.youtube.com/embed/${videoId}`,
+            thumbnail: PlaylistThumbnail,
+        }
+    }
+
+    // YouTube Video
+    if (siteId === "yt") {
+        return {
+            url: `https://www.youtube.com/embed/${videoId}`,
+            thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
+        }
+    }
+
+    // Twitch Clip
+    if (siteId === "tc") {
+        return {
+            url: `https://clips.twitch.tv/embed?clip=${videoId}&parent=${window.location.hostname}&autoplay=false`,
+            thumbnail: TwitchThumbnail,
+        }
+    }
+
+    // Twitch Video
+    if (siteId === "tv") {
+        return {
+            url: `https://player.twitch.tv/?video=${videoId}&parent=${window.location.hostname}&autoplay=false`,
+            thumbnail: TwitchThumbnail,
+        }
+    }
+
+    // Bilibili Video
+    if (siteId === "bi") {
+        return {
+            url: `https://player.bilibili.com/player.html?bvid=${videoId}`,
+            thumbnail: BilibiliThumbnail,
+        }
+    }
+
+    return {
+        url: "error",
+        thumbnail: ErrorImage,
+    }
+}
+
 interface MapVideoGalleryProps {
     videos: string[]
 }
@@ -27,57 +81,10 @@ interface MapVideoGalleryProps {
 function MapVideoGallery({ videos }: MapVideoGalleryProps) {
     //const [currentPage, setCurrentPage] = useState(0)
 
-    const videosData: { url: string; thumbnail: string }[] = useMemo(() => {
+    const videosData: VideoInfo[] = useMemo(() => {
         //setCurrentPage(0)
 
-        return videos.map((videoCode) => {
-            const [siteId, videoId] = videoCode.split("/")
-
-            // YouTube Playlist
-            if (siteId === "yt" && videoId.includes("videoseries")) {
-                return {
-                    url: `https://www.youtube.com/embed/${videoId}`,
-                    thumbnail: PlaylistThumbnail,
-                }
-            }
-
-            // YouTube Video
-            if (siteId === "yt") {
-                return {
-                    url: `https://www.youtube.com/embed/${videoId}`,
-                    thumbnail: `https://img.youtube.com/vi/${videoId}/0.jpg`,
-                }
-            }
-
-            // Twitch Clip
-            if (siteId === "tc") {
-                return {
-                    url: `https://clips.twitch.tv/embed?clip=${videoId}&parent=${window.location.hostname}&autoplay=false`,
-                    thumbnail: TwitchThumbnail,
-                }
-            }
-
-            // Twitch Video
-            if (siteId === "tv") {
-                return {
-                    url: `https://player.twitch.tv/?video=${videoId}&parent=${window.location.hostname}&autoplay=false`,
-                    thumbnail: TwitchThumbnail,
-                }
-            }
-
-            // Bilibili Video
-            if (siteId === "bi") {
-                return {
-                    url: `https://player.bilibili.com/player.html?bvid=${videoId}`,
-                    thumbnail: BilibiliThumbnail,
-                }
-            }
-
-            return {
-                url: "error",
-                thumbnail: ErrorImage,
-            }
-        })
+        return videos.map((videoCode) => getVideoInfo(videoCode))
     }, [videos])
 
     /*const CrouselIndicators = () => {

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { Suspense } from "react"
 import ReactDOM from "react-dom/client"
 import "./index.css"
 
@@ -35,6 +35,8 @@ import ServersGlobal from "./pages/servers/servers-global"
 import Bans from "./pages/bans"
 
 import Leaderboards from "./pages/leaderboards"
+
+const Admin = React.lazy(() => import("./pages/admin"))
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
@@ -176,6 +178,14 @@ const router = createBrowserRouter([
             {
                 path: "leaderboards",
                 element: <Leaderboards />,
+            },
+            {
+                path: "admin",
+                element: (
+                    <Suspense fallback={<div>Loading...</div>}>
+                        <Admin />
+                    </Suspense>
+                ),
             },
         ],
     },
