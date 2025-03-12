@@ -120,7 +120,11 @@ function MapOfTheDayBanner({ mapOfTheDay, mapRecentTimes, isLoading }: MapOfTheD
                     </div>
                 </div>
 
-                <MapOfTheDayLeaderboard mapRecentTimes={mapRecentTimes} isLoading={isLoading} />
+                <MapOfTheDayLeaderboard
+                    mapRecentTimes={mapRecentTimes}
+                    isLoading={isLoading}
+                    mapOfTheDay={mapOfTheDay}
+                />
             </div>
 
             <div className="text-center font-mono text-sm text-muted-foreground">

@@ -1,11 +1,14 @@
+import { useMemo } from "react"
+
 import { Link } from "react-router-dom"
 
 import { useGameMode } from "@/components/localsettings/localsettings-provider"
 import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
 import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
+import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { cn, getTimeString } from "@/lib/utils"
-import { getPointsColor } from "@/lib/gokz"
+import { getGameModeID, getPointsColor } from "@/lib/gokz"
 
 import { toast } from "sonner"
 import {
@@ -20,12 +23,22 @@ import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface MapOfTheDayLeaderboardProps {
+    mapOfTheDay: KZProfileMap | undefined
     mapRecentTimes: RecordsTopRecentWithSteamProfile[]
     isLoading?: boolean
 }
 
-function MapOfTheDayLeaderboard({ mapRecentTimes, isLoading }: MapOfTheDayLeaderboardProps) {
+function MapOfTheDayLeaderboard({
+    mapRecentTimes,
+    isLoading,
+    mapOfTheDay,
+}: MapOfTheDayLeaderboardProps) {
     const [gameMode] = useGameMode()
+
+    const mapHasFilter = useMemo(
+        () => mapOfTheDay?.filters.includes(getGameModeID(gameMode)),
+        [mapOfTheDay, gameMode],
+    )
 
     const connectToServer = async (server_id: number) => {
         const globalServer = await fetchGlobalServerById(server_id)
@@ -51,14 +64,13 @@ function MapOfTheDayLeaderboard({ mapRecentTimes, isLoading }: MapOfTheDayLeader
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {gameMode === "kz_vanilla" && (
+                    {mapOfTheDay && !mapHasFilter && (
                         <TableRow className="hover:bg-transparent">
                             <TableCell
                                 colSpan={5}
                                 className="text-center font-mono text-muted-foreground"
                             >
-                                Unfortunately, Map of the Day is not available in KZ Vanilla due to
-                                a bug in the API.
+                                This map has no filters for this Game Mode.
                             </TableCell>
                         </TableRow>
                     )}

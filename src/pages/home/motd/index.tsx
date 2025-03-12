@@ -15,14 +15,7 @@ function MapOfTheDay() {
     const [gameMode] = useGameMode()
     const [runType] = useRunType()
 
-    const mapRecentTimesQuery = useMapRecentTimes(
-        gameMode,
-        runType,
-        0,
-        5,
-        todayUTC(),
-        mapOfTheDay?.name,
-    )
+    const mapRecentTimesQuery = useMapRecentTimes(gameMode, runType, 0, 5, todayUTC(), mapOfTheDay)
 
     // The idea is to sort by time, but records/top/recent API retrieves in order,
     // and records/top doesn't have a created_since parameter.

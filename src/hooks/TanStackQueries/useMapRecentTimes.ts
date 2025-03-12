@@ -2,12 +2,13 @@ import { useQuery, queryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
 
-import { getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
+import { getGameModeID, getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
 
 import { RecordsTopRecent } from "./useMapWRs"
 import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 import { SteamPlayerSummary } from "./useSteamProfiles"
 import { RecordsTopRecentWithSteamProfile } from "./useRecentTimes"
+import { KZProfileMap } from "./useKZProfileMaps"
 
 const mapRecentTimesQueryOptions = (
     gameMode: GameMode,
@@ -15,18 +16,18 @@ const mapRecentTimesQueryOptions = (
     stage: number,
     pageSize: number,
     createdSince: string,
-    mapName?: string,
+    map?: KZProfileMap,
 ) => {
     return queryOptions({
-        queryKey: ["mapRecentTimes", mapName, gameMode, runType, stage, pageSize, createdSince],
+        queryKey: ["mapRecentTimes", map?.name, gameMode, runType, stage, pageSize, createdSince],
         queryFn: async () => {
-            if (!!mapName && getGameModeName(gameMode) === "kz_vanilla") {
-                // There's a bug in the API where modes_list_string=kz_vanilla with map_name doesn't work.
+            if (!map?.filters.includes(getGameModeID(gameMode))) {
+                // There's a bug in the API. If the map doesn't have a filter for the game mode, it returns every map.
                 return []
             }
 
             let params: GetRecordsTopRecentParams = {
-                map_name: mapName,
+                map_name: map.name,
                 modes_list_string: getGameModeName(gameMode),
                 stage: stage,
                 tickrate: 128,
@@ -68,7 +69,7 @@ const mapRecentTimesQueryOptions = (
 
             return recentTimesWithSteamProfile
         },
-        enabled: !!mapName,
+        enabled: !!map,
         staleTime: Infinity, // never refetch
         gcTime: Infinity, // never delete cache
         placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
@@ -81,10 +82,10 @@ const useMapRecentTimes = (
     stage: number,
     pageSize: number,
     createdSince: string,
-    mapName?: string,
+    map?: KZProfileMap,
 ) => {
     return useQuery(
-        mapRecentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince, mapName),
+        mapRecentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince, map),
     )
 }
 
@@ -94,10 +95,10 @@ const fetchMapRecentTimes = (
     stage: number,
     pageSize: number,
     createdSince: string,
-    mapName?: string,
+    map?: KZProfileMap,
 ) => {
     return queryClient.fetchQuery(
-        mapRecentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince, mapName),
+        mapRecentTimesQueryOptions(gameMode, runType, stage, pageSize, createdSince, map),
     )
 }
 
