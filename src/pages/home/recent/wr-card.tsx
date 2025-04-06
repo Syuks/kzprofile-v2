@@ -62,7 +62,7 @@ function WRCard({ record }: WRCardProps) {
                         >
                             <Link to={`/players/${record.steamid64}`}>
                                 <img
-                                    src={record.steamProfile.avatar}
+                                    src={record.steamProfile?.avatar}
                                     className="h-full w-full rounded-full"
                                 />
                             </Link>

@@ -19,7 +19,7 @@ function RecentTimesChip({ record }: RecentTimesChipProps) {
             }}*/
         >
             <Avatar className="rounded-none">
-                <AvatarImage src={record.steamProfile.avatar} alt={record.player_name} />
+                <AvatarImage src={record.steamProfile?.avatar} alt={record.player_name} />
                 <AvatarFallback>{record.player_name[0]}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col items-start text-sm">

@@ -88,7 +88,7 @@ function MapOfTheDayLeaderboard({
                               <TableRow key={record.id} className="border-0 hover:bg-transparent">
                                   <TableCell>
                                       <img
-                                          src={record.steamProfile.avatar}
+                                          src={record.steamProfile?.avatar}
                                           className="rounded-full"
                                       />
                                   </TableCell>

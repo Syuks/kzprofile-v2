@@ -9,7 +9,7 @@ import { type RecordsTopRecent } from "./useMapWRs"
 import { type SteamPlayerSummary } from "./useSteamProfiles"
 
 export interface RecordsTopRecentWithSteamProfile extends RecordsTopRecent {
-    steamProfile: SteamPlayerSummary
+    steamProfile: SteamPlayerSummary | undefined
 }
 
 const recentTimesQueryOptions = (
@@ -69,7 +69,7 @@ const recentTimesQueryOptions = (
                 (record) => {
                     const steamProfile = steamJson.find(
                         (steamProfile) => steamProfile.steamid === record.steamid64,
-                    ) as SteamPlayerSummary
+                    )
 
                     return {
                         ...record,
