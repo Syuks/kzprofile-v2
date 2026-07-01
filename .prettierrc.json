@@ -1,7 +1,0 @@
-{
-  "tabWidth": 4,
-  "printWidth": 100,
-  "semi": false,
-  "plugins": ["prettier-plugin-tailwindcss"],
-  "tailwindFunctions": ["cn"]
-}

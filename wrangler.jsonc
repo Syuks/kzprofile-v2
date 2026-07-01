@@ -1,0 +1,26 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "kzprofile-v2",
+	"main": "worker/index.ts",
+	"compatibility_date": "2026-07-01",
+	"assets": {
+		"not_found_handling": "single-page-application"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+  "kv_namespaces": [
+    {
+      "binding": "KZPROFILE",
+      "id": "19f933f072c243189b59dc5e277f5304",
+    },
+  ],
+}
