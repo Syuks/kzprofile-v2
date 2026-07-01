@@ -10,7 +10,7 @@ import {
 } from "@/lib/utils"
 import { getMapImageURL, getTierData } from "@/lib/gokz"
 
-import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
+import type { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
 import useKZProfileMaps from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { Button } from "@/components/ui/button"

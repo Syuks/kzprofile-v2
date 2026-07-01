@@ -2,11 +2,11 @@ import { useMemo } from "react"
 
 import { useOutletContext } from "react-router-dom"
 
-import { TierID } from "@/lib/gokz"
+import type { TierID } from "@/lib/gokz"
 import { useRunType } from "@/components/localsettings/localsettings-provider"
-import { PlayerProfileKZData } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import type { PlayerProfileKZData } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
-import { PlayerProfileOutletContext } from ".."
+import type { PlayerProfileOutletContext } from ".."
 
 import Stats_Completion from "./completion"
 import Stats_Playtime from "./playtime"

@@ -2,10 +2,10 @@ import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import {
     GlobalAPI_GetRecordsTopWorldRecords,
-    GetRecordsTopWorldRecordsParams,
+    type GetRecordsTopWorldRecordsParams,
 } from "./APIs/GlobalAPI"
 
-import { getGameModeID, GameMode, RunType } from "@/lib/gokz"
+import { getGameModeID, type GameMode, type RunType } from "@/lib/gokz"
 
 interface RecordsTopWorldRecord {
     steamid64: string

@@ -1,14 +1,14 @@
 import { useQuery, queryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
-import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
+import { GlobalAPI_GetRecordsTopRecent, type GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
+import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 
 import { getGameModeID, getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
 
-import { RecordsTopRecent } from "./useMapWRs"
-import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
-import { SteamPlayerSummary } from "./useSteamProfiles"
-import { RecordsTopRecentWithSteamProfile } from "./useRecentTimes"
-import { KZProfileMap } from "./useKZProfileMaps"
+import type { RecordsTopRecent } from "./useMapWRs"
+import type { SteamPlayerSummary } from "./useSteamProfiles"
+import type { RecordsTopRecentWithSteamProfile } from "./useRecentTimes"
+import type { KZProfileMap } from "./useKZProfileMaps"
 
 const mapRecentTimesQueryOptions = (
     gameMode: GameMode,

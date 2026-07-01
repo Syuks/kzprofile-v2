@@ -4,7 +4,7 @@ import { lightFormat } from "date-fns"
 
 import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {

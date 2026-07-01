@@ -1,7 +1,7 @@
 import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetMaps } from "./APIs/GlobalAPI"
-import { TierID } from "@/lib/gokz"
+import type { TierID } from "@/lib/gokz"
 
 export interface GlobalMap {
     id: number

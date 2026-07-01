@@ -4,7 +4,7 @@ import { DesktopIcon, ImageIcon, PersonIcon } from "@radix-ui/react-icons"
 
 import { useNavigate } from "react-router-dom"
 
-import useKZProfileMaps, { KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import useKZProfileMaps, { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { cn } from "@/lib/utils"
 import { getTierData } from "@/lib/gokz"

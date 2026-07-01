@@ -2,18 +2,18 @@ import { useEffect, useMemo, useState, type PropsWithChildren } from "react"
 
 import { BarChartIcon, DesktopIcon, TextAlignCenterIcon, VideoIcon } from "@radix-ui/react-icons"
 
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query"
+import type { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query"
 import { z } from "zod"
 
 import { NavLink, useParams, Outlet, useSearchParams } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
-import { TierData, getTierData } from "@/lib/gokz"
+import { type TierData, getTierData } from "@/lib/gokz"
 import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
 
 import useKZProfileMap from "@/hooks/TanStackQueries/useKZProfileMap"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
-import useMapTimes, { MapRecordsTop } from "@/hooks/TanStackQueries/useMapTimes"
+import useMapTimes, { type MapRecordsTop } from "@/hooks/TanStackQueries/useMapTimes"
 
 import MapInfo from "./map-info"
 import MapBanner from "./map-banner"

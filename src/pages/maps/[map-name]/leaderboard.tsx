@@ -24,7 +24,7 @@ import { DataTablePagination } from "@/components/datatable/datatable-pagination
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
 import {
     DataTableFacetedFilter,
-    DatatableFacetedFilterOption,
+    type DatatableFacetedFilterOption,
 } from "@/components/datatable/datatable-faceted-filter"
 import { DatatableFacetedMinMaxFilter } from "@/components/datatable/datatable-faceted-min-max-filter"
 import {
@@ -45,12 +45,12 @@ import {
     useRunType,
 } from "@/components/localsettings/localsettings-provider"
 
-import { MapLayoutOutletContext } from "."
+import type { MapLayoutOutletContext } from "."
 
 import {
     createColumnHelper,
     useReactTable,
-    PaginationState,
+    type PaginationState,
     getCoreRowModel,
     getSortedRowModel,
     getFilteredRowModel,
@@ -58,8 +58,8 @@ import {
     getFacetedRowModel,
     getFacetedMinMaxValues,
     getPaginationRowModel,
-    OnChangeFn,
-    RowSelectionState,
+    type OnChangeFn,
+    type RowSelectionState,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {

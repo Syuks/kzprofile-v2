@@ -5,7 +5,7 @@ import { useOutletContext } from "react-router-dom"
 import { Line } from "react-chartjs-2"
 import type { ChartConfiguration } from "chart.js"
 
-import { MapLayoutOutletContext } from ".."
+import type { MapLayoutOutletContext } from ".."
 import { getTimeString } from "@/lib/utils"
 import useMapWRs, { type RecordsTopRecent } from "@/hooks/TanStackQueries/useMapWRs"
 import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"

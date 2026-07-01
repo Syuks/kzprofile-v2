@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { DesktopIcon, PersonIcon } from "@radix-ui/react-icons"
 
 import { useOutletContext } from "react-router-dom"
-import { MapLayoutOutletContext } from ".."
+import type { MapLayoutOutletContext } from ".."
 
 import useMapWRs, { type RecordsTopRecent } from "@/hooks/TanStackQueries/useMapWRs"
 import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"

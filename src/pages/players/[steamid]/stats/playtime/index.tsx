@@ -1,4 +1,4 @@
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import Playtime_CardRuns from "./cards-runs"
 import Playtime_ChartDoughnutTiers from "./chart-doughnut-tiers"

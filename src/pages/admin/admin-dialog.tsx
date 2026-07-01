@@ -11,7 +11,7 @@ import {
 import { Link } from "react-router-dom"
 
 import { queryClient } from "@/main"
-import { GameModeID, TierID } from "@/lib/gokz"
+import type { GameModeID, TierID } from "@/lib/gokz"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import {

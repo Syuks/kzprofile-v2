@@ -12,7 +12,7 @@ import { Link, useOutletContext, useSearchParams } from "react-router-dom"
 
 import useSteamServers, { type KzProfileServer } from "@/hooks/TanStackQueries/useSteamServers"
 import { getMapImageURL } from "@/lib/gokz"
-import { ServersOutletContext } from "."
+import type { ServersOutletContext } from "."
 
 import {
     createColumnHelper,

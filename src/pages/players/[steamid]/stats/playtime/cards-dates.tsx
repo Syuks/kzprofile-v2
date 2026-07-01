@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { format } from "date-fns"
 
-import { RecordsTopStatistics, RecordTopStat } from "../stats"
+import type { RecordsTopStatistics, RecordTopStat } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { getTimeString } from "@/lib/utils"

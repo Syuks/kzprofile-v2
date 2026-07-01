@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { getTimeString } from "@/lib/utils"
 import { tierLabels, tiers } from "@/lib/gokz"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Bar } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"

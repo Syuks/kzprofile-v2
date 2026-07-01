@@ -1,6 +1,6 @@
 import { getTimeString } from "@/lib/utils"
 
-import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
+import type { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"

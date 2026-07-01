@@ -1,4 +1,4 @@
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import Progression_CardPoints from "./cards-points"
 import Progression_TableMapMostPoints from "./table-maps-most-points"

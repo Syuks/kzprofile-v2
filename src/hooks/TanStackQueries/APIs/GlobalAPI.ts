@@ -1,4 +1,4 @@
-import { JumpTypeID, JumpTypeLabel } from "@/lib/gokz"
+import type { JumpTypeID, JumpTypeLabel } from "@/lib/gokz"
 
 const globalAPI = {
     baseURL: "https://kztimerglobal.com/api/v2.0",

@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { getPointsColor, getTierData } from "@/lib/gokz"
 import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { RecordsTopStatistics, RecordTopStat } from "../stats"
+import type { RecordsTopStatistics, RecordTopStat } from "../stats"
 
 import MapHoverCard from "@/components/maps/map-hover-card"
 

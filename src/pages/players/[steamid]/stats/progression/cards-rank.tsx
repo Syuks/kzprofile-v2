@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { type KZRank, getKZRank } from "@/lib/gokz"
 import { useGameMode } from "@/components/localsettings/localsettings-provider"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 

@@ -4,7 +4,7 @@ import { format } from "date-fns"
 
 import { getTimeString } from "@/lib/utils"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Bubble } from "react-chartjs-2"
 import type { ChartConfiguration } from "chart.js"

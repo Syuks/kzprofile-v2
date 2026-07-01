@@ -2,7 +2,7 @@ import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
 import { GlobalAPI_GetRecordFilters } from "./APIs/GlobalAPI"
 
-import { getGameModeID, GameMode } from "@/lib/gokz"
+import { getGameModeID, type GameMode } from "@/lib/gokz"
 
 interface RecordFilter {
     id: number

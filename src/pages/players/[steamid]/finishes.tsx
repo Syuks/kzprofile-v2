@@ -27,7 +27,7 @@ import { DataTablePagination } from "@/components/datatable/datatable-pagination
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
 import {
     DataTableFacetedFilter,
-    DatatableFacetedFilterOption,
+    type DatatableFacetedFilterOption,
 } from "@/components/datatable/datatable-faceted-filter"
 import { DatatableFacetedMinMaxFilter } from "@/components/datatable/datatable-faceted-min-max-filter"
 import {
@@ -43,7 +43,7 @@ import MapHoverCard from "@/components/maps/map-hover-card"
 import MapVideoGallery from "@/components/maps/map-video-gallery"
 
 import { getTimeString, cn } from "@/lib/utils"
-import { TierID, getTierData, getPointsColor } from "@/lib/gokz"
+import { type TierID, getTierData, getPointsColor } from "@/lib/gokz"
 
 import {
     useGameMode,
@@ -51,7 +51,7 @@ import {
     useRunType,
 } from "@/components/localsettings/localsettings-provider"
 
-import { PlayerProfileOutletContext } from "."
+import type { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
@@ -62,8 +62,8 @@ import {
     useReactTable,
     getFacetedUniqueValues,
     getFacetedRowModel,
-    PaginationState,
-    OnChangeFn,
+    type PaginationState,
+    type OnChangeFn,
     getFacetedMinMaxValues,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"

@@ -12,7 +12,7 @@ import { Link, useNavigate, useOutletContext } from "react-router-dom"
 
 import { lightFormat } from "date-fns"
 
-import type { Unfinishes } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import type { Unfinishes as TUnfinishes } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 import { fetchKZProfileMaps } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { DataTable } from "@/components/datatable/datatable"
@@ -32,11 +32,11 @@ import MapHoverCard from "@/components/maps/map-hover-card"
 import MapVideoGallery from "@/components/maps/map-video-gallery"
 
 import { getTimeString } from "@/lib/utils"
-import { TierID, getTierData } from "@/lib/gokz"
+import { type TierID, getTierData } from "@/lib/gokz"
 
 import { useLocalSettings, useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { PlayerProfileOutletContext } from "."
+import type { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
@@ -47,8 +47,8 @@ import {
     useReactTable,
     getFacetedUniqueValues,
     getFacetedRowModel,
-    PaginationState,
-    OnChangeFn,
+    type PaginationState,
+    type OnChangeFn,
     getFacetedMinMaxValues,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
@@ -65,7 +65,7 @@ import { toast } from "sonner"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import DataTableReloadButton from "@/components/datatable/datatable-reload-button"
 
-const columnHelper = createColumnHelper<Unfinishes>()
+const columnHelper = createColumnHelper<TUnfinishes>()
 
 const columns = [
     columnHelper.accessor("map_name", {

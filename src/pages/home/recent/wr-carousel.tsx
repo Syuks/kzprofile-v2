@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
 
-import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
+import type { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
 
-import { Carousel, CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel"
+import { Carousel, type CarouselApi, CarouselContent, CarouselItem } from "@/components/ui/carousel"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import WRCard from "./wr-card"

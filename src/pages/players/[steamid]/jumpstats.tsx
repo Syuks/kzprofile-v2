@@ -19,11 +19,11 @@ import { DataTablePagination } from "@/components/datatable/datatable-pagination
 import { DataTableColumnHeader } from "@/components/datatable/datatable-header"
 
 import { cn } from "@/lib/utils"
-import { JumpTypeLabel, getJumpStatData, getJumpTypeData, jumpTypeLabelSchema } from "@/lib/gokz"
+import { type JumpTypeLabel, getJumpStatData, getJumpTypeData, jumpTypeLabelSchema } from "@/lib/gokz"
 
 import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
 
-import { PlayerProfileOutletContext } from "."
+import type { PlayerProfileOutletContext } from "."
 
 import {
     createColumnHelper,
@@ -31,8 +31,8 @@ import {
     getPaginationRowModel,
     getSortedRowModel,
     useReactTable,
-    PaginationState,
-    OnChangeFn,
+    type PaginationState,
+    type OnChangeFn,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import {

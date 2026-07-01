@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import { CalendarIcon, LightningBoltIcon } from "@radix-ui/react-icons"
 
 import { useOutletContext } from "react-router-dom"
-import { MapLayoutOutletContext } from ".."
+import type { MapLayoutOutletContext } from ".."
 
 import { differenceInDays, format, millisecondsToMinutes } from "date-fns"
 

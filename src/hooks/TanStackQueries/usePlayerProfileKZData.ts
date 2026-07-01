@@ -1,9 +1,9 @@
 import { useQuery, queryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
-import { getGameModeID, GameMode, getKZRank, KZRank, TierID } from "@/lib/gokz"
+import { getGameModeID, type GameMode, getKZRank, type KZRank, type TierID } from "@/lib/gokz"
 
 import { fetchKZProfileMaps } from "./useKZProfileMaps"
-import { fetchPlayerTimes, RecordsTop } from "./usePlayerTimes"
+import { fetchPlayerTimes, type RecordsTop } from "./usePlayerTimes"
 
 export interface RecordsTopExtended extends RecordsTop {
     difficulty: TierID

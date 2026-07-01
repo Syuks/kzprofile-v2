@@ -5,7 +5,7 @@ import { useOutletContext } from "react-router-dom"
 import { cn, generateRandomString } from "@/lib/utils"
 import { useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { PlayerProfileOutletContext } from ".."
+import type { PlayerProfileOutletContext } from ".."
 
 import {
     tierAchievements,

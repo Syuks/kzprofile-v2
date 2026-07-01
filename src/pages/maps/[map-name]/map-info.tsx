@@ -11,8 +11,8 @@ import {
     getFileSizeString,
     getWorkshopLink,
 } from "@/lib/utils"
-import { TierData, getMapImageURL } from "@/lib/gokz"
-import { KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import { type TierData, getMapImageURL } from "@/lib/gokz"
+import type { KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 import useAutoResizeFont from "@/hooks/useAutoResizeFont"
 import { useLocalSettings } from "@/components/localsettings/localsettings-provider"
 

@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { format } from "date-fns"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Scatter } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"

@@ -4,7 +4,7 @@ import { DesktopIcon } from "@radix-ui/react-icons"
 
 import { getTimeString } from "@/lib/utils"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 

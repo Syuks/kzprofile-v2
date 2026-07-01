@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { format } from "date-fns"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Bubble } from "react-chartjs-2"
 import type { ChartConfiguration } from "chart.js"

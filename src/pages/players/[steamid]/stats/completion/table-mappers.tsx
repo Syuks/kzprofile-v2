@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import type { MapperData } from "./cards-mappers"
 

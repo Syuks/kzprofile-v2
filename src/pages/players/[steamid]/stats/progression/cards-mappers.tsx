@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { PersonIcon } from "@radix-ui/react-icons"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { MapperLink } from "@/components/maps/mappers-list"
 

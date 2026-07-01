@@ -2,9 +2,9 @@ import { useMemo } from "react"
 
 import { ArrowDownIcon, ArrowUpIcon, CircleIcon, RadiobuttonIcon } from "@radix-ui/react-icons"
 
-import { type Table } from "@tanstack/react-table"
+import type { Table } from "@tanstack/react-table"
 
-import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
+import type { KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { Button } from "@/components/ui/button"
 import {

@@ -1,6 +1,6 @@
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 
-import { Column, FilterFn, filterFns } from "@tanstack/react-table"
+import { type Column, type FilterFn, filterFns } from "@tanstack/react-table"
 
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"

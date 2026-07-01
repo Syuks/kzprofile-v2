@@ -5,7 +5,7 @@ import { StopwatchIcon } from "@radix-ui/react-icons"
 import { getTimeString } from "@/lib/utils"
 import { useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { RecordsTopStatistics, RecordTopStat } from "../stats"
+import type { RecordsTopStatistics, RecordTopStat } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 

@@ -1,6 +1,6 @@
 import { useOutletContext } from "react-router-dom"
 
-import { MapLayoutOutletContext } from ".."
+import type { MapLayoutOutletContext } from ".."
 
 import Map_CardWRs from "./cards-wrs"
 import Map_ChartLineWrHistory from "./chart-line-wr-history"

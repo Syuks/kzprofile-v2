@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect } from "react"
+import { type PropsWithChildren, useEffect } from "react"
 
 import {
     TextAlignLeftIcon,
@@ -13,7 +13,7 @@ import { Outlet, useParams, NavLink } from "react-router-dom"
 import useKZPlayer from "@/hooks/TanStackQueries/useKZPlayer"
 import useSteamProfiles from "@/hooks/TanStackQueries/useSteamProfiles"
 import usePlayerProfileKZData, {
-    PlayerProfileKZData,
+    type PlayerProfileKZData,
 } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
 import { useGameMode } from "@/components/localsettings/localsettings-provider"

@@ -4,7 +4,7 @@ import { Line } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"
 
 import { useOutletContext } from "react-router-dom"
-import { MapLayoutOutletContext } from ".."
+import type { MapLayoutOutletContext } from ".."
 
 import { getTimeString } from "@/lib/utils"
 import useMapDistributions from "@/hooks/TanStackQueries/useMapDistributions"

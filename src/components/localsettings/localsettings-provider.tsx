@@ -1,16 +1,16 @@
 import {
     createContext,
     useContext,
-    Dispatch,
-    SetStateAction,
-    PropsWithChildren,
+    type Dispatch,
+    type SetStateAction,
+    type PropsWithChildren,
     useEffect,
 } from "react"
 
 import { useSearchParams } from "react-router-dom"
 
-import { GameModeLabel, gameModeLabelSchema, RunType, runTypeSchema } from "@/lib/gokz"
-import { SteamPlayerSummary } from "@/hooks/TanStackQueries/useSteamProfiles"
+import { type GameModeLabel, gameModeLabelSchema, type RunType, runTypeSchema } from "@/lib/gokz"
+import type { SteamPlayerSummary } from "@/hooks/TanStackQueries/useSteamProfiles"
 
 import useLocalStorage from "@/hooks/useLocalStorage"
 

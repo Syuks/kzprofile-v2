@@ -1,4 +1,4 @@
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import Completion_CardCompletion from "./cards-completion"
 import Completion_CardFinishes from "./cards-finishes"

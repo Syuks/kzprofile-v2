@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 
 import { useGameMode } from "@/components/localsettings/localsettings-provider"
 import { fetchGlobalServerById } from "@/hooks/TanStackQueries/useGlobalServerById"
-import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
+import type { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 
 import { cn, getTimeString } from "@/lib/utils"

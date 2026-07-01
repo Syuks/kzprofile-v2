@@ -4,7 +4,7 @@ import { PersonIcon } from "@radix-ui/react-icons"
 
 import { getTimeString } from "@/lib/utils"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { MapperLink } from "@/components/maps/mappers-list"
 

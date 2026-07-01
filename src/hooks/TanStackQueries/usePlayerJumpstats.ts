@@ -1,8 +1,8 @@
 import { useInfiniteQuery, infiniteQueryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
-import { GlobalAPI_GetJumpstats, GetJumpstatsParams } from "./APIs/GlobalAPI"
+import { GlobalAPI_GetJumpstats, type GetJumpstatsParams } from "./APIs/GlobalAPI"
 
-import { JumpTypeID, JumpTypeLabel } from "@/lib/gokz"
+import type { JumpTypeID, JumpTypeLabel } from "@/lib/gokz"
 import { getSteam32 } from "@/lib/steamid"
 import z from "zod"
 

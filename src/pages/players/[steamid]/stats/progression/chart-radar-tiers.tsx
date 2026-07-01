@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { tierLabels, tiers } from "@/lib/gokz"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Radar } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"

@@ -8,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { useLocalSettings, Theme } from "@/components/localsettings/localsettings-provider"
+import { useLocalSettings, type Theme } from "@/components/localsettings/localsettings-provider"
 
 function ThemeToggle() {
     const [_localSettings, setLocalSettings] = useLocalSettings()

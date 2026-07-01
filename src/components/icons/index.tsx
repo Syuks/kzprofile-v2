@@ -1,6 +1,6 @@
 import { forwardRef } from "react"
 
-import { IconProps } from "@radix-ui/react-icons/dist/types"
+import type { IconProps } from "@radix-ui/react-icons/dist/types"
 
 export const SteamIcon = forwardRef<SVGSVGElement, IconProps>(
     ({ color = "currentColor", ...props }, forwardedRef) => {

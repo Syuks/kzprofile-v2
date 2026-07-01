@@ -2,7 +2,7 @@ import { useMemo } from "react"
 
 import { DesktopIcon } from "@radix-ui/react-icons"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 

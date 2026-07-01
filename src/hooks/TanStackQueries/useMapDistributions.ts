@@ -3,9 +3,9 @@ import { queryClient } from "@/main"
 
 import {
     GlobalAPI_GetRecordFilterDistributions,
-    GetRecordFilterDistributionsParams,
+    type GetRecordFilterDistributionsParams,
 } from "./APIs/GlobalAPI"
-import { getGameModeID, GameMode } from "@/lib/gokz"
+import { getGameModeID, type GameMode } from "@/lib/gokz"
 
 interface MapDistributions {
     record_filter_id: number

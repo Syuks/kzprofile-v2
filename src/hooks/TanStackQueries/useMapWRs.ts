@@ -1,8 +1,8 @@
 import { useQuery, queryOptions } from "@tanstack/react-query"
 import { queryClient } from "@/main"
-import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
+import { GlobalAPI_GetRecordsTopRecent, type GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
 
-import { getGameModeName, GameMode } from "@/lib/gokz"
+import { getGameModeName, type GameMode } from "@/lib/gokz"
 
 interface RecordsTopRecent {
     id: number

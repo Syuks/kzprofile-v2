@@ -17,7 +17,7 @@ import { Link } from "react-router-dom"
 import { format } from "date-fns"
 
 import { cn, getFileSizeString, getWorkshopLink } from "@/lib/utils"
-import { getGameModeID, getGameModeName, getMapImageURL, getTierData, TierData } from "@/lib/gokz"
+import { getGameModeID, getGameModeName, getMapImageURL, getTierData, type TierData } from "@/lib/gokz"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 import { useGameMode } from "../localsettings/localsettings-provider"
 

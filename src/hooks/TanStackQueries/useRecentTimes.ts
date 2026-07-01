@@ -1,6 +1,6 @@
 import { useQuery, queryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
-import { GlobalAPI_GetRecordsTopRecent, GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
+import { GlobalAPI_GetRecordsTopRecent, type GetRecordsTopRecentParams } from "./APIs/GlobalAPI"
 import { SteamAPI_GetProfiles } from "./APIs/KZProfileAPI"
 
 import { getGameModeName, type GameMode, type RunType } from "@/lib/gokz"

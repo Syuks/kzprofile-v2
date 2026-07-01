@@ -4,7 +4,7 @@ import { PlusCircledIcon } from "@radix-ui/react-icons"
 
 import { format, isAfter, isBefore, isSameDay } from "date-fns"
 
-import { Column, Row } from "@tanstack/react-table"
+import type { Column, Row } from "@tanstack/react-table"
 
 import { Badge } from "@/components/ui/badge"
 import { Button, buttonVariants } from "@/components/ui/button"

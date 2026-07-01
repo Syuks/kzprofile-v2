@@ -5,7 +5,7 @@ import { Pencil1Icon, StopwatchIcon, VideoIcon } from "@radix-ui/react-icons"
 import { Link } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
-import { getGameModeID, getMapImageURL, getTierData, TierData } from "@/lib/gokz"
+import { getGameModeID, getMapImageURL, getTierData, type TierData } from "@/lib/gokz"
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
 import { useGameMode } from "@/components/localsettings/localsettings-provider"
 

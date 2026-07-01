@@ -3,9 +3,9 @@ import { useMemo } from "react"
 import { StopwatchIcon, ImageIcon } from "@radix-ui/react-icons"
 
 import { useRunType } from "@/components/localsettings/localsettings-provider"
-import { RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
+import type { RecordsTopExtended } from "@/hooks/TanStackQueries/usePlayerProfileKZData"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 

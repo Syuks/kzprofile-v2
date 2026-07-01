@@ -2,10 +2,10 @@ import { useMemo } from "react"
 
 import { format } from "date-fns"
 
-import { KZRank, getKZRank } from "@/lib/gokz"
+import { type KZRank, getKZRank } from "@/lib/gokz"
 import { useGameMode, useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Line } from "react-chartjs-2"
 import type { ChartOptions, ChartData } from "chart.js"

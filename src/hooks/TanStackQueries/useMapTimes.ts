@@ -1,6 +1,6 @@
 import { useInfiniteQuery, infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query"
 import { queryClient } from "@/main"
-import { GlobalAPI_GetRecordsTop, GetRecordsTopParams } from "./APIs/GlobalAPI"
+import { GlobalAPI_GetRecordsTop, type GetRecordsTopParams } from "./APIs/GlobalAPI"
 
 import { getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
 

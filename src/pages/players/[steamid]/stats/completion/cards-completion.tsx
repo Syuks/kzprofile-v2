@@ -3,10 +3,10 @@ import { useMemo } from "react"
 import { CheckCircledIcon, CrossCircledIcon, LapTimerIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
-import { TierID, getTierData, tiers, type TierData } from "@/lib/gokz"
+import { type TierID, getTierData, tiers, type TierData } from "@/lib/gokz"
 import { useRunType } from "@/components/localsettings/localsettings-provider"
 
-import { RecordsTopStatistics } from "../stats"
+import type { RecordsTopStatistics } from "../stats"
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 

@@ -2,7 +2,7 @@ import { EnvelopeClosedIcon } from "@radix-ui/react-icons"
 
 import { Link, useOutletContext } from "react-router-dom"
 
-import { MapLayoutOutletContext } from "."
+import type { MapLayoutOutletContext } from "."
 
 import MapVideoGallery from "@/components/maps/map-video-gallery"
 

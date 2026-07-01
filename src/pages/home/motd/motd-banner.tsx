@@ -6,7 +6,7 @@ import { cn, type TimeUntilMidnightString, timeUntilMidnightString } from "@/lib
 import { getTierData } from "@/lib/gokz"
 
 import { type KZProfileMap } from "@/hooks/TanStackQueries/useKZProfileMaps"
-import { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
+import type { RecordsTopRecentWithSteamProfile } from "@/hooks/TanStackQueries/useRecentTimes"
 
 import MapBanner from "@/pages/maps/[map-name]/map-banner"
 import { Separator } from "@/components/ui/separator"

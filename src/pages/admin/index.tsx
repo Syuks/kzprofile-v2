@@ -18,10 +18,10 @@ import {
     getFacetedUniqueValues,
     getFacetedRowModel,
     getFacetedMinMaxValues,
-    Column,
+    type Column,
 } from "@tanstack/react-table"
 
-import { GameModeID, type TierID } from "@/lib/gokz"
+import type { GameModeID, TierID } from "@/lib/gokz"
 import { getFileSizeString } from "@/lib/utils"
 
 import MapsSorting from "@/components/maps/maps-sorting"
