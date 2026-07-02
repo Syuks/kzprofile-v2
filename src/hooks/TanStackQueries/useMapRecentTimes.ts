@@ -49,6 +49,9 @@ const mapRecentTimesQueryOptions = (
 
             const apiResponse = await GlobalAPI_GetRecordsTopRecent(params)
             const apiJson: RecordsTopRecent[] = await apiResponse.json()
+            if (!apiJson.length) {
+                return []
+            }
 
             const steamIds = apiJson.map((record) => record.steamid64)
             const steamResponse = await SteamAPI_GetProfiles(steamIds)

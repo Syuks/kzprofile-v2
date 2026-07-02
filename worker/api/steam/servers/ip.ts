@@ -1,9 +1,4 @@
-//Endpoint: https://api.steampowered.com/IGameServersService/GetServerList/v1/?key={key}&format=json&filter=appid\730\map\{map}
-//Filters: https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter
-
-interface Env {
-    STEAM_API_KEY: string
-}
+import { Hono } from "hono";
 
 interface SteamServer {
     addr: string
@@ -25,12 +20,14 @@ interface SteamServer {
     version: string
 }
 
-export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
-    if (!env.STEAM_API_KEY) {
+export const steamServersIp = new Hono<{Bindings: Env}>()
+
+steamServersIp.get("/", async (c) => {
+  if (!c.env.STEAM_API_KEY) {
         throw new Error("STEAM API KEY not set as evironment variable.")
     }
 
-    const ip = new URL(request.url).searchParams.get("ip")
+    const ip = c.req.query("ip")
 
     if (!ip) {
         throw new Error("Please provide a server IP address in the query parameter 'ip'")
@@ -38,7 +35,7 @@ export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
 
     const url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
     const queryParams = {
-        key: env.STEAM_API_KEY,
+        key: c.env.STEAM_API_KEY,
         format: "json",
         filter: `appid\\730\\addr\\${ip}`,
     }
@@ -52,5 +49,5 @@ export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
 
     const data: { response: { servers: SteamServer[] } } = await response.json()
 
-    return new Response(JSON.stringify(data.response.servers))
-}
+    return c.json(data.response.servers)
+});

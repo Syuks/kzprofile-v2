@@ -1,9 +1,4 @@
-//Endpoint: https://api.steampowered.com/IGameServersService/GetServerList/v1/?key={key}&format=json&filter=appid\730\map\{map}
-//Filters: https://developer.valvesoftware.com/wiki/Master_Server_Query_Protocol#Filter
-
-interface Env {
-    STEAM_API_KEY: string
-}
+import { Hono } from "hono";
 
 interface SteamServer {
     addr: string
@@ -25,26 +20,27 @@ interface SteamServer {
     version: string
 }
 
-export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
-    if (!env.STEAM_API_KEY) {
+export const steamServersMap = new Hono<{Bindings: Env}>()
+
+steamServersMap.get("/", async (c) => {
+  if (!c.env.STEAM_API_KEY) {
         throw new Error("STEAM API KEY not set as environment variable.")
     }
 
     const url = "https://api.steampowered.com/IGameServersService/GetServerList/v1/"
-    const params = new URL(request.url).searchParams
+    
+    const mapName = c.req.query("mapName")
+    const workshopId = c.req.query("workshopId")
 
-    const mapName = params.get("mapName")
     if (!mapName) {
         throw new Error("Please provide a map name in the query parameter 'mapName'")
     }
 
-    const workshopId = params.get("workshopId")
-
-    const queries = [`key=${env.STEAM_API_KEY}&format=json&filter=appid\\730\\map\\${mapName}`]
+    const queries = [`key=${c.env.STEAM_API_KEY}&format=json&filter=appid\\730\\map\\${mapName}`]
 
     if (workshopId) {
         queries.push(
-            `key=${env.STEAM_API_KEY}&format=json&filter=appid\\730\\map\\/${workshopId}/${mapName}`,
+            `key=${c.env.STEAM_API_KEY}&format=json&filter=appid\\730\\map\\/${workshopId}/${mapName}`,
         )
     }
 
@@ -67,11 +63,9 @@ export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
             }
         }
 
-        return new Response(JSON.stringify(servers), {
-            headers: { "Content-Type": "application/json" },
-        })
+        return c.json(servers)
     } catch (error) {
         console.error("Unexpected error:", error)
-        return new Response("An error occurred while fetching server data.", { status: 500 })
+        return c.json({error: "An error occurred while fetching server data."}, 500)
     }
-}
+});

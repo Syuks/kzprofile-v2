@@ -1,6 +1,4 @@
-interface Env {
-    STEAM_API_KEY: string
-}
+import { Hono } from "hono";
 
 interface PlayerSummary {
     steamid: string
@@ -18,12 +16,14 @@ interface PlayerSummary {
     locstatecode: string
 }
 
-export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
-    if (!env.STEAM_API_KEY) {
+export const steamProfiles = new Hono<{Bindings: Env}>()
+
+steamProfiles.get("/", async (c) => {
+  if (!c.env.STEAM_API_KEY) {
         throw new Error("STEAM API KEY not set as evironment variable.")
     }
 
-    const steamids = new URL(request.url).searchParams.getAll("steamids")
+    const steamids = c.req.query("steamids")?.split(",").filter(Boolean) ?? []
 
     if (steamids.length === 0) {
         throw new Error("Please provide Steam IDs in the query parameter 'steamids'")
@@ -32,7 +32,7 @@ export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
     const url = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/"
     const queryParams = {
         steamids: steamids.toString(),
-        key: env.STEAM_API_KEY,
+        key: c.env.STEAM_API_KEY,
     }
     const queryString = new URLSearchParams(queryParams).toString()
 
@@ -44,5 +44,5 @@ export const onRequest: PagesFunction<Env> = async ({ env, request }) => {
 
     const data: { response: { players: PlayerSummary[] } } = await response.json()
 
-    return new Response(JSON.stringify(data.response.players))
-}
+    return c.json(data.response.players)
+});
