@@ -14,15 +14,11 @@ maps.get("/", async (c) => {
   let d = new Date()
   const cacheMaxAge = Math.floor(-(d.getTime() - d.setHours(24, 0, 0, 0)) / 1000)
 
-  const maps = await c.env.KZPROFILE.get("maps-v2")
+  const mapsJson = await c.env.KZPROFILE.get("maps-v2")
 
-  if (!maps) {
-    return c.json([], 200, {
-      "Cache-Control": `max-age=${cacheMaxAge}`,
-    })
-  }
+  const body = mapsJson ? JSON.parse(mapsJson) : []
 
-  return c.json(JSON.parse(maps), 200, {
-    "Cache-Control": `max-age=${cacheMaxAge}`,
+  return c.json(body, 200, {
+    "Cache-Control": `public, max-age=${cacheMaxAge}`,
   })
 });
