@@ -35,8 +35,8 @@ function MapOfTheDayLeaderboard({
 }: MapOfTheDayLeaderboardProps) {
     const [gameMode] = useGameMode()
 
-    const mapHasFilter = useMemo(
-        () => mapOfTheDay?.filters.includes(getGameModeID(gameMode)),
+    const mapHasFilter = useMemo<boolean>(
+        () => mapOfTheDay?.filters.includes(getGameModeID(gameMode)) ?? false,
         [mapOfTheDay, gameMode],
     )
 
