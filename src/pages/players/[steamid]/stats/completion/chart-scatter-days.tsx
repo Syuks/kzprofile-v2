@@ -64,8 +64,24 @@ function Completion_ChartScatterDays({
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        title: (context) => format(context[0].parsed.x, "MMM do, yyyy"),
-                        label: (context) => `Finishes: ${context.parsed.y}`,
+                        title: (context) => {
+                            const timestamp = context[0]?.parsed.x
+
+                            if (timestamp === null || timestamp === undefined) {
+                                return ""
+                            }
+
+                            return format(timestamp, "MMM do, yyyy")
+                        },
+                        label: (context) => {
+                            const finishes = context.parsed.y
+
+                            if (finishes === null) {
+                                return ""
+                            }
+
+                            return `Finishes: ${finishes}`
+                        },
                     },
                 },
             },

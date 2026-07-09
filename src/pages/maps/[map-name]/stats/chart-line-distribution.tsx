@@ -86,9 +86,22 @@ function Map_ChartLineDistribution({ className }: Map_ChartLineDistributionProps
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        title: (context) => `Time: ${getTimeString(context[0].parsed.x)}`,
+                        title: (context) => {
+                            const time = context[0]?.parsed.x
+
+                            if (time === null || time === undefined) {
+                                return ""
+                            }
+
+                            return `Time: ${getTimeString(time)}`
+                        },
                         label: (context) => {
                             const raw = context.raw as { x: number; y: number; percentile: number }
+
+                            if (raw.percentile === undefined) {
+                                return ""
+                            }
+
                             return `${context.dataset.label}: Top ${Math.ceil((1 - raw.percentile) * 100)} %`
                         },
                     },

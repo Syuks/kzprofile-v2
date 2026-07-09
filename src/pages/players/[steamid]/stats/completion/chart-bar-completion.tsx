@@ -71,7 +71,15 @@ function Completion_ChartBarCompletion({
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        label: (context) => `Completion: ${context.parsed.y.toFixed(3)} %`,
+                        label: (context) => {
+                            const completion = context.parsed.y
+
+                            if (completion === null) {
+                                return ""
+                            }
+
+                            return `Completion: ${completion.toFixed(3)} %`
+                        },
                     },
                 },
             },

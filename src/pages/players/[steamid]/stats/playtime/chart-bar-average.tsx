@@ -76,7 +76,13 @@ function Playtime_ChartBarAverage({
                     displayColors: false,
                     callbacks: {
                         label: (context) => {
-                            return `Average time: ${getTimeString(context.parsed.y)}`
+                            const averageTime = context.parsed.y
+
+                            if (averageTime === null) {
+                                return ""
+                            }
+
+                            return `Average time: ${getTimeString(averageTime)}`
                         },
                     },
                 },

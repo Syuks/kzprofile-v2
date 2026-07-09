@@ -86,9 +86,24 @@ function Map_ChartLinePercentile({ className }: Map_ChartLinePercentileProps) {
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        title: (context) => `Time: ${getTimeString(context[0].parsed.x)}`,
-                        label: (context) =>
-                            `${context.dataset.label}: Top ${Math.ceil((1 - context.parsed.y) * 100)} %`,
+                        title: (context) => {
+                            const time = context[0]?.parsed.x
+
+                            if (time === null || time === undefined) {
+                                return ""
+                            }
+
+                            return `Time: ${getTimeString(time)}`
+                        },
+                        label: (context) => {
+                            const percentile = context.parsed.y
+
+                            if (percentile === null) {
+                                return ""
+                            }
+
+                            return `${context.dataset.label}: Top ${Math.ceil((1 - percentile) * 100)} %`
+                        },
                     },
                 },
             },

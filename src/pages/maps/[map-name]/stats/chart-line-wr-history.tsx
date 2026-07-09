@@ -94,10 +94,24 @@ function Map_ChartLineWrHistory({ className }: Map_ChartLineWrHistoryProps) {
                         caretSize: 0,
                         displayColors: false,
                         callbacks: {
-                            beforeTitle: (context) =>
-                                recordsChartData[context[0].dataIndex].player_name,
+                            beforeTitle: (context) => {
+                                const dataIndex = context[0]?.dataIndex
+
+                                if (dataIndex === undefined) {
+                                    return ""
+                                }
+
+                                return recordsChartData[dataIndex]?.player_name ?? ""
+                            },
                             label: (context) => {
-                                return `${recordsChartData[context.dataIndex].teleports === 0 ? "PRO" : "TP"}: ${getTimeString(context.parsed.y)}`
+                                const time = context.parsed.y
+                                const record = recordsChartData[context.dataIndex]
+
+                                if (time === null || record === undefined) {
+                                    return ""
+                                }
+
+                                return `${record.teleports === 0 ? "PRO" : "TP"}: ${getTimeString(time)}`
                             },
                         },
                     },
