@@ -1,28 +1,21 @@
-/*export default {
-  fetch(request) {
-    const url = new URL(request.url);
+import { Hono } from "hono"
 
-    if (url.pathname.startsWith("/api/")) {
-      return Response.json({
-        name: "Cloudflare",
-      });
-    }
-		return new Response(null, { status: 404 });
-  },
-} satisfies ExportedHandler<Env>;
-*/
-
-import { Hono } from 'hono'
 import { maps } from "./api/maps.ts"
 import { steamProfiles } from "./api/steam/profiles.ts"
 import { steamServersIp } from "./api/steam/servers/ip.ts"
 import { steamServersMap } from "./api/steam/servers/map.ts"
+import { syncMaps } from "./sync-maps.ts"
 
-const app = new Hono()
+const app = new Hono<{ Bindings: Env }>()
 
-app.route("/api/maps", maps);
-app.route("/api/steam/profiles", steamProfiles);
-app.route("/api/steam/servers/ip", steamServersIp);
-app.route("/api/steam/servers/map", steamServersMap);
+app.route("/api/maps", maps)
+app.route("/api/steam/profiles", steamProfiles)
+app.route("/api/steam/servers/ip", steamServersIp)
+app.route("/api/steam/servers/map", steamServersMap)
 
-export default app
+export default {
+  fetch: app.fetch,
+  scheduled: async (_event, env, ctx) => {
+    ctx.waitUntil(syncMaps(env))
+  },
+} satisfies ExportedHandler<Env>

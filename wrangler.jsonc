@@ -17,6 +17,11 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
+	"triggers": {
+		"crons": [
+			"0 0 * * *"
+		]
+	},
   "kv_namespaces": [
     {
       "binding": "KZPROFILE",
