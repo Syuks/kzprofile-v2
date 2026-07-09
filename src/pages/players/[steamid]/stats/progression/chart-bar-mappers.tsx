@@ -90,7 +90,13 @@ function Progression_ChartBarMappers({
                     displayColors: false,
                     callbacks: {
                         label: (context) => {
-                            return `Points: ${context.parsed.y.toLocaleString()}`
+                            const points = context.parsed.y
+
+                            if (points === null) {
+                                return ""
+                            }
+
+                            return `Points: ${points.toLocaleString()}`
                         },
                     },
                 },

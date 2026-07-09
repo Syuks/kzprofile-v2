@@ -69,7 +69,15 @@ function Progression_ChartBarTiersAverage({
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        label: (context) => `Average: ${context.parsed.y.toFixed(2)}`,
+                        label: (context) => {
+                            const average = context.parsed.y
+
+                            if (average === null) {
+                                return ""
+                            }
+
+                            return `Average: ${average.toFixed(2)}`
+                        },
                     },
                 },
             },

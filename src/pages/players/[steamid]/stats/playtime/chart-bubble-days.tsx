@@ -85,10 +85,33 @@ function Playtime_ChartBubbleDays({
                         caretSize: 0,
                         displayColors: false,
                         callbacks: {
-                            title: (context) => format(context[0].parsed.x, "MMM do, yyyy"),
-                            label: (context) =>
-                                `Playtime: ${getTimeString(playtimePerDay[context.dataIndex])}`,
-                            footer: (context) => `Finishes: ${context[0].parsed.y}`,
+                            title: (context) => {
+                                const timestamp = context[0]?.parsed.x
+
+                                if (timestamp === null || timestamp === undefined) {
+                                    return ""
+                                }
+
+                                return format(timestamp, "MMM do, yyyy")
+                            },
+                            label: (context) => {
+                                const playtime = playtimePerDay[context.dataIndex]
+
+                                if (playtime === undefined) {
+                                    return ""
+                                }
+
+                                return `Playtime: ${getTimeString(playtime)}`
+                            },
+                            footer: (context) => {
+                                const finishes = context[0]?.parsed.y
+
+                                if (finishes === null || finishes === undefined) {
+                                    return ""
+                                }
+
+                                return `Finishes: ${finishes}`
+                            },
                         },
                     },
                 },
