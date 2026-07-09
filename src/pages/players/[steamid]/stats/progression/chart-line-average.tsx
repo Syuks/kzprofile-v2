@@ -92,8 +92,24 @@ function Progression_ChartLineAverage({
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        title: (context) => format(context[0].parsed.x, "MMM do, yyyy"),
-                        label: (context) => `Average: ${context.parsed.y.toFixed(2)}`,
+                        title: (context) => {
+                            const timestamp = context[0]?.parsed.x
+
+                            if (timestamp === null || timestamp === undefined) {
+                                return ""
+                            }
+
+                            return format(timestamp, "MMM do, yyyy")
+                        },
+                        label: (context) => {
+                            const average = context.parsed.y
+
+                            if (average === null) {
+                                return ""
+                            }
+
+                            return `Average: ${average.toFixed(2)}`
+                        },
                     },
                 },
             },

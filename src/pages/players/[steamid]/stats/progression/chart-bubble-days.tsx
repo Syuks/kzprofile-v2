@@ -79,10 +79,26 @@ function Progression_ChartBubbleDays({
                         caretSize: 0,
                         displayColors: false,
                         callbacks: {
-                            title: (context) => format(context[0].parsed.x, "MMM do, yyyy"),
+                            title: (context) => {
+                                const timestamp = context[0]?.parsed.x
+
+                                if (timestamp === null || timestamp === undefined) {
+                                    return ""
+                                }
+
+                                return format(timestamp, "MMM do, yyyy")
+                            },
                             label: (context) =>
                                 `Points: ${pointsPerDay[context.dataIndex].toLocaleString()}`,
-                            footer: (context) => `Finishes: ${context[0].parsed.y}`,
+                            footer: (context) => {
+                                const finishes = context[0]?.parsed.y
+
+                                if (finishes === null || finishes === undefined) {
+                                    return ""
+                                }
+
+                                return `Finishes: ${finishes}`
+                            },
                         },
                     },
                 },

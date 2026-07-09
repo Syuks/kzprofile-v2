@@ -101,8 +101,24 @@ function Progression_ChartLineRank({
                     caretSize: 0,
                     displayColors: false,
                     callbacks: {
-                        title: (context) => format(context[0].parsed.x, "MMM do, yyyy"),
-                        label: (context) => `Rank: ${getKZRank(gameMode, context.parsed.y).label}`,
+                        title: (context) => {
+                            const timestamp = context[0]?.parsed.x
+
+                            if (timestamp === null || timestamp === undefined) {
+                                return ""
+                            }
+
+                            return format(timestamp, "MMM do, yyyy")
+                        },
+                        label: (context) => {
+                            const points = context.parsed.y
+
+                            if (points === null) {
+                                return ""
+                            }
+
+                            return `Rank: ${getKZRank(gameMode, points).label}`
+                        },
                     },
                 },
             },

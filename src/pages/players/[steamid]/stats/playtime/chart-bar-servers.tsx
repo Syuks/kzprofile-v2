@@ -98,7 +98,13 @@ function Playtime_ChartBarServers({
                     displayColors: false,
                     callbacks: {
                         label: (context) => {
-                            return `Playtime: ${getTimeString(context.parsed.y)}`
+                            const playtime = context.parsed.y
+
+                            if (playtime === null) {
+                                return ""
+                            }
+
+                            return `Playtime: ${getTimeString(playtime)}`
                         },
                     },
                 },
