@@ -1,14 +1,15 @@
-import { Hono } from "hono";
-//import kzProfileMaps from "../../data/maps.json"
+import { Hono } from "hono"
 
-export const maps = new Hono<{Bindings: Env}>()
+//import kzProfileMaps from "../../data/maps.json" with { type: "json" }
+
+export const maps = new Hono<{ Bindings: Env }>()
 
 maps.get("/", async (c) => {
   // In Cloudflare Pages, local development uses local storage.
   // It cannot access data stored on Cloudflare’s servers.
   // KV must be seeded:
 
-  //await env.KZPROFILE.put("maps-v2", JSON.stringify(kzProfileMaps))
+  //await c.env.KZPROFILE.put("maps-v2", JSON.stringify(kzProfileMaps))
 
   // Cache the "maps-v2" KV until midnight UTC.
   let d = new Date()
@@ -21,4 +22,4 @@ maps.get("/", async (c) => {
   return c.json(body, 200, {
     "Cache-Control": `public, max-age=${cacheMaxAge}`,
   })
-});
+})

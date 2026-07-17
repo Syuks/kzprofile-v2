@@ -1,49 +1,49 @@
 import {
-    createContext,
-    useContext,
-    type Dispatch,
-    type SetStateAction,
-    type PropsWithChildren,
-    useEffect,
+  createContext,
+  useContext,
+  type Dispatch,
+  type SetStateAction,
+  type PropsWithChildren,
+  useEffect,
 } from "react"
-
 import { useSearchParams } from "react-router-dom"
 
-import { type GameModeLabel, gameModeLabelSchema, type RunType, runTypeSchema } from "@/lib/gokz"
 import type { SteamPlayerSummary } from "@/hooks/TanStackQueries/useSteamProfiles"
-
 import useLocalStorage from "@/hooks/useLocalStorage"
+import { type GameModeLabel, gameModeLabelSchema, type RunType, runTypeSchema } from "@/lib/gokz"
 
 export type Theme = "dark" | "light" | "system"
 
 export type LocalSettings = {
-    steamPlayerSummary: SteamPlayerSummary | undefined
-    theme: Theme
-    modeChooserType: "pro-tp" | "pro-nub"
-    mode: GameModeLabel
-    type: RunType
-    defaultSortOrderYours: "points" | "created_at"
-    defaultSortOrderOthers: "points" | "created_at"
-    defaultProfilePage: boolean
-    dateFormat: "yyyy-MM-dd" | "MM-dd-yyyy" | "dd-MM-yyyy"
-    tablePageSize: number
-    favoriteServers: string[]
+  steamPlayerSummary: SteamPlayerSummary | undefined
+  theme: Theme
+  modeChooserType: "pro-tp" | "pro-nub"
+  mode: GameModeLabel
+  type: RunType
+  defaultSortOrderYours: "points" | "created_at"
+  defaultSortOrderOthers: "points" | "created_at"
+  defaultProfilePage: boolean
+  dateFormat: "yyyy-MM-dd" | "MM-dd-yyyy" | "dd-MM-yyyy"
+  tablePageSize: number
+  favoriteServers: string[]
+  gokzTop: boolean
 }
 
 type LocalSettingsContextType = [LocalSettings, Dispatch<SetStateAction<LocalSettings>>]
 
 const defaultLocalSettings: LocalSettings = {
-    steamPlayerSummary: undefined,
-    theme: "dark",
-    modeChooserType: "pro-tp",
-    mode: "kz_timer",
-    type: "pro",
-    defaultSortOrderYours: "points",
-    defaultSortOrderOthers: "points",
-    defaultProfilePage: false,
-    dateFormat: "yyyy-MM-dd",
-    tablePageSize: 20,
-    favoriteServers: [],
+  steamPlayerSummary: undefined,
+  theme: "dark",
+  modeChooserType: "pro-tp",
+  mode: "kz_timer",
+  type: "pro",
+  defaultSortOrderYours: "points",
+  defaultSortOrderOthers: "points",
+  defaultProfilePage: false,
+  dateFormat: "yyyy-MM-dd",
+  tablePageSize: 20,
+  favoriteServers: [],
+  gokzTop: false,
 }
 
 const LOCAL_SETTINGS_KEY = "localSettings-v1"
@@ -51,107 +51,111 @@ const LOCAL_SETTINGS_KEY = "localSettings-v1"
 const LocalSettingsContext = createContext<LocalSettingsContextType | undefined>(undefined)
 
 export const LocalSettingsProvider = ({ children }: PropsWithChildren) => {
-    const [localSettings, setLocalSettings] = useLocalStorage<LocalSettings>(
-        LOCAL_SETTINGS_KEY,
-        defaultLocalSettings,
-    )
+  const [localSettings, setLocalSettings] = useLocalStorage<LocalSettings>(
+    LOCAL_SETTINGS_KEY,
+    defaultLocalSettings,
+  )
 
-    useEffect(() => {
-        const root = window.document.documentElement
+  if (localSettings.gokzTop === undefined) {
+    setLocalSettings({ ...localSettings, gokzTop: false })
+  }
 
-        root.classList.remove("light", "dark")
+  useEffect(() => {
+    const root = window.document.documentElement
 
-        if (localSettings.theme === "system") {
-            const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
-                ? "dark"
-                : "light"
+    root.classList.remove("light", "dark")
 
-            root.classList.add(systemTheme)
-            root.style.colorScheme = systemTheme
-            return
-        }
+    if (localSettings.theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
 
-        root.classList.add(localSettings.theme)
-        root.style.colorScheme = localSettings.theme
-    }, [localSettings.theme])
+      root.classList.add(systemTheme)
+      root.style.colorScheme = systemTheme
+      return
+    }
 
-    return (
-        <LocalSettingsContext.Provider value={[localSettings, setLocalSettings]}>
-            {children}
-        </LocalSettingsContext.Provider>
-    )
+    root.classList.add(localSettings.theme)
+    root.style.colorScheme = localSettings.theme
+  }, [localSettings.theme])
+
+  return (
+    <LocalSettingsContext.Provider value={[localSettings, setLocalSettings]}>
+      {children}
+    </LocalSettingsContext.Provider>
+  )
 }
 
 // Context Hooks
 
 export const useLocalSettings = (): [LocalSettings, (val: Partial<LocalSettings>) => void] => {
-    const context = useContext(LocalSettingsContext)
+  const context = useContext(LocalSettingsContext)
 
-    if (context === undefined) {
-        throw new Error("useLocalSettings must be used within a LocalSettingsProvider")
-    }
-    const [localSettings, setLocalSettings] = context
+  if (context === undefined) {
+    throw new Error("useLocalSettings must be used within a LocalSettingsProvider")
+  }
+  const [localSettings, setLocalSettings] = context
 
-    const updateLocalSettings = (newLocalSettings: Partial<LocalSettings>) => {
-        setLocalSettings((oldLocalSettings) => {
-            return {
-                ...oldLocalSettings,
-                ...newLocalSettings,
-            }
-        })
-    }
+  const updateLocalSettings = (newLocalSettings: Partial<LocalSettings>) => {
+    setLocalSettings((oldLocalSettings) => {
+      return {
+        ...oldLocalSettings,
+        ...newLocalSettings,
+      }
+    })
+  }
 
-    return [localSettings, updateLocalSettings]
+  return [localSettings, updateLocalSettings]
 }
 
 export const useGameMode = (): [GameModeLabel, (val: GameModeLabel) => void] => {
-    const [localSettings, setLocalSettings] = useLocalSettings()
-    const [searchParams] = useSearchParams()
+  const [localSettings, setLocalSettings] = useLocalSettings()
+  const [searchParams] = useSearchParams()
 
-    // Override localSettings.mode with searchParams "mode"
-    useEffect(() => {
-        const value =
-            searchParams.get("mode") ||
-            searchParams.get("game_mode") ||
-            searchParams.get("gameMode") ||
-            searchParams.get("game")
+  // Override localSettings.mode with searchParams "mode"
+  useEffect(() => {
+    const value =
+      searchParams.get("mode") ||
+      searchParams.get("game_mode") ||
+      searchParams.get("gameMode") ||
+      searchParams.get("game")
 
-        const result = gameModeLabelSchema.safeParse(value)
-        if (result.success) {
-            setLocalSettings({ mode: value } as { mode: GameModeLabel })
-        }
-    }, [searchParams])
-
-    const updateGameMode = (newMode: GameModeLabel) => {
-        setLocalSettings({ mode: newMode })
+    const result = gameModeLabelSchema.safeParse(value)
+    if (result.success) {
+      setLocalSettings({ mode: value } as { mode: GameModeLabel })
     }
+  }, [searchParams])
 
-    return [localSettings.mode, updateGameMode]
+  const updateGameMode = (newMode: GameModeLabel) => {
+    setLocalSettings({ mode: newMode })
+  }
+
+  return [localSettings.mode, updateGameMode]
 }
 
 export const useRunType = (): [RunType, (val: RunType) => void] => {
-    const [localSettings, setLocalSettings] = useLocalSettings()
-    const [searchParams] = useSearchParams()
+  const [localSettings, setLocalSettings] = useLocalSettings()
+  const [searchParams] = useSearchParams()
 
-    // Override localSettings.type with searchParams "type"
-    useEffect(() => {
-        const value =
-            searchParams.get("type") ||
-            searchParams.get("run_type") ||
-            searchParams.get("runType") ||
-            searchParams.get("run")
+  // Override localSettings.type with searchParams "type"
+  useEffect(() => {
+    const value =
+      searchParams.get("type") ||
+      searchParams.get("run_type") ||
+      searchParams.get("runType") ||
+      searchParams.get("run")
 
-        const result = runTypeSchema.safeParse(value)
-        if (result.success) {
-            setLocalSettings({ type: value } as { type: RunType })
-        }
-    }, [searchParams])
-
-    const updateRunType = (newType: RunType) => {
-        setLocalSettings({ type: newType })
+    const result = runTypeSchema.safeParse(value)
+    if (result.success) {
+      setLocalSettings({ type: value } as { type: RunType })
     }
+  }, [searchParams])
 
-    return [localSettings.type, updateRunType]
+  const updateRunType = (newType: RunType) => {
+    setLocalSettings({ type: newType })
+  }
+
+  return [localSettings.type, updateRunType]
 }
 
 export const fetchLocalSettings = () => {}

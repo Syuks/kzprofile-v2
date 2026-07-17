@@ -1,100 +1,104 @@
 import { useInfiniteQuery, infiniteQueryOptions, keepPreviousData } from "@tanstack/react-query"
-import { queryClient } from "@/main"
-import { GlobalAPI_GetRecordsTop, type GetRecordsTopParams } from "./APIs/GlobalAPI"
 
 import { getGameModeName, type GameMode, type RunType } from "@/lib/gokz"
+import { queryClient } from "@/main"
 
+import { GlobalAPI_GetRecordsTop, type GetRecordsTopParams } from "./APIs/GlobalAPI"
 import { type RecordsTop } from "./usePlayerTimes"
 
 export interface MapRecordsTop extends RecordsTop {
-    place: number
+  place: number
 }
 
 const mapTimesInfiniteQueryOptions = (
-    mapName: string,
-    gameMode: GameMode,
-    runType: RunType,
-    stage: number,
-    pageSize: number,
+  mapName: string,
+  gameMode: GameMode,
+  runType: RunType,
+  stage: number,
+  pageSize: number,
+  gokzTop: boolean = false,
 ) => {
-    return infiniteQueryOptions({
-        queryKey: ["mapTimes", mapName, gameMode, runType, stage, pageSize],
-        queryFn: async ({ pageParam }) => {
-            let params: GetRecordsTopParams = {
-                map_name: mapName,
-                modes_list_string: getGameModeName(gameMode),
-                stage: stage,
-                tickrate: 128,
-                limit: pageSize,
-                offset: pageParam,
-            }
+  return infiniteQueryOptions({
+    queryKey: ["mapTimes", mapName, gameMode, runType, stage, pageSize, gokzTop],
+    queryFn: async ({ pageParam }) => {
+      let params: GetRecordsTopParams = {
+        map_name: mapName,
+        modes_list_string: getGameModeName(gameMode),
+        stage: stage,
+        tickrate: 128,
+        limit: pageSize,
+        offset: pageParam,
+      }
 
-            if (runType === "pro") {
-                params.has_teleports = false
-            }
+      if (runType === "pro") {
+        params.has_teleports = false
+      }
 
-            if (runType === "tp") {
-                params.has_teleports = true
-            }
+      if (runType === "tp") {
+        params.has_teleports = true
+      }
 
-            if (runType === "nub") {
-                params.overall = true
-            }
+      if (runType === "nub") {
+        params.overall = true
+      }
 
-            const response = await GlobalAPI_GetRecordsTop(params)
-            const json: RecordsTop[] = await response.json()
-            const mapJson: MapRecordsTop[] = json.map((record, index) => {
-                return { ...record, place: index + 1 + pageParam }
-            })
-            return mapJson
-        },
-        initialPageParam: 0,
-        getNextPageParam: (lastPageData, allPagesData) =>
-            lastPageData.length === pageSize ? pageSize * allPagesData.length : undefined,
-        gcTime: 0,
-        placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
-    })
+      const response = await GlobalAPI_GetRecordsTop(params, gokzTop)
+      const json: RecordsTop[] = await response.json()
+      const mapJson: MapRecordsTop[] = json.map((record, index) => {
+        return { ...record, place: index + 1 + pageParam }
+      })
+      return mapJson
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPageData, allPagesData) =>
+      lastPageData.length === pageSize ? pageSize * allPagesData.length : undefined,
+    gcTime: 0,
+    placeholderData: keepPreviousData, // App hangs without this. I think it's related to how I use tanstack table. Should be fixable.
+  })
 }
 
 const useMapTimes = (
-    mapName: string,
-    gameMode: GameMode,
-    runType: RunType,
-    stage: number,
-    pageSize: number,
+  mapName: string,
+  gameMode: GameMode,
+  runType: RunType,
+  stage: number,
+  pageSize: number,
+  gokzTop: boolean = false,
 ) => {
-    return useInfiniteQuery(
-        mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize),
-    )
+  return useInfiniteQuery(
+    mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize, gokzTop),
+  )
 }
 
 const fetchMapTimes = (
-    mapName: string,
-    gameMode: GameMode,
-    runType: RunType,
-    stage: number,
-    pageSize: number,
+  mapName: string,
+  gameMode: GameMode,
+  runType: RunType,
+  stage: number,
+  pageSize: number,
+  gokzTop: boolean = false,
 ) => {
-    return queryClient.fetchInfiniteQuery(
-        mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize),
-    )
+  return queryClient.fetchInfiniteQuery(
+    mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize, gokzTop),
+  )
 }
 
-const refetchMapTimes = (
-    mapName: string,
-    gameMode: GameMode,
-    runType: RunType,
-    stage: number,
-    pageSize: number,
+const refetchMapTimes = async (
+  mapName: string,
+  gameMode: GameMode,
+  runType: RunType,
+  stage: number,
+  pageSize: number,
+  gokzTop: boolean = false,
 ) => {
-    const options = mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize)
+  const options = mapTimesInfiniteQueryOptions(mapName, gameMode, runType, stage, pageSize, gokzTop)
 
-    queryClient.setQueryData(options.queryKey, (data) => ({
-        pages: data ? data.pages.slice(0, 1) : [],
-        pageParams: [0],
-    }))
+  queryClient.setQueryData(options.queryKey, (data) => ({
+    pages: data ? data.pages.slice(0, 1) : [],
+    pageParams: [0],
+  }))
 
-    queryClient.refetchQueries({ queryKey: options.queryKey })
+  await queryClient.refetchQueries({ queryKey: options.queryKey })
 }
 
 export default useMapTimes
