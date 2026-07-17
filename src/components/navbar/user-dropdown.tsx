@@ -21,6 +21,8 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
 
 import { useLocalSettings } from "../localsettings/localsettings-provider"
 
@@ -31,6 +33,10 @@ function UserDropdown() {
 
   const logout = () => {
     setLocalSettings({ steamPlayerSummary: undefined })
+  }
+
+  const useGokzTop = () => {
+    setLocalSettings({ gokzTop: !localSettings.gokzTop })
   }
 
   useEffect(() => {
@@ -145,6 +151,11 @@ function UserDropdown() {
             </Link>
           </DropdownMenuItem>
         )}
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="flex items-center justify-between space-x-2">
+          <Label htmlFor="gokz-top">Use gokz.top API</Label>
+          <Switch id="gokz-top" checked={localSettings.gokzTop} onCheckedChange={useGokzTop} />
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to="https://github.com/Syuks/kzprofile-v2" target="_blank" rel="noreferrer">
